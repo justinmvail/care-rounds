@@ -57,6 +57,7 @@ import '../screens/team/circle_qr_screen.dart';
 import '../screens/team/circle_scan_screen.dart';
 import '../screens/team/username_screen.dart';
 import '../screens/team/expenses_screen.dart';
+import '../screens/team/my_rounds_screen.dart';
 import '../screens/team/shifts_screen.dart';
 import '../screens/team/tasks_screen.dart';
 import '../services/voice_intake.dart';
@@ -729,6 +730,14 @@ GoRouter buildRouter({
                     name: CareRoundsRoutes.teamShifts,
                     builder: (BuildContext context, GoRouterState state) =>
                         const ShiftsScreen(),
+                  ),
+                  // Care Rounds "My Rounds" — the signed-in worker's shifts
+                  // across ALL clients (vs Shifts, which is the active client's
+                  // coverage board). In the Care branch so the tab bar stays.
+                  GoRoute(
+                    path: 'my-rounds',
+                    builder: (BuildContext context, GoRouterState state) =>
+                        const MyRoundsScreen(),
                   ),
                   // Activity feed (Phase 14.32) — the chronological,
                   // filterable feed of every care event. In the Care branch

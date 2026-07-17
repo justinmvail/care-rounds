@@ -9,13 +9,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart' show Override;
 
-/// The five tiles in their documented order (BUILD_SPEC.md §5.13,
+/// The six tiles in their documented order (BUILD_SPEC.md §5.13,
 /// TASKS.md Phase 14.26): (label, icon, route). The 2026-06-06 IA refactor
 /// dropped the Calendar tile (the one schedule now lives under Care) and
 /// renamed the roster tile from "Care Circle" to "People".
 const List<(String, IconData, String)> _expected = <(String, IconData, String)>[
   ('Tasks', Icons.task_alt_outlined, '/team/tasks'),
   ('Shifts', Icons.access_time_outlined, '/team/shifts'),
+  ('My Rounds', Icons.route_outlined, '/team/my-rounds'),
   ('People', Icons.diversity_3_outlined, '/team/circle'),
   ('Activity', Icons.timeline_outlined, '/team/activity'),
   ('Expenses', Icons.account_balance_wallet_outlined, '/team/expenses'),
@@ -57,7 +58,7 @@ InMemoryStorageProvider _seededStorage({required bool teamEnabled}) {
   return storage;
 }
 
-/// Pumps the hub at a tall phone surface so all five tiles render inside
+/// Pumps the hub at a tall phone surface so all six tiles render inside
 /// the viewport (the grid scrolls, but a tall surface keeps every tile
 /// hittable). We deliberately skip `careroundsLightTheme` — its
 /// google_fonts TextStyles fire fire-and-forget Futures that surface as
@@ -87,13 +88,13 @@ Future<GoRouter> _pumpHub(
 
 void main() {
   group('CareTeamHubScreen — coordination enabled', () {
-    testWidgets('renders all five tiles in the documented order',
+    testWidgets('renders all six tiles in the documented order',
         (WidgetTester tester) async {
       await _pumpHub(tester);
 
       final List<HubTile> tiles =
           tester.widgetList<HubTile>(find.byType(HubTile)).toList();
-      expect(tiles.length, 5);
+      expect(tiles.length, _expected.length);
       expect(
         tiles.map((HubTile t) => t.label).toList(),
         <String>[for (final (String label, _, _) in _expected) label],

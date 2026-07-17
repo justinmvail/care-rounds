@@ -20,7 +20,7 @@ InMemoryStorageProvider _storageWith({required bool coordination}) {
 }
 
 /// Goldens of the Care Team hub in both visual states (BUILD_SPEC.md
-/// §5.13, TASKS.md Phase 14.26): the populated 6-tile grid (with the
+/// §5.13, TASKS.md Phase 14.26): the populated 7-tile grid (with the
 /// settings opt-in flipped on) and the default "Coordinate care" empty
 /// state. No theme is passed: per `flutter_test_config.dart`, goldens
 /// avoid dragging google_fonts through the framework; the hub's
@@ -29,13 +29,13 @@ InMemoryStorageProvider _storageWith({required bool coordination}) {
 void main() {
   group('CareTeamHubScreen golden', () {
     goldenTest(
-      'renders the populated 6-tile hub landing',
+      'renders the populated 7-tile hub landing',
       fileName: 'care_team_hub_screen',
       builder: () => GoldenTestGroup(
         columns: 1,
         children: <Widget>[
           GoldenTestScenario(
-            name: 'care team hub — 6 tiles (Phase 14.26)',
+            name: 'care team hub — 7 tiles (Phase 14.26)',
             child: SizedBox(
               width: 420,
               height: 820,
