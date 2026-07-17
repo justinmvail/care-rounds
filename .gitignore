@@ -1,0 +1,103 @@
+# Alpha-tester bug reports collected by the shim's POST /feedback
+# endpoint (tools/claude_shim.py). Local-only; never commit testers' notes
+# or screenshots.
+/feedback/
+
+# Flutter / Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+*.iml
+*.ipr
+*.iws
+.idea/
+.vscode/
+**/.DS_Store
+
+# Drift / generated
+*.g.dart
+*.freezed.dart
+**/generated/
+**/*.gen.dart
+
+# iOS
+ios/Pods/
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/Flutter/Generated.xcconfig
+ios/Flutter/flutter_export_environment.sh
+ios/Runner.xcworkspace/xcuserdata/
+ios/Runner.xcodeproj/xcuserdata/
+ios/Runner.xcodeproj/project.xcworkspace/xcuserdata/
+
+# Android
+android/.gradle/
+android/captures/
+android/gradlew
+android/gradlew.bat
+android/local.properties
+android/app/release/
+android/.idea/
+
+# Secrets (none expected, but defensive)
+.env
+.env.local
+google-services.json
+GoogleService-Info.plist
+# Tailscale Funnel TLS cert + key (machine-local secrets — never commit)
+*.ts.net.crt
+*.ts.net.key
+
+# Python shim
+tools/__pycache__/
+tools/.venv/
+
+# Vendored espeak-ng — populated by tools/vendor_espeak_ng.sh from
+# upstream espeak-ng 1.52.0. The podspec + README are committed; the
+# ~20 MB of C sources and ~5 MB of runtime data are not. See
+# ios/Vendored/espeak-ng/README.md.
+ios/Vendored/espeak-ng/src/
+ios/Vendored/espeak-ng/Resources/
+# Android Phase 10.3 mirror of the same vendor drop — the C sources
+# under cpp/espeak-ng/ are compiled into libcarerounds_espeak_ng.so
+# via externalNativeBuild. The CMakeLists.txt, JNI .cpp, and README
+# stay committed; the vendored upstream tree does not.
+android/app/src/main/cpp/espeak-ng/
+# Mirror of the espeak-ng runtime data under Flutter assets — same
+# vendor script writes it; keep the README placeholder tracked.
+assets/tts/espeak-ng-data/*
+!assets/tts/espeak-ng-data/README.md
+
+# Phase 10.4 audio-quality samples — regenerated on demand by
+# tools/regen_tts_samples.sh against a real device / simulator. The
+# WAVs are operator artifacts; only the source-of-truth README +
+# rubric stay tracked.
+docs/tts_samples/**/*.wav
+
+# Misc
+*.log
+coverage/
+.coverage
+
+# Alchemist platform goldens — uncommitted (per the alchemist
+# Recommended Setup Guide). CI goldens under goldens/ci/ stay tracked.
+test/**/goldens/**/*.*
+test/**/failures/**/*.*
+!test/**/goldens/ci/*.*
+
+# Integration-test screenshot failure diffs (on-device demo_tour). The
+# baselines under integration_test/goldens/ ARE tracked; failure diffs
+# are run debris.
+integration_test/failures/
+
+# Claude Code session/harness state (lock files, etc.)
+.claude/
+
+# Local dev secrets sourced by tools/run_device.sh (AUTH=google) (never commit)
+tools/dev_defines.sh
+demo_video/
+backend/.prod.vars

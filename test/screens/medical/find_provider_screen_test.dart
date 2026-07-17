@@ -1,0 +1,179 @@
+import 'package:drift/native.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart' hide Provider;
+import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
+import 'package:carerounds/db/database.dart';
+import 'package:carerounds/models/appointment.dart' show Provider;
+import 'package:carerounds/models/provider_search_result.dart';
+import 'package:carerounds/providers/npi_provider_provider.dart';
+import 'package:carerounds/screens/medical/find_provider_screen.dart';
+import 'package:carerounds/services/npi_provider_service.dart';
+import 'package:carerounds/services/provider_repository.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart' show Override;
+
+/// Records the args of the last [search] call so tests can assert the City /
+/// State fields flow through (and State is normalised to a 2-letter code).
+class _RecordingNpiService implements NpiProviderService {
+  String? lastName;
+  String? lastSpecialty;
+  String? lastCity;
+  String? lastState;
+  String? lastEnumerationType;
+
+  @override
+  Future<List<ProviderSearchResult>?> search({
+    String? name,
+    String? specialty,
+    String? city,
+    String? state,
+    String? postalCode,
+    String? enumerationType,
+  }) async {
+    lastName = name;
+    lastSpecialty = specialty;
+    lastCity = city;
+    lastState = state;
+    lastEnumerationType = enumerationType;
+    return const <ProviderSearchResult>[
+      ProviderSearchResult(
+        name: 'John Berger',
+        credential: 'MD',
+        specialty: 'Neurology',
+        city: 'Charleston',
+        state: 'SC',
+        npi: '1234567890',
+      ),
+    ];
+  }
+}
+
+/// The find-a-provider screen: search (via the fake NPI service) → results →
+/// Save persists a Provider.
+Future<void> _pump(
+  WidgetTester tester, {
+  required ProviderRepository repo,
+  NpiProviderService service = const FakeNpiProviderService(),
+}) async {
+  await tester.binding.setSurfaceSize(const Size(420, 1600));
+  addTearDown(() => tester.binding.setSurfaceSize(null));
+
+  final GoRouter router = GoRouter(
+    initialLocation: '/find-provider',
+    routes: <RouteBase>[
+      GoRoute(
+        path: '/find-provider',
+        builder: (BuildContext context, GoRouterState state) =>
+            const FindProviderScreen(),
+      ),
+    ],
+  );
+  await tester.pumpWidget(
+    ProviderScope(
+      overrides: <Override>[
+        providerRepositoryBackendProvider.overrideWithValue(repo),
+        npiProviderServiceProvider.overrideWithValue(service),
+      ],
+      child: MaterialApp.router(routerConfig: router),
+    ),
+  );
+  await tester.pumpAndSettle();
+}
+
+void main() {
+  testWidgets('search shows results and Save persists a provider',
+      (WidgetTester tester) async {
+    final CareRoundsDatabase db = CareRoundsDatabase(NativeDatabase.memory());
+    addTearDown(db.close);
+    final ProviderRepository repo = ProviderRepository(db);
+
+    await _pump(tester, repo: repo);
+
+    // Drive via Last name (a plain field) so no type-ahead overlay sits over
+    // the Search button.
+    await tester.enterText(
+        find.byKey(FindProviderScreen.lastNameKey), 'Berger');
+    await tester.tap(find.byKey(FindProviderScreen.searchButtonKey));
+    await tester.pumpAndSettle();
+
+    expect(find.text('John Berger, MD'), findsOneWidget);
+    // The card surfaces EVERY field the NPI record carries (fb_1783039822948375
+    // — "put all the fields on the card"): type, all specialties, license,
+    // street + suite, city/state+ZIP, tap-to-call phone, fax, NPI.
+    expect(find.textContaining('Individual'), findsOneWidget); // Type
+    expect(find.textContaining('Vascular Neurology'), findsOneWidget); // specialties
+    expect(find.textContaining('1631 SC'), findsOneWidget); // License
+    expect(find.textContaining('2135 Ashley Phosphate Rd'), findsOneWidget);
+    expect(find.textContaining('Suite 200'), findsOneWidget);
+    expect(find.text('North Charleston, SC 29456'), findsOneWidget);
+    expect(find.textContaining('843-767-4500'), findsOneWidget); // Call
+    expect(find.textContaining('843-767-4599'), findsOneWidget); // Fax
+    expect(find.textContaining('1234567890'), findsOneWidget); // NPI
+
+    // The sparse provider (Aisha Patel) has no license/suite/phone/fax — those
+    // labels must NOT appear a second time (blank fields are omitted entirely).
+    expect(find.textContaining('License'), findsOneWidget);
+    expect(find.textContaining('Fax'), findsOneWidget);
+
+    await tester.tap(find.byKey(FindProviderScreen.saveKey('1234567890')));
+    await tester.pumpAndSettle();
+
+    final List<Provider> providers = await repo.listProviders();
+    expect(providers.any((Provider p) => p.name == 'John Berger, MD'), isTrue);
+  });
+
+  testWidgets('City field exists and City + State flow to the NPI service',
+      (WidgetTester tester) async {
+    final CareRoundsDatabase db = CareRoundsDatabase(NativeDatabase.memory());
+    addTearDown(db.close);
+    final ProviderRepository repo = ProviderRepository(db);
+    final _RecordingNpiService service = _RecordingNpiService();
+
+    await _pump(tester, repo: repo, service: service);
+
+    // City is a real field on the form.
+    expect(find.byKey(FindProviderScreen.cityKey), findsOneWidget);
+
+    await tester.enterText(find.byKey(FindProviderScreen.cityKey), 'Charleston');
+    // Full state name typed free-hand normalises to the 2-letter code.
+    await tester.enterText(
+        find.byKey(FindProviderScreen.stateKey), 'South Carolina');
+    // Close the type-ahead overlay so it isn't sitting over the button.
+    FocusManager.instance.primaryFocus?.unfocus();
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(FindProviderScreen.searchButtonKey));
+    await tester.pumpAndSettle();
+
+    expect(service.lastCity, 'Charleston');
+    expect(service.lastState, 'SC');
+    // Default provider-type filter is People (NPI-1).
+    expect(service.lastEnumerationType, 'NPI-1');
+  });
+
+  testWidgets('provider-type toggle sets the NPI enumeration_type filter',
+      (WidgetTester tester) async {
+    final CareRoundsDatabase db = CareRoundsDatabase(NativeDatabase.memory());
+    addTearDown(db.close);
+    final ProviderRepository repo = ProviderRepository(db);
+    final _RecordingNpiService service = _RecordingNpiService();
+
+    await _pump(tester, repo: repo, service: service);
+
+    // Switch to Clinics (organizations) → enumeration_type NPI-2.
+    await tester.tap(find.text('Clinics'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(FindProviderScreen.cityKey), 'Charleston');
+    FocusManager.instance.primaryFocus?.unfocus();
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(FindProviderScreen.searchButtonKey));
+    await tester.pumpAndSettle();
+    expect(service.lastEnumerationType, 'NPI-2');
+
+    // Switch to All → no enumeration_type filter (null).
+    await tester.tap(find.text('All'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(FindProviderScreen.searchButtonKey));
+    await tester.pumpAndSettle();
+    expect(service.lastEnumerationType, isNull);
+  });
+}

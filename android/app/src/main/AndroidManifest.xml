@@ -1,0 +1,143 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Network access. Flutter auto-injects this into the debug + profile
+         manifests, so it's easy to miss that RELEASE builds (the Play Store
+         build) need it declared here or the app has NO network: the AI
+         coach, care-circle backend sync, document scan, and provider search
+         all silently fail. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Device-capture permissions (#8). Required by the record +
+         speech_to_text plugins (mic) and image_picker (camera + gallery)
+         so the journal photo/voice-note attach + Add-sheet voice button
+         work on device. Inert unless the USE_REAL_CAPTURE build flag
+         selects the real capture impls. -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <!-- Photo access: scoped media permission on Android 13+ (API 33),
+         legacy storage read capped at API 32 for older devices. -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <!-- Dose + appointment reminders (flutter_local_notifications, Phase
+         12.8). Without these the scheduled alarms NEVER fire on Android:
+         the plugin needs POST_NOTIFICATIONS to display on API 33+, an
+         exact-alarm permission to schedule reminders on time, and
+         RECEIVE_BOOT_COMPLETED so the boot receiver below re-arms pending
+         reminders after a reboot (Android drops all alarms on power-cycle).
+
+         We declare only SCHEDULE_EXACT_ALARM, NOT USE_EXACT_ALARM. Play
+         policy restricts USE_EXACT_ALARM (the auto-granted, no-prompt one)
+         to alarm-clock and calendar apps; CareRounds is a caregiving app, so
+         it's ineligible and Play rejects it across all tracks. A reminder
+         app IS allowed to use SCHEDULE_EXACT_ALARM — but on Android 14+ it
+         is not auto-granted, so exact scheduling can be disallowed at
+         runtime. LocalNotificationsProvider handles that by querying
+         canScheduleExactNotifications() and falling back to an INEXACT
+         (Doze-batched, but still firing) alarm when exact isn't permitted,
+         so a reminder is never silently dropped. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!-- Backups are OFF (2026-06-11): the app-data dir holds the loved
+         one's health record in PLAINTEXT (the drift SQLite DB: meds,
+         dose history, behaviors, journal) plus the feedback outbox.
+         Default-on Auto Backup would copy all of it to the user's
+         Google Drive and expose it to `adb backup`. allowBackup="false"
+         disables both; the matching iOS posture is the Keychain-only
+         secret storage. Re-enable deliberately (with
+         dataExtractionRules excluding the DB) if cloud restore ever
+         becomes a product feature. -->
+    <application
+        android:label="Care Rounds"
+        android:name="${applicationName}"
+        android:allowBackup="false"
+        android:fullBackupContent="false"
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:icon="@mipmap/ic_launcher">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:taskAffinity=""
+            android:theme="@style/LaunchTheme"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+            android:hardwareAccelerated="true"
+            android:windowSoftInputMode="adjustResize">
+            <!-- Specifies an Android theme to apply to this Activity as soon as
+                 the Android process has started. This theme is visible to the user
+                 while the Flutter UI initializes. After that, this theme continues
+                 to determine the Window background behind the Flutter UI. -->
+            <meta-data
+              android:name="io.flutter.embedding.android.NormalTheme"
+              android:resource="@style/NormalTheme"
+              />
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+            <!-- Care Circle invite LINKS (2026-06-08). Opens the app on a
+                 `carerounds://` custom-scheme deep link (e.g.
+                 `carerounds://join/<token>`) tapped from a shared text
+                 link / the backend's public /join/<token> landing page.
+                 The app_links plugin delivers the URI; app.dart redeems
+                 the token. iOS registers the same scheme in Info.plist. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="carerounds"/>
+            </intent-filter>
+        </activity>
+        <!-- flutter_local_notifications scheduled-reminder receivers
+             (Phase 12.8). The plugin stops declaring these itself from v16
+             on, so a scheduled dose/appointment alarm has nothing to
+             deliver it without these three entries:
+               - ScheduledNotificationReceiver fires the pending alarm and
+                 posts the notification when its time arrives.
+               - ScheduledNotificationBootReceiver re-arms every pending
+                 alarm after a device reboot / app update (Android clears
+                 alarms on power-cycle), paired with RECEIVE_BOOT_COMPLETED.
+               - ActionBroadcastReceiver routes notification-action taps
+                 back into the plugin.
+             All exported="false": nothing outside the app may trigger them. -->
+        <receiver
+            android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver"
+            android:exported="false" />
+        <receiver
+            android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+                <action android:name="com.htc.intent.action.QUICKBOOT_POWERON" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="com.dexterous.flutterlocalnotifications.ActionBroadcastReceiver"
+            android:exported="false" />
+        <!-- Don't delete the meta-data below.
+             This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
+        <meta-data
+            android:name="flutterEmbedding"
+            android:value="2" />
+    </application>
+    <!-- Required to query activities that can process text, see:
+         https://developer.android.com/training/package-visibility and
+         https://developer.android.com/reference/android/content/Intent#ACTION_PROCESS_TEXT.
+
+         In particular, this is used by the Flutter engine in io.flutter.plugin.text.ProcessTextPlugin. -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.PROCESS_TEXT"/>
+            <data android:mimeType="text/plain"/>
+        </intent>
+        <!-- Lets speech_to_text discover the on-device speech recognizer
+             on Android 11+ (package visibility). Without this the
+             recognizer reports unavailable and RealVoiceCapture yields
+             no transcript. (#8) -->
+        <intent>
+            <action android:name="android.speech.RecognitionService" />
+        </intent>
+    </queries>
+</manifest>

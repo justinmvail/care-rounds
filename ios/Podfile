@@ -1,0 +1,63 @@
+# Vendored espeak-ng pod (Phase 10) requires iOS 16.0+ per its
+# podspec; onnxruntime-objc ~> 1.18.0 (Phase 9, bundled TTS) lifts the
+# floor for the same reason. Without the explicit platform line
+# CocoaPods defaults to 13.0 and refuses to resolve.
+platform :ios, '16.0'
+
+# CocoaPods analytics sends network stats synchronously affecting flutter build latency.
+ENV['COCOAPODS_DISABLE_STATS'] = 'true'
+
+project 'Runner', {
+  'Debug' => :debug,
+  'Profile' => :release,
+  'Release' => :release,
+}
+
+def flutter_root
+  generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)
+  unless File.exist?(generated_xcode_build_settings_path)
+    raise "#{generated_xcode_build_settings_path} must exist. If you're running pod install manually, make sure flutter pub get is executed first"
+  end
+
+  File.foreach(generated_xcode_build_settings_path) do |line|
+    matches = line.match(/FLUTTER_ROOT\=(.*)/)
+    return matches[1].strip if matches
+  end
+  raise "FLUTTER_ROOT not found in #{generated_xcode_build_settings_path}. Try deleting Generated.xcconfig, then run flutter pub get"
+end
+
+require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
+
+flutter_ios_podfile_setup
+
+target 'Runner' do
+  use_frameworks!
+
+  flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+
+  # BUILD_SPEC.md §1 (Phase 9.3): on-device neural TTS via ONNX Runtime.
+  # `onnxruntime-objc` bundles the Objective-C binding + the CoreML
+  # execution provider so `ORTCoreMLExecutionProvider` is callable from
+  # TTSBridge.swift via the bridging header. Pinned to 1.18.x to match
+  # what the Phase 9.1 voice model was exported against.
+  pod 'onnxruntime-objc', '~> 1.18.0'
+
+  # BUILD_SPEC.md §1 (Phase 10.1): text-to-phoneme via espeak-ng 1.52.0,
+  # vendored as a local pod under ios/Vendored/espeak-ng/. The sources
+  # land via `tools/vendor_espeak_ng.sh` (operator-runnable on fresh
+  # checkouts) — the podspec is committed so `pod install` resolves
+  # the dependency reference cleanly even when the sources aren't yet
+  # vendored. See ios/Vendored/espeak-ng/README.md for the rationale
+  # vs. the upstream community `espeak-ng-ios` pod (1.46.x, stale).
+  pod 'espeak-ng', :path => 'Vendored/espeak-ng'
+
+  target 'RunnerTests' do
+    inherit! :search_paths
+  end
+end
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    flutter_additional_ios_build_settings(target)
+  end
+end

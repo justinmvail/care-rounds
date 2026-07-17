@@ -1,0 +1,25 @@
+# Local-dev vars, auto-loaded by `wrangler dev`. Copy to .dev.vars
+# (gitignored) — production values are Worker secrets set via
+# `wrangler secret put ...`, never files.
+
+# Required for any JWT-gated route (auth/profiles/circles/sync/chat/...).
+# Any non-empty string works locally.
+FORUM_JWT_SECRET=dev-only-jwt-secret-change-me
+
+# Needed only to exercise POST /api/v1/chat locally:
+# CF_AI_API_TOKEN=  (Cloudflare API token, scope "Workers AI: Read" — for /api/v1/chat + /extract)
+
+# Optional override — the default audience lives in wrangler.toml [vars]:
+# GOOGLE_CLIENT_ID=
+
+# Needed only to exercise POST /api/v1/billing/verify locally against the
+# REAL stores (otherwise that platform returns 500 server_misconfigured).
+# The private keys are the full PEM contents. Leave unset unless you're
+# validating end-to-end against real App Store / Play credentials.
+# APPLE_ISSUER_ID=
+# APPLE_KEY_ID=
+# APPLE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----"
+# APPLE_BUNDLE_ID=com.carerounds.carerounds
+# GOOGLE_PLAY_SA_EMAIL=
+# GOOGLE_PLAY_SA_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----"
+# GOOGLE_PLAY_PACKAGE=com.carerounds.carerounds

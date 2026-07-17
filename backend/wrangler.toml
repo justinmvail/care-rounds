@@ -1,0 +1,283 @@
+# Cloudflare Workers config for the CareRounds caregiver forum.
+#
+# - `FORUM_DB` is the D1 database holding profiles / posts / comments / votes / reports.
+# - `FORUM_MEDIA` is the R2 bucket holding avatars + post image attachments.
+#
+# Before the first `wrangler dev` or `wrangler deploy`:
+#   1. Create the D1 database:  `wrangler d1 create care-rounds-forum`
+#      and paste the returned UUID into `database_id` below.
+#   2. Create the R2 bucket:    `wrangler r2 bucket create care-rounds-forum-media`
+#   3. Set the JWT secret:      `wrangler secret put FORUM_JWT_SECRET`
+#      (Phase 13.3 — auth middleware).
+#
+# Local dev (`wrangler dev`) and `vitest` use miniflare's in-process D1/R2
+# emulators, so steps 1–3 are only required for remote (`wrangler deploy`).
+
+name = "care-rounds-forum"
+main = "src/index.ts"
+compatibility_date = "2026-05-30"
+compatibility_flags = ["nodejs_compat"]
+
+# Phase 13.13: weekly metrics watchdog. Mondays at 13:00 UTC
+# (~6am Pacific) keeps the email out of the operator's weekend.
+[triggers]
+crons = ["0 13 * * 1"]
+
+[vars]
+# Public origin serving avatar objects out of FORUM_MEDIA. Profile avatar_url
+# values must start with this prefix, so the API can't be pointed at arbitrary
+# off-platform images.
+#
+# This is the WORKER'S OWN /media route (src/routes/media.ts), not an R2 bucket
+# domain: a public bucket needs a custom domain provisioned + DNS'd per
+# environment, and until 2026-07-13 this var sat at a placeholder
+# (`media.carerounds.local`) that resolved NOWHERE — so an avatar URL could
+# never have loaded even if one had been set. Serving through the Worker makes
+# avatars work on every deploy with zero extra infrastructure. If a
+# CDN-fronted bucket is provisioned later, ONLY this var changes.
+#
+# Set it per environment to that environment's own origin (see [env.dev.vars]).
+# carerounds.care has NO DNS yet (verified 2026-07-14: it does not resolve).
+# Point at the Worker's own origin — the same thing dev does — so avatars
+# actually load. Change this ONE var if/when the custom domain is live.
+R2_PUBLIC_URL = "https://care-rounds-forum.jcsvonellc.workers.dev/media"
+
+# Allowed audience(s) for POST /api/v1/auth/google — the Google *Web* OAuth
+# client id (the app sets it as serverClientId so iOS+Android ID tokens both
+# carry it as `aud`). May be a comma-separated list to allow additional
+# audiences (e.g. a native iOS client id). The Web client id is public, not a
+# secret, so it lives here; override per environment via
+# `wrangler deploy --var GOOGLE_CLIENT_ID:...` or set it for local dev in
+# `.dev.vars`.
+GOOGLE_CLIENT_ID = "REPLACE_WITH_CARE_ROUNDS_WEB_CLIENT_ID,REPLACE_WITH_CARE_ROUNDS_IOS_CLIENT_ID,REPLACE_WITH_CARE_ROUNDS_ANDROID_CLIENT_ID"
+
+# Alerting wiring (Resend) — used by BOTH the weekly capacity watchdog
+# (Phase 13.13) and the real-time 5xx/cron error alerts (src/alerts). The
+# RESEND_API_KEY secret is set via `wrangler secret put RESEND_API_KEY
+# --env <env>`; until it's set, all alerting is silently off (never crashes).
+#
+# RESEND_FROM_EMAIL uses Resend's shared sandbox sender, which works with just
+# an API key and NO domain verification — but Resend only delivers a sandbox
+# send to the account's OWN email, so RESEND_TO_EMAIL must be the Resend
+# signup address. To alert other addresses, verify carerounds.care in Resend
+# and switch the from-address to e.g. alerts@carerounds.care.
+ENVIRONMENT = "local"
+RESEND_FROM_EMAIL = "onboarding@resend.dev"
+RESEND_TO_EMAIL = "jcsvonellc@gmail.com"
+CLOUDFLARE_ACCOUNT_ID = ""
+CLOUDFLARE_D1_DATABASE_ID = ""
+CLOUDFLARE_R2_BUCKET_NAME = "care-rounds-forum-media"
+
+# --- AI coach + scan extraction (Cloudflare Workers AI) ---------------
+# Inference runs on Cloudflare Workers AI via its OpenAI-compatible
+# endpoint (https://api.cloudflare.com/client/v4/accounts/<id>/ai/v1). The
+# PHI-bearing prompt/image never leaves Cloudflare's network — the same
+# infra hosting the Worker + D1 + R2 — so there is no separate AI vendor.
+# The token is a SECRET: `wrangler secret put CF_AI_API_TOKEN` (Cloudflare
+# API token scoped "Workers AI: Read"). CLOUDFLARE_ACCOUNT_ID is set in the
+# watchdog vars above (reused here). CHAT_MODEL is the text model (chat,
+# recap, visit-prep, appeal); EXTRACT_MODEL is the vision model for scans.
+#
+# Spend caps (micro-dollars; $1 = 1_000_000) still apply as a usage/cost
+# circuit breaker. The global cap is
+#   max(CHAT_GLOBAL_FLOOR_MICROS, CHAT_PER_USER_BUDGET_MICROS × users)
+# so it's $5/day in alpha (the floor wins with few users) and scales as a
+# ratio of users in prod. Per-user daily token cap is the abuse stop.
+# NOTE: Workers AI bills in "neurons", not tokens — treat the micro-per-
+# token constants in chat.ts as a proxy and tune to your plan.
+CHAT_MODEL = "@cf/meta/llama-3.3-70b-instruct-fp8-fast"
+# Vision model for scan-to-import. VALIDATE at deploy — smaller edge models
+# read messy label photos less reliably than a frontier model; the human-
+# in-the-loop review + uncertainty flags are the mitigation.
+EXTRACT_MODEL = "@cf/meta/llama-3.2-11b-vision-instruct"
+CHAT_MAX_INPUT_CHARS = "48000"
+CHAT_MAX_OUTPUT_TOKENS = "1024"
+CHAT_USER_DAILY_TOKENS = "300000"
+CHAT_GLOBAL_FLOOR_MICROS = "5000000"
+CHAT_PER_USER_BUDGET_MICROS = "100000"
+
+# --- In-app-purchase receipt verification (/api/v1/billing) -----------
+# The device never declares its own premium status: it forwards a store
+# receipt to POST /billing/verify, the Worker validates it against the
+# platform store API, and the authoritative entitlement lands in the
+# `entitlements` D1 table (GET /billing/entitlement is the app's launch-time
+# source of truth).
+#
+# The PRIVATE KEYS are SECRETS — set them, never here:
+#   wrangler secret put APPLE_PRIVATE_KEY          # App Store Connect .p8 (ES256) PEM
+#   wrangler secret put GOOGLE_PLAY_SA_PRIVATE_KEY # Play service-account private_key PEM
+#
+# The ids/emails/package below are NOT secret; fill them at deploy for prod
+# (or override with --var). A billing/verify for a platform whose creds are
+# absent returns 500 server_misconfigured. These can only be validated
+# end-to-end once the App Store / Play products + credentials exist.
+#
+# Apple — App Store Server API (verify a signed transaction; sign the request
+# JWT with the App Store Connect .p8):
+APPLE_ISSUER_ID = ""                              # App Store Connect issuer id (UUID)
+APPLE_KEY_ID = ""                                 # the .p8 key id
+APPLE_BUNDLE_ID = "com.carerounds.carerounds"       # the app bundle id (JWT `bid`)
+# Google — Play Developer API (purchases.subscriptionsv2.get / products.get,
+# via a service-account JWT→OAuth exchange):
+GOOGLE_PLAY_SA_EMAIL = ""                         # the Play service-account email
+GOOGLE_PLAY_PACKAGE = "com.carerounds.carerounds"    # MUST match applicationId in
+                                                   # android/app/build.gradle.kts. The old
+                                                   # value here was the Kotlin *namespace*
+                                                   # (com.carerounds.carerounds), which is a
+                                                   # deliberate keep but is NOT the Play package.
+                                                   # Play receipt verification would have 404'd.
+
+[[d1_databases]]
+binding = "FORUM_DB"
+database_name = "care-rounds-forum"
+database_id = "REPLACE_WITH_CARE_ROUNDS_PROD_D1_ID"
+migrations_dir = "drizzle"
+
+[[r2_buckets]]
+binding = "FORUM_MEDIA"
+bucket_name = "care-rounds-forum-media"
+
+# Document scans (emergency card / POA / ID images). Stored under a
+# circle-namespaced key so blobs survive a reinstall and sync across the
+# care circle. Local `wrangler dev` + vitest use miniflare's in-process R2
+# emulator (blobs persist under .wrangler/state), so no real bucket is
+# required for alpha; create it before remote deploy:
+#   wrangler r2 bucket create carerounds-doc-blobs
+[[r2_buckets]]
+binding = "DOC_BLOBS"
+bucket_name = "carerounds-doc-blobs"
+
+# --- production environment -------------------------------------------
+# Deployed 2026-07-14 as `care-rounds-forum` in the jcsvonellc account. Deploy
+# with `wrangler deploy --env prod`; migrate with
+# `wrangler d1 migrations apply FORUM_DB --env prod --remote`.
+#
+# A NAMED env (not the top-level config) for the same reason dev is: the
+# vitest harness loads the top-level config, and a top-level [ai] binding
+# crashes miniflare outright ("wrapped binding module can't be resolved").
+#
+# Named wrangler envs DO NOT INHERIT the top-level [vars] or bindings — every
+# one has to be repeated here. A var you forget is not an error at deploy; it
+# is a 500 in production. (CLAUDE.md's deployed-config invariant, learned the
+# hard way on 2026-07-13.)
+[env.prod]
+name = "care-rounds-forum"
+
+[env.prod.vars]
+ENVIRONMENT = "prod"
+# The prod Worker's own /media route. NOT carerounds.care — that domain has no
+# DNS (verified 2026-07-14), so avatars pointed at it would be dead links.
+R2_PUBLIC_URL = "https://care-rounds-forum.jcsvonellc.workers.dev/media"
+GOOGLE_CLIENT_ID = "REPLACE_WITH_CARE_ROUNDS_WEB_CLIENT_ID,REPLACE_WITH_CARE_ROUNDS_IOS_CLIENT_ID,REPLACE_WITH_CARE_ROUNDS_ANDROID_CLIENT_ID"
+RESEND_FROM_EMAIL = "onboarding@resend.dev"
+RESEND_TO_EMAIL = "jcsvonellc@gmail.com"
+CLOUDFLARE_ACCOUNT_ID = "1d05533f4440827e2768c13a6c80c5ea"
+CLOUDFLARE_D1_DATABASE_ID = "REPLACE_WITH_CARE_ROUNDS_PROD_D1_ID"
+CLOUDFLARE_R2_BUCKET_NAME = "care-rounds-forum-media"
+CHAT_MODEL = "@cf/meta/llama-3.3-70b-instruct-fp8-fast"
+EXTRACT_MODEL = "@cf/meta/llama-3.2-11b-vision-instruct"
+CHAT_MAX_INPUT_CHARS = "48000"
+CHAT_MAX_OUTPUT_TOKENS = "1024"
+CHAT_USER_DAILY_TOKENS = "300000"
+CHAT_GLOBAL_FLOOR_MICROS = "5000000"
+CHAT_PER_USER_BUDGET_MICROS = "100000"
+APPLE_BUNDLE_ID = "com.carerounds.carerounds"
+GOOGLE_PLAY_PACKAGE = "com.carerounds.carerounds"
+# Billing stays unconfigured until the store products + credentials exist;
+# /billing/verify answers 500 server_misconfigured until then.
+APPLE_ISSUER_ID = ""
+APPLE_KEY_ID = ""
+GOOGLE_PLAY_SA_EMAIL = ""
+
+[[env.prod.d1_databases]]
+binding = "FORUM_DB"
+database_name = "care-rounds-forum"
+database_id = "REPLACE_WITH_CARE_ROUNDS_PROD_D1_ID"
+migrations_dir = "drizzle"
+
+# Weekly metrics watchdog (Mondays 13:00 UTC).
+[env.prod.triggers]
+crons = ["0 13 * * 1"]
+
+[env.prod.ai]
+binding = "AI"
+
+[[env.prod.r2_buckets]]
+binding = "FORUM_MEDIA"
+bucket_name = "care-rounds-forum-media"
+
+[[env.prod.r2_buckets]]
+binding = "DOC_BLOBS"
+bucket_name = "carerounds-doc-blobs"
+
+# --- dev environment ---------------------------------------------------
+# Deploys as `care-rounds-forum-dev` in the jcsvonellc Cloudflare account
+# (1d05533f4440827e2768c13a6c80c5ea). A named wrangler environment, so the
+# same account can host other apps' `-dev` workers alongside it. Deploy with
+# `wrangler deploy --env dev`; migrate with
+# `wrangler d1 migrations apply FORUM_DB --env dev --remote`.
+#
+# R2 enabled 2026-07-10; dev buckets `care-rounds-forum-media-dev` +
+# `carerounds-doc-blobs-dev` created and bound below (as FORUM_MEDIA /
+# DOC_BLOBS). Uploads write to R2; serving forum media publicly still needs a
+# real public bucket URL in R2_PUBLIC_URL (follow-up). Workers AI is the
+# native `[env.dev.ai]` binding below.
+[env.dev]
+name = "care-rounds-forum-dev"
+
+[env.dev.vars]
+ENVIRONMENT = "dev"
+# The dev Worker's own /media route — see the top-level R2_PUBLIC_URL comment.
+R2_PUBLIC_URL = "https://care-rounds-forum-dev.jcsvonellc.workers.dev/media"
+GOOGLE_CLIENT_ID = "REPLACE_WITH_CARE_ROUNDS_WEB_CLIENT_ID,REPLACE_WITH_CARE_ROUNDS_IOS_CLIENT_ID,REPLACE_WITH_CARE_ROUNDS_ANDROID_CLIENT_ID"
+RESEND_FROM_EMAIL = "onboarding@resend.dev"
+RESEND_TO_EMAIL = "jcsvonellc@gmail.com"
+CLOUDFLARE_ACCOUNT_ID = "1d05533f4440827e2768c13a6c80c5ea"
+CLOUDFLARE_D1_DATABASE_ID = "REPLACE_WITH_CARE_ROUNDS_DEV_D1_ID"
+CLOUDFLARE_R2_BUCKET_NAME = "care-rounds-forum-media-dev"
+CHAT_MODEL = "@cf/meta/llama-3.3-70b-instruct-fp8-fast"
+EXTRACT_MODEL = "@cf/meta/llama-3.2-11b-vision-instruct"
+CHAT_MAX_INPUT_CHARS = "48000"
+CHAT_MAX_OUTPUT_TOKENS = "1024"
+CHAT_USER_DAILY_TOKENS = "300000"
+CHAT_GLOBAL_FLOOR_MICROS = "5000000"
+CHAT_PER_USER_BUDGET_MICROS = "100000"
+APPLE_BUNDLE_ID = "com.carerounds.carerounds"
+GOOGLE_PLAY_PACKAGE = "com.carerounds.carerounds"  # the Play applicationId, NOT the Kotlin namespace
+# Billing placeholders. Named wrangler envs do NOT inherit the top-level
+# [vars], so these have to be repeated here or the deploy warns on every run
+# and /billing/verify 500s with a confusing "server_misconfigured" rather than
+# an honest "not configured yet". Still empty — billing can only be wired once
+# the App Store / Play products + credentials exist (the private keys go in as
+# secrets, never here).
+APPLE_ISSUER_ID = ""
+APPLE_KEY_ID = ""
+GOOGLE_PLAY_SA_EMAIL = ""
+
+[[env.dev.d1_databases]]
+binding = "FORUM_DB"
+database_name = "care-rounds-forum-dev"
+database_id = "REPLACE_WITH_CARE_ROUNDS_DEV_D1_ID"
+migrations_dir = "drizzle"
+
+[env.dev.triggers]
+crons = []
+
+# Native Workers AI binding — the coach chat calls this at runtime (no
+# CF_AI_API_TOKEN needed; the deploy creds carry `ai:write`). Scan/vision
+# extraction still uses the REST path (CF_AI_API_TOKEN) pending live
+# vision-format validation. Deliberately env-scoped (NOT top-level) so the
+# vitest test harness, which loads the top-level config, never boots the AI
+# runtime — that was the reason the top-level [ai] binding was removed.
+[env.dev.ai]
+binding = "AI"
+
+# R2 buckets for the dev env. Binding names MUST match what the code reads
+# (`env.FORUM_MEDIA` / `env.DOC_BLOBS`), not wrangler's suggested snake-case.
+[[env.dev.r2_buckets]]
+binding = "FORUM_MEDIA"
+bucket_name = "care-rounds-forum-media-dev"
+
+[[env.dev.r2_buckets]]
+binding = "DOC_BLOBS"
+bucket_name = "carerounds-doc-blobs-dev"

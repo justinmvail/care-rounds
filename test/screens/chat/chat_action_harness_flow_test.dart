@@ -1,0 +1,171 @@
+import 'package:carerounds/db/database.dart';
+import 'package:carerounds/models/medication.dart';
+import 'package:carerounds/providers/care_plan_provider.dart';
+import 'package:carerounds/providers/health_log_provider.dart';
+import 'package:carerounds/providers/storage_provider.dart';
+import 'package:carerounds/screens/chat/chat_screen.dart';
+import 'package:carerounds/services/appointment_repository.dart';
+import 'package:carerounds/services/chat_repository.dart';
+import 'package:carerounds/services/chat_service.dart';
+import 'package:carerounds/services/medication_repository.dart';
+import 'package:drift/native.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart' show Override;
+
+/// Closes the audit gap "no test drives the chat action harness through the
+/// real chat UI." Pumps the live [ChatScreen] (which uses the real
+/// `chatServiceProvider` + `buildChatActions`), scripts the coach's reply to
+/// carry an `[action:…]` marker, sends a message, and asserts the side
+/// effect actually happened — a medication written, or the app navigated.
+
+const String _convoId = 'c1';
+
+/// Scripted backend that streams [deltas] then closes.
+class _ScriptedBackend implements ChatLLMBackend {
+  _ScriptedBackend(this.deltas);
+  final List<ChatDelta> deltas;
+
+  @override
+  Stream<ChatDelta> streamReply({
+    required String systemPrompt,
+    required List<ChatTurn> history,
+  }) async* {
+    for (final ChatDelta d in deltas) {
+      yield d;
+    }
+  }
+}
+
+Future<({MedicationRepository meds, GoRouter router})> _pumpThread(
+  WidgetTester tester, {
+  required CareRoundsDatabase db,
+  required List<ChatDelta> reply,
+}) async {
+  await tester.binding.setSurfaceSize(const Size(420, 900));
+  addTearDown(() => tester.binding.setSurfaceSize(null));
+
+  final ChatRepository chatRepo = ChatRepository(db);
+  await chatRepo.createConversation(
+      id: _convoId, title: 'thread', createdAt: DateTime(2026, 6, 1));
+  final MedicationRepository meds = MedicationRepository(db);
+
+  final GoRouter router = GoRouter(
+    initialLocation: '/chat/$_convoId',
+    routes: <RouteBase>[
+      GoRoute(
+        path: '/chat/:id',
+        builder: (BuildContext c, GoRouterState s) =>
+            ChatScreen(conversationId: s.pathParameters['id']!),
+      ),
+      GoRoute(
+        path: '/medications',
+        builder: (BuildContext c, GoRouterState s) =>
+            const Scaffold(body: Center(child: Text('MED LIST'))),
+      ),
+    ],
+  );
+
+  await tester.pumpWidget(
+    ProviderScope(
+      overrides: <Override>[
+        chatRepositoryBackendProvider.overrideWithValue(chatRepo),
+        chatLLMBackendProvider.overrideWithValue(_ScriptedBackend(reply)),
+        medicationRepositoryBackendProvider.overrideWithValue(meds),
+        // The chat now reads the user's data for context each turn — point
+        // every data backend at the in-memory DB so it doesn't hit the real
+        // on-device SQLite (which throws in a widget test).
+        storageBackendProvider.overrideWithValue(InMemoryStorageProvider()),
+        appointmentRepositoryBackendProvider
+            .overrideWithValue(AppointmentRepository(db)),
+        carePlanRepositoryBackendProvider
+            .overrideWithValue(CarePlanRepository(db)),
+        healthLogRepositoryBackendProvider
+            .overrideWithValue(HealthLogRepository(db)),
+      ],
+      child: MaterialApp.router(routerConfig: router),
+    ),
+  );
+  await tester.pumpAndSettle();
+  return (meds: meds, router: router);
+}
+
+Future<void> _send(WidgetTester tester, String text) async {
+  await tester.enterText(find.byKey(ChatScreen.inputFieldKey), text);
+  await tester.tap(find.byKey(ChatScreen.sendButtonKey));
+  await tester.pumpAndSettle();
+}
+
+String _location(GoRouter router) =>
+    router.routerDelegate.currentConfiguration.last.matchedLocation;
+
+void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  late CareRoundsDatabase db;
+
+  setUp(() => db = CareRoundsDatabase(NativeDatabase.memory()));
+  tearDown(() async => db.close());
+
+  testWidgets('an add_medication action parks a confirm card, then writes the '
+      'med only after Confirm', (WidgetTester tester) async {
+    // Every write now confirms through the in-thread card (USER DECISION
+    // 2026-07): sending does NOT write; the Confirm tap does.
+    final ({MedicationRepository meds, GoRouter router}) h = await _pumpThread(
+      tester,
+      db: db,
+      reply: const <ChatDelta>[
+        ChatDeltaText("Confirm below and I'll add it.\n"
+            '[action:add_medication name="Aspirin" dosage="81 mg"]'),
+      ],
+    );
+
+    await _send(tester, 'add aspirin 81 mg');
+
+    // Nothing written yet — the confirm card is showing, prose is clean.
+    expect(await h.meds.listMedications(), isEmpty);
+    expect(find.textContaining("Confirm below and I'll add it."),
+        findsOneWidget);
+    expect(find.textContaining('[action:'), findsNothing);
+    expect(find.text('Add the medication “Aspirin” (81 mg)?'), findsOneWidget);
+
+    // Tap Confirm → the tool runs through the real ChatService and the med
+    // lands on disk.
+    const String pendingCitation =
+        '${ChatService.pendingActionCitationPrefix}'
+        '[action:add_medication name="Aspirin" dosage="81 mg"]';
+    await tester
+        .tap(find.byKey(ChatScreen.pendingActionConfirmKey(pendingCitation)));
+    await tester.pumpAndSettle();
+
+    final List<Medication> meds = await h.meds.listMedications();
+    expect(meds, hasLength(1));
+    expect(meds.single.name, 'Aspirin');
+    expect(meds.single.dosage, '81 mg');
+    // The card is gone after the decision.
+    expect(find.byKey(ChatScreen.pendingActionCardKey(pendingCitation)),
+        findsNothing);
+  });
+
+  testWidgets('a navigate action in the reply pushes the target screen',
+      (WidgetTester tester) async {
+    final ({MedicationRepository meds, GoRouter router}) h = await _pumpThread(
+      tester,
+      db: db,
+      reply: const <ChatDelta>[
+        ChatDeltaText('Taking you there.\n'
+            '[action:navigate target="medications"]'),
+      ],
+    );
+
+    expect(_location(h.router), '/chat/$_convoId');
+
+    await _send(tester, 'take me to her meds');
+
+    // The chat screen's navigation listener pushed the medication list.
+    expect(_location(h.router), '/medications');
+    expect(find.text('MED LIST'), findsOneWidget);
+  });
+}

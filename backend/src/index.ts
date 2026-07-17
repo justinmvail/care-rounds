@@ -1,0 +1,196 @@
+import { Hono } from 'hono';
+import { HTTPException } from 'hono/http-exception';
+
+import { alertOnError, buildErrorAlert, type AlertEnv } from './alerts';
+import { auth, type AuthBindings, type AuthVariables } from './middleware/auth';
+import { authRouter } from './routes/auth';
+import { billingRouter, type BillingBindings } from './routes/billing';
+import { chatRouter, type ChatBindings } from './routes/chat';
+import { circlesRouter } from './routes/circles';
+import { commentsRouter } from './routes/comments';
+import { documentsRouter } from './routes/documents';
+import { extractRouter, type ExtractBindings } from './routes/extract';
+import { feedbackRouter } from './routes/feedback';
+import { joinRouter } from './routes/join';
+import { privacyRouter, termsRouter } from './routes/legal';
+import { mediaRouter } from './routes/media';
+import { postsRouter } from './routes/posts';
+import { profilesRouter } from './routes/profiles';
+import { reportsRouter } from './routes/reports';
+import { syncRouter } from './routes/sync';
+import { votesRouter } from './routes/votes';
+import { handleScheduled, type WatchdogEnv } from './watchdog';
+import type { Context } from 'hono';
+
+export type Bindings = AuthBindings &
+  ChatBindings &
+  ExtractBindings &
+  BillingBindings & {
+  FORUM_DB: D1Database;
+  FORUM_MEDIA: R2Bucket;
+  // R2 bucket holding caregiver document scans (emergency card / POA / ID
+  // images) so they survive a reinstall and sync across the care circle.
+  DOC_BLOBS: R2Bucket;
+  R2_PUBLIC_URL: string;
+  // Allowed Google OAuth audience(s) for POST /api/v1/auth/google. Single
+  // value = the Web client id; may be a comma-separated list.
+  GOOGLE_CLIENT_ID: string;
+  // Operator alerting (Resend). Present in production as [vars] +
+  // the RESEND_API_KEY secret; absent in tests, which keeps alerting silent
+  // there. Shared with the weekly watchdog's WatchdogEnv.
+  RESEND_API_KEY: string;
+  RESEND_FROM_EMAIL: string;
+  RESEND_TO_EMAIL: string;
+  // Deploy label ("prod"/"dev") for alert subject lines. Optional.
+  ENVIRONMENT?: string;
+};
+
+export type Variables = AuthVariables;
+
+const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
+
+// Last-resort error boundary. Anything a route or middleware lets escape
+// (D1 failures, JWKS fetch outages, deliberate rethrows from the auth
+// layers) lands here — including errors thrown inside the sub-app mounted
+// below, which bubble up to the parent handler. Log the real error
+// server-side; the response body stays generic so internals (stack
+// frames, SQL text, token contents) never reach a client. Exported so a
+// test can pin the genericity property without depending on a specific
+// route's validation gap as the throw vector.
+export function handleAppError(err: Error, c: Context): Response {
+  console.error('unhandled error', err);
+  dispatchErrorAlert(err, c);
+  return c.json({ error: 'internal' }, 500);
+}
+
+// Fire a best-effort operator alert for a genuine server error. Fully
+// self-contained: it never throws (so it can't stop the 500 from returning)
+// and it stays silent unless alerting is configured (RESEND_* present). A
+// thrown HTTPException with a client (<500) status is an intentional error
+// response, not an outage — don't alert on those.
+function dispatchErrorAlert(err: unknown, c: Context): void {
+  try {
+    if (err instanceof HTTPException && err.status < 500) return;
+    const env = c.env as Partial<AlertEnv> | undefined;
+    if (!env?.RESEND_API_KEY || !env.FORUM_DB) return;
+
+    // c.executionCtx throws when there's no execution context (e.g. a bare
+    // app.request() in a unit test) — fall back to a detached promise.
+    let exec: ExecutionContext | undefined;
+    try {
+      exec = c.executionCtx;
+    } catch {
+      exec = undefined;
+    }
+
+    const alert = buildErrorAlert({
+      method: c.req.method,
+      path: c.req.path,
+      err,
+      environment: (env as { ENVIRONMENT?: string }).ENVIRONMENT,
+    });
+    const sending = alertOnError(env as AlertEnv, alert);
+    if (exec) exec.waitUntil(sending);
+    else void sending.catch(() => {});
+  } catch {
+    // Alerting must never interfere with returning the 500.
+  }
+}
+
+app.onError(handleAppError);
+
+app.get('/health', (c) => c.json({ status: 'ok' }));
+
+// Public care-circle invite landing page. Mounted at the WORKER ROOT (NOT
+// under /api/v1) and intentionally EXEMPT from the forum JWT middleware —
+// it's a shareable web page the invited caregiver opens from a text link,
+// like /auth/google's pre-auth handshake. It just renders the token from
+// the path + offers a `carerounds://join/<token>` deep link into the app.
+app.route('/join', joinRouter());
+
+// Public legal pages, same worker-root/no-auth posture as /join. The
+// sign-in screen's Terms / Privacy links point at
+// https://carerounds.care/terms + /privacy, which route here once the
+// domain is attached to the Worker at deploy.
+app.route('/terms', termsRouter());
+app.route('/privacy', privacyRouter());
+
+// Public avatar serving out of FORUM_MEDIA. Worker-root + no auth, same
+// posture as /join and the legal pages: avatars render next to forum posts,
+// and the feed is read-anonymous. `R2_PUBLIC_URL` points here, which is what
+// lets an avatar URL resolve without provisioning a public R2 domain — see
+// routes/media.ts.
+app.route('/media', mediaRouter());
+
+const api = new Hono<{ Bindings: Bindings; Variables: Variables }>();
+
+// Posts + comments routers mount BEFORE the global auth middleware
+// so the GET list + detail + thread reads remain read-anonymous per
+// BUILD_SPEC §13. Each router applies route-level auth() to its
+// write endpoints itself.
+api.route('/', commentsRouter());
+api.route('/posts', postsRouter());
+
+// Google sign-in bootstrap also mounts BEFORE the global forum JWT auth
+// middleware: it's the identity-establishing handshake (verifying a Google
+// ID token), so there's no forum JWT to require yet.
+api.route('/auth', authRouter());
+
+api.use('*', auth());
+
+api.route('/profiles', profilesRouter());
+api.route('/circles', circlesRouter());
+api.route('/reports', reportsRouter());
+api.route('/sync', syncRouter());
+// LLM coach proxy. Behind the forum JWT (mounted after auth() above) so
+// every call is tied to a real account — the chokepoint where per-user
+// quotas + the global daily spend cap are enforced and token usage is
+// logged. The inference host's API key lives only here, never on-device.
+api.route('/chat', chatRouter());
+// Server-side IAP receipt verification + the authoritative entitlement the
+// app reads on launch. Behind the forum JWT (mounted after auth() above) so
+// every purchase is tied to a real account — the device never declares its
+// own premium status; the Worker verifies the store receipt and persists the
+// truth.
+api.route('/billing', billingRouter());
+api.route('/extract', extractRouter());
+// In-app tester reports (the Report button). Behind the forum JWT: a report is
+// always tied to a real account, and reads are admin-gated inside the router
+// (reports carry other caregivers' PHI). Replaces the dead pipe to the
+// operator's laptop shim — see routes/feedback.ts.
+api.route('/feedback', feedbackRouter());
+api.route('/documents', documentsRouter());
+api.route('/votes', votesRouter());
+
+app.route('/api/v1', api);
+
+export default {
+  fetch: app.fetch,
+  async scheduled(
+    _controller: ScheduledController,
+    env: Bindings & WatchdogEnv,
+    ctx: ExecutionContext,
+  ): Promise<void> {
+    // The watchdog can take a few seconds (GraphQL + Resend round
+    // trips); waitUntil keeps the scheduled invocation alive past
+    // the synchronous return so Workers doesn't kill it mid-flight.
+    //
+    // A bare waitUntil(handleScheduled(env)) used to SWALLOW any failure as an
+    // unhandled rejection — so a broken watchdog (bad analytics token, Resend
+    // outage) would fail silently, exactly the blind spot this whole change
+    // closes. Catch it: log, and fire a self-alert so the operator learns the
+    // watchdog itself is down.
+    ctx.waitUntil(
+      handleScheduled(env).catch((e) => {
+        console.error('watchdog run failed', e);
+        return alertOnError(env, {
+          signature: 'watchdog:run-failure',
+          subject: '[CareRounds] Weekly watchdog FAILED to run',
+          text:
+            'The weekly capacity watchdog threw while running:\n\n' +
+            (e instanceof Error ? (e.stack ?? e.message) : String(e)),
+        });
+      }),
+    );
+  },
+};

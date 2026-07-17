@@ -1,0 +1,117 @@
+import '../support/forum_cache_test_override.dart';
+import 'package:alchemist/alchemist.dart';
+import 'package:carerounds/db/database.dart';
+import 'package:carerounds/models/care_event.dart';
+import 'package:carerounds/providers/auth_provider.dart';
+import 'package:carerounds/providers/home_clock_provider.dart';
+import 'package:carerounds/providers/patient_timeline_provider.dart';
+import 'package:carerounds/providers/storage_provider.dart';
+import 'package:carerounds/routing/router.dart';
+import 'package:carerounds/screens/appointment/appointment_list_screen.dart'
+    show appointmentListClockProvider;
+import 'package:carerounds/screens/medication/dose_log_screen.dart';
+import 'package:carerounds/services/appointment_repository.dart';
+import 'package:carerounds/services/medication_repository.dart';
+import 'package:carerounds/theme.dart';
+import 'package:drift/native.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart' show Override;
+
+/// CI-only golden of the Home dashboard (Phase 14.7) in its empty
+/// scaffold state — AppBar-less, the greeting + profile top row, and no
+/// cards yet (those arrive in 14.8–14.12). Pumped through the real
+/// router so the golden catches shell-level regressions (tab bar,
+/// back-button suppression on the tab root).
+///
+/// The clock is pinned to a fixed morning hour and a signed-in fake
+/// caregiver supplies the greeting name so the render is deterministic.
+final DateTime _goldenNow = DateTime.utc(2026, 5, 30, 9);
+
+void main() {
+  group('HomeScreen golden', () {
+    goldenTest(
+      'renders the empty dashboard scaffold',
+      fileName: 'home_screen_default',
+      builder: () => GoldenTestGroup(
+        columns: 1,
+        children: <Widget>[
+          GoldenTestScenario(
+            name: 'default (Home tab root)',
+            // TabScaffold (Phase 12.8) watches settingsProvider, which
+            // hydrates off storageProvider — the in-memory override keeps
+            // the golden off the on-device sqlite file. The auth fake
+            // supplies the greeting name; the clock pins the time-of-day.
+            child: ProviderScope(
+              overrides: <Override>[
+                storageBackendProvider.overrideWithValue(
+                  InMemoryStorageProvider(),
+                ),
+                authProvider.overrideWithValue(
+                  FakeAuthProvider()..signInWithGoogle(),
+                ),
+                homeClockProvider.overrideWithValue(() => _goldenNow),
+                // Home's Community recap card reads the (local-first) feed,
+                // which now reaches a DB-backed cache — keep it in-memory so
+                // the golden never opens on-device sqlite.
+                forumPostCacheTestOverride(),
+                // The Medications Today card (Phase 14.9) reads the
+                // dose-log providers; an empty in-memory repo keeps the
+                // golden off on-device sqlite and renders the card's
+                // "No medications today." empty state.
+                medicationRepositoryBackendProvider.overrideWithValue(
+                  MedicationRepository(
+                    CareRoundsDatabase(NativeDatabase.memory()),
+                    clock: () => _goldenNow,
+                  ),
+                ),
+                doseLogClockProvider.overrideWithValue(() => _goldenNow),
+                // The Schedule card reads patientTimelineEventsProvider;
+                // override the merger directly with an empty list so the
+                // card renders its "No upcoming items." empty state
+                // without dragging the five source providers into the
+                // golden setup.
+                patientTimelineEventsProvider
+                    .overrideWith((Ref ref) async => const <CareEvent>[]),
+                // The Schedule card also depends on the appointment
+                // repository (via patientTimelineEvents' appointment
+                // projection); the merger override above short-circuits
+                // that, but the card header navigates to /team/calendar
+                // when tapped so we still need an empty repo to keep the
+                // router's calendar route happy in goldens.
+                appointmentRepositoryBackendProvider.overrideWithValue(
+                  AppointmentRepository(
+                    CareRoundsDatabase(NativeDatabase.memory()),
+                    clock: () => _goldenNow,
+                  ),
+                ),
+                appointmentListClockProvider.overrideWithValue(
+                  () => _goldenNow,
+                ),
+              ],
+              child: SizedBox(
+                width: 390,
+                height: 780,
+                // No `theme:` — google_fonts can't fetch under
+                // `flutter test` (see test/golden/flutter_test_config.dart).
+                // HomeScreen pulls brand colors directly off
+                // careroundsColors, so the scaffold stays brand-accurate
+                // without dragging the google_fonts TextTheme through.
+                child: MaterialApp.router(
+                  routerConfig: buildRouter(),
+                  builder: (BuildContext context, Widget? child) {
+                    return ColoredBox(
+                      color: careroundsColors.surfaceWarm,
+                      child: child ?? const SizedBox.shrink(),
+                    );
+                  },
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  });
+}

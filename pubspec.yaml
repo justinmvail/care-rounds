@@ -1,0 +1,229 @@
+name: carerounds
+description: "In-the-moment coach for dementia caregivers."
+publish_to: 'none'
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.5.0
+  flutter: ">=3.24.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  # Localization / i18n (#18). `flutter_localizations` supplies the
+  # Material/Cupertino/Widgets localization delegates; `intl` backs the
+  # generated AppLocalizations (message lookup, plural/gender, date +
+  # number formatting). Both are pure-Dart — no CocoaPods/Gradle native
+  # deps, so no `pod install` is needed. `intl`'s version is pinned by
+  # the Flutter SDK's `flutter_localizations` constraint; let
+  # `flutter pub get` resolve it rather than hard-pinning here. Code gen
+  # is Flutter's built-in gen-l10n (enabled via `flutter: generate: true`
+  # below); strings live in `lib/l10n/*.arb`, config in `l10n.yaml`. See
+  # BUILD_SPEC.md §1.
+  flutter_localizations:
+    sdk: flutter
+  intl: any
+  cupertino_icons: ^1.0.8
+
+  # State + routing
+  # Riverpod 3.x + riverpod_generator 4.x: the pre-3 riverpod_generator
+  # chain transitively required analyzer_plugin 0.12.0, which is
+  # incompatible with the analyzer 7.x bundled by Dart 3.11. The 3.x
+  # riverpod ecosystem fixed this — see pubspec.lock for the full
+  # resolved tree.
+  flutter_riverpod: ">=3.0.0 <3.2.0"
+  riverpod_annotation: ^4.0.0
+  go_router: ^14.0.0
+
+  # Models
+  freezed_annotation: ^3.0.0
+  json_annotation: ^4.9.0
+
+  # Storage
+  drift: ^2.20.0
+  # The native sqlite3 for iOS/Android. This is a PLAIN sqlite3 build — the app
+  # does NOT encrypt its database (see lib/db/local_db.dart for why, and
+  # CLAUDE.md's invariant). `sqlcipher_flutter_libs` was removed on 2026-07-13;
+  # it produced three data-loss events in a day and prevented none, and both
+  # platforms already encrypt app files at rest.
+  sqlite3_flutter_libs: ^0.5.0
+  path_provider: ^2.1.0
+  path: ^1.9.0
+  flutter_secure_storage: ^9.2.0
+  # Direct dep because lib/db/local_db.dart opens/probes the file itself
+  # (readability check before handing it to drift).
+  sqlite3: ^2.4.0
+
+  # Network
+  dio: ^5.7.0
+  # NOTE (2026-06-11): `crypto` was a direct dep while the app minted
+  # its own forum JWTs client-side. That scheme is retired — the Worker
+  # mints session tokens after Google sign-in (`POST /auth/google`), so
+  # the app no longer signs anything and the direct dep is gone
+  # (still present transitively via drift/http).
+
+  # Audio / TTS
+  flutter_tts: ^4.2.0
+  # Bundled neural TTS (Piper voice model run on-device).
+  # ONNX Runtime is bundled NATIVELY per platform — not via the Dart
+  # community plugin. iOS pulls `onnxruntime-objc ~> 1.18.0` through
+  # ios/Podfile; Android pulls `com.microsoft.onnxruntime:
+  # onnxruntime-android` through app/build.gradle. The Dart-side
+  # `BundledTTSProvider` is a MethodChannel proxy only — no Dart
+  # ORT inference path — so the community plugin would only add
+  # transitive Pod constraints (it pins onnxruntime-objc = 1.15.1
+  # which conflicts with the bridge's ~> 1.18.0 requirement). See
+  # BUILD_SPEC.md §1 — Bundled assets, and TASKS.md Phase 9 for the
+  # bridge breakdown.
+
+  # Typography
+  google_fonts: ^6.2.0
+
+  # Auth
+  google_sign_in: ^6.2.0
+  sign_in_with_apple: ^6.1.0
+
+  # PDF export (doctor visit packet)
+  pdf: ^3.11.0
+  printing: ^5.13.0
+
+  # Misc UI
+  flutter_svg: ^2.0.0
+  shared_preferences: ^2.3.0
+
+  # External URLs (decoder result "Talk to Natali" outbound link)
+  url_launcher: ^6.3.0
+
+  # Share sheet (library card detail share action — BUILD_SPEC.md §5.8)
+  share_plus: ^10.0.0
+
+  # Local notifications (Phase 12.8 — per-dose + per-appointment
+  # reminders). The plugin schedules iOS/Android local notifications
+  # through OS APIs (UNUserNotificationCenter / AlarmManager). We use
+  # the timezone-aware `zonedSchedule` API so reminders fire at the
+  # caregiver's wall-clock time across DST transitions; `timezone` is
+  # the required companion dependency the plugin's docs call for.
+  flutter_local_notifications: ^18.0.0
+  timezone: ^0.10.0
+
+  # Real device capture (#8 — journal photo/voice + Add-sheet voice).
+  # Each is wired ONLY behind the existing capture interfaces
+  # (PhotoAttacher / VoiceNoteRecorder / VoiceCapture) and selected by
+  # the `USE_REAL_CAPTURE` build flag, which DEFAULTS to false — so
+  # `flutter test` and the demo tour keep using the Noop/Unavailable
+  # fakes and never touch a real mic/camera. See BUILD_SPEC.md §1.
+  # - image_picker: OS gallery/camera picker → RealPhotoAttacher.
+  # - speech_to_text: on-device dictation → RealVoiceCapture (Add sheet).
+  # - record: mic → m4a file for RealVoiceNoteRecorder (journal note).
+  #   Pinned <7.0.0: record 7.x requires Dart ^3.12 (we ship 3.11.5).
+  # - audioplayers: plays the recorded m4a back. `record` is capture-
+  #   only, but the VoiceNoteRecorder seam's `play(path)` predates this
+  #   work, so a player is required to honor the interface on device.
+  image_picker: ^1.1.0
+  speech_to_text: ^7.0.0
+  record: ">=6.0.0 <7.0.0"
+  audioplayers: ^6.5.0
+
+  # Care Circle connect (2026-06-06): render the caregiver's invite token
+  # as a QR (qr_flutter) and scan another caregiver's QR to join their
+  # circle (mobile_scanner — uses the camera).
+  qr_flutter: ^4.1.0
+  mobile_scanner: ^6.0.2
+
+  # Care Circle invite LINKS (2026-06-08): receive the
+  # `carerounds://join/<token>` custom-scheme deep link an invited
+  # caregiver taps from a shared text link (alpha feedback: "there should
+  # be a text link to link apps"). Handles BOTH cold-start (initialLink)
+  # and warm (uriLinkStream) incoming URIs. Pairs with the backend's
+  # public `GET /join/:token` landing page + the existing QR token
+  # machinery — pure plugin, no per-call cost. iOS already registers the
+  # `carerounds` scheme in Info.plist; Android registers it via an
+  # intent-filter on MainActivity.
+  app_links: ^6.3.0
+
+  # Automatic crash aggregation (observability). Wired ONLY behind the
+  # CrashReporter interface (SentryCrashReporter = real, NoopCrashReporter =
+  # the default for tests/demo/dev); the app never imports the real impl
+  # directly — it goes through crashReporterProvider, which defaults to the
+  # no-op so `flutter test` + demo mode NEVER initialize Sentry. Init is gated
+  # on a `--dart-define=SENTRY_DSN` (EMPTY = disabled, so dev/test/demo builds
+  # send nothing and behave exactly as before). The DSN points at a SELF-HOSTED
+  # Sentry instance. PHI scrubbing is mandatory — see crash_reporter.dart's
+  # beforeSend. This runs ALONGSIDE the existing on-device, user-initiated
+  # report path (LogBuffer + CrashLog); it does not replace it. Note: the SDK
+  # name (Sentry) is DEV-FACING only — it never appears in user-facing strings.
+  sentry_flutter: ^9.24.0
+
+  # Subscription paywall (StoreKit + Play Billing). Wired ONLY behind the
+  # BillingService interface (StoreBillingService = real, FakeBillingService
+  # = deterministic for tests/demo); the app never imports the real impl
+  # directly — it goes through billingServiceProvider / premiumStatusProvider,
+  # which default to the fake so `flutter test` + demo mode build with NO store
+  # configured. The subscription product carries an introductory FREE TRIAL
+  # (there is always a trial before any charge); the app just reflects it. NO
+  # features are gated yet — this is machinery only. Product IDs + the trial
+  # are configured in App Store Connect / Play Console (see billing_service.dart).
+  in_app_purchase: ^3.3.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+  integration_test:
+    sdk: flutter
+
+  # Golden tests (visual regression). Alchemist handles platform-
+  # specific font rendering differences so goldens pass on both
+  # macOS and Linux CI. 0.12+ tracks the Flutter 3.32+ Canvas API
+  # (clipRSuperellipse / drawRSuperellipse) that the 0.11.x
+  # BlockedTextCanvasAdapter doesn't implement.
+  alchemist: ^0.14.0
+
+  # Code gen
+  build_runner: ^2.4.0
+  freezed: ^3.0.0
+  json_serializable: ^6.8.0
+  drift_dev: ^2.20.0
+  riverpod_generator: ^4.0.0
+  # Linter pin band: Dart 3.11 ships analyzer 7.6.
+  # - custom_lint 0.8.0 uses analyzer ^7.5.0 + analyzer_plugin ^0.13.0 ✓
+  # - custom_lint 0.7.7 was retracted; 0.8.1 jumped to analyzer 8.x ✗
+  # - riverpod_lint 3.0.x..3.1.0 accept analyzer >=7.0.0 <9.0.0 ✓
+  # - riverpod_lint 3.1.1+ pinned to analyzer ^9.0.0 ✗
+  # Upper-bound the riverpod_lint constraint to avoid the analyzer-9
+  # jump silently selecting an incompatible version. Re-evaluate
+  # when Dart ships analyzer 9.x.
+  custom_lint: ^0.8.0
+  riverpod_lint: ">=3.0.0 <3.1.1"
+
+flutter:
+  uses-material-design: true
+  # Enable Flutter's built-in gen-l10n code generation (#18). Reads
+  # l10n.yaml + lib/l10n/*.arb and emits AppLocalizations into
+  # .dart_tool/flutter_gen on `flutter pub get` / `flutter gen-l10n`.
+  generate: true
+  assets:
+    - assets/images/
+    - assets/seed/
+    # Bundled Piper voice (Phase 9 — neural TTS). The .onnx is the
+    # 22 kHz medium-quality `hfc_female` voice (~60 MB); the .onnx.json
+    # is the espeak phoneme + inference config consumed by the iOS /
+    # Android bridges. Chosen over amy/kristin/lessac-high/ljspeech-high
+    # in a blind listen of the same sentence through the real pipeline
+    # (2026-07-14) — clearly the most natural, and the "high" voices cost
+    # ~4x the inference for no gain a caregiver would notice. See
+    # BUILD_SPEC.md §1 — Bundled assets.
+    - assets/tts/en_US-hfc_female-medium/
+    # espeak-ng runtime data (text-to-phoneme), ENGLISH ONLY — 1.2 MB, and
+    # byte-identical phonemes to the full 24 MB set (verified 2026-07-14).
+    # ANDROID's bridge loads espeak from these assets (iOS reads the CocoaPods
+    # framework copy), and Flutter's asset globs DO NOT RECURSE — so every
+    # subdirectory must be listed by hand. Miss one and espeak still
+    # "initialises", then fails to load the voice and the coach speaks by
+    # spelling words out letter by letter. There is no error; it just babbles.
+    # `lang/gmw/en-US` is load-bearing: without it espeak silently falls back to
+    # BRITISH English and feeds those phonemes to an American voice model.
+    - assets/tts/espeak-ng-data/
+    - assets/tts/espeak-ng-data/lang/
+    - assets/tts/espeak-ng-data/lang/gmw/
+    - assets/tts/espeak-ng-data/voices/!v/

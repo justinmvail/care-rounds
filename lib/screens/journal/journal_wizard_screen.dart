@@ -1,0 +1,699 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../models/journal_entry.dart';
+import '../../providers/storage_provider.dart';
+import '../../theme.dart';
+import '../../widgets/form/id_factory.dart';
+import '../../widgets/path_header.dart';
+
+/// Hand-off shape for the chat coach's `[action:log_journal …]` action
+/// when it bounces the caregiver into the wizard for confirmation.
+/// Passed as `extra` on the `/journal/new` push.
+class JournalWizardArgs {
+  const JournalWizardArgs({
+    this.occurredAt,
+    this.situationText,
+    this.attemptsText,
+    this.initialTranscript,
+    this.quickNote = false,
+  });
+
+  final DateTime? occurredAt;
+  final String? situationText;
+  final String? attemptsText;
+
+  /// A spoken phrase captured from the Home Add sheet's voice button
+  /// (Phase 14.14). Seeds the situation step so the caregiver lands on
+  /// the wizard with their own words already typed in — they confirm /
+  /// edit rather than retype. [situationText] (the chat-coach path)
+  /// wins when both are supplied.
+  final String? initialTranscript;
+
+  /// When true, the wizard renders a single-page minimal form (just
+  /// "When?" and a free-text area) rather than the multi-step
+  /// behavior/triage/attempts flow. Lets the caregiver capture "she
+  /// kept asking for her mother" in two taps without committing to
+  /// the structured workflow.
+  final bool quickNote;
+}
+
+/// "When did it happen?" presets the wizard surfaces (BUILD_SPEC.md
+/// §5.5 wizard). The custom slot opens the platform date+time picker so
+/// the caregiver isn't boxed into a preset for a 2am episode.
+enum JournalWhen {
+  justNow,
+  earlierToday,
+  yesterday,
+  custom;
+
+  String get label {
+    switch (this) {
+      case JournalWhen.justNow:
+        return 'Just now';
+      case JournalWhen.earlierToday:
+        return 'Earlier today';
+      case JournalWhen.yesterday:
+        return 'Yesterday';
+      case JournalWhen.custom:
+        return 'Pick a time';
+    }
+  }
+}
+
+/// Three-step journal wizard at `/journal/new` — when / situation /
+/// attempts (BUILD_SPEC.md §5.5 home + chat-harness path).
+///
+/// Replaces the legacy decoder-driven "auto-log" path for the cases
+/// where the caregiver wants to keep a moment without walking the
+/// behavior picker. Submit lands a [JournalEntry.wizard] row in the
+/// same drift table the journal screen reads from, so the entry
+/// shows up in the list immediately.
+class JournalWizardScreen extends ConsumerStatefulWidget {
+  const JournalWizardScreen({super.key, this.args});
+
+  final JournalWizardArgs? args;
+
+  static const Key whenPresetJustNowKey = Key('journal-wizard-when-just-now');
+  static const Key whenPresetEarlierTodayKey =
+      Key('journal-wizard-when-earlier-today');
+  static const Key whenPresetYesterdayKey =
+      Key('journal-wizard-when-yesterday');
+  static const Key whenPresetCustomKey = Key('journal-wizard-when-custom');
+  static const Key situationFieldKey = Key('journal-wizard-situation');
+  static const Key attemptsFieldKey = Key('journal-wizard-attempts');
+  static const Key nextButtonKey = Key('journal-wizard-next');
+  static const Key backButtonKey = Key('journal-wizard-back');
+  static const Key submitButtonKey = Key('journal-wizard-submit');
+  static const Key progressKey = Key('journal-wizard-progress');
+
+  static const int totalSteps = 3;
+
+  @override
+  ConsumerState<JournalWizardScreen> createState() =>
+      _JournalWizardScreenState();
+}
+
+class _JournalWizardScreenState extends ConsumerState<JournalWizardScreen> {
+  int _step = 0;
+  JournalWhen? _whenPreset;
+  DateTime? _customOccurredAt;
+  final TextEditingController _situationController = TextEditingController();
+  final TextEditingController _attemptsController = TextEditingController();
+  bool _submitting = false;
+  // Inline errors shown when the caregiver advances/saves with an empty
+  // required field — the Next/Save button stays tappable so they get a
+  // reason ("Add a few words…") instead of a silently greyed-out button.
+  String? _whenError;
+  String? _situationError;
+  String? _attemptsError;
+
+  @override
+  void initState() {
+    super.initState();
+    final JournalWizardArgs? args = widget.args;
+    if (args == null) return;
+    if (args.occurredAt != null) {
+      _whenPreset = JournalWhen.custom;
+      _customOccurredAt = args.occurredAt;
+    }
+    if (args.situationText != null) {
+      _situationController.text = args.situationText!;
+    } else if (args.initialTranscript != null) {
+      // Voice intake (Phase 14.14): the spoken phrase is the caregiver's
+      // own account of the moment, so it seeds the "what was happening?"
+      // step. They edit from there.
+      _situationController.text = args.initialTranscript!;
+    }
+    if (args.attemptsText != null) {
+      _attemptsController.text = args.attemptsText!;
+    }
+  }
+
+  @override
+  void dispose() {
+    _situationController.dispose();
+    _attemptsController.dispose();
+    super.dispose();
+  }
+
+  DateTime _resolveOccurredAt() {
+    final DateTime now = DateTime.now();
+    switch (_whenPreset ?? JournalWhen.justNow) {
+      case JournalWhen.justNow:
+        return now;
+      case JournalWhen.earlierToday:
+        // 4 hours ago, clamped to the start of today so a 2am tap
+        // doesn't roll into yesterday.
+        final DateTime tentative = now.subtract(const Duration(hours: 4));
+        final DateTime startOfToday =
+            DateTime(now.year, now.month, now.day);
+        return tentative.isBefore(startOfToday) ? startOfToday : tentative;
+      case JournalWhen.yesterday:
+        // Yesterday at the same wall-clock time — close enough to
+        // "yesterday afternoon" without making the wizard ask twice.
+        return now.subtract(const Duration(days: 1));
+      case JournalWhen.custom:
+        return _customOccurredAt ?? now;
+    }
+  }
+
+  Future<void> _pickCustomDateTime() async {
+    final DateTime now = DateTime.now();
+    final DateTime initial = _customOccurredAt ?? now;
+    final DateTime? date = await showDatePicker(
+      context: context,
+      initialDate: initial,
+      firstDate: now.subtract(const Duration(days: 30)),
+      lastDate: now,
+    );
+    if (!mounted || date == null) return;
+    final TimeOfDay? time = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.fromDateTime(initial),
+    );
+    if (!mounted || time == null) return;
+    setState(() {
+      _whenPreset = JournalWhen.custom;
+      _whenError = null;
+      _customOccurredAt = DateTime(
+        date.year,
+        date.month,
+        date.day,
+        time.hour,
+        time.minute,
+      );
+    });
+  }
+
+  /// Validate the current step. On a miss, sets the step's inline error and
+  /// returns false so the caller blocks the advance/save. Clears the error
+  /// when the step is satisfied.
+  bool _validateStep() {
+    switch (_step) {
+      case 0:
+        final bool ok = _whenPreset != null &&
+            (_whenPreset != JournalWhen.custom || _customOccurredAt != null);
+        setState(() => _whenError = ok ? null : 'Pick when it happened.');
+        return ok;
+      case 1:
+        final bool ok = _situationController.text.trim().isNotEmpty;
+        setState(() => _situationError =
+            ok ? null : 'Add a few words about what was happening.');
+        return ok;
+      case 2:
+        final bool ok = _attemptsController.text.trim().isNotEmpty;
+        setState(() => _attemptsError =
+            ok ? null : 'Add what you tried — "Nothing yet" works too.');
+        return ok;
+    }
+    return false;
+  }
+
+  void _onNext() {
+    if (!_validateStep()) return;
+    if (_step < JournalWizardScreen.totalSteps - 1) {
+      setState(() => _step += 1);
+    }
+  }
+
+  void _onBack() {
+    if (_step > 0) {
+      setState(() => _step -= 1);
+    } else {
+      Navigator.of(context).maybePop();
+    }
+  }
+
+  Future<void> _submit() async {
+    if (_submitting) return;
+    // Validate before saving so an empty required field shows its inline
+    // reason instead of a no-op tap. Quick-note only needs the situation;
+    // the full wizard's final step validates the attempts field.
+    if (_isQuickNote) {
+      if (_situationController.text.trim().isEmpty) {
+        setState(() => _situationError =
+            'Add a few words about what happened.');
+        return;
+      }
+    } else if (!_validateStep()) {
+      return;
+    }
+    setState(() => _submitting = true);
+
+    final StorageProvider storage = ref.read(storageProvider);
+    final DateTime now = DateTime.now();
+    final JournalEntry entry = JournalEntry.wizard(
+      id: mintId('journal', clock: () => now),
+      createdAt: now,
+      occurredAt: _resolveOccurredAt(),
+      situationText: _situationController.text.trim(),
+      attemptsText: _attemptsController.text.trim(),
+    );
+    try {
+      await storage.insertJournalEntry(entry);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Entry saved to your journal.')),
+      );
+      // Pop back to wherever the wizard was opened from — home, chat,
+      // or the journal tab itself.
+      if (Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      } else {
+        context.goNamed('home');
+      }
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _submitting = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Couldn't save — try again."),
+        ),
+      );
+    }
+  }
+
+  bool get _isQuickNote => widget.args?.quickNote ?? false;
+
+  @override
+  Widget build(BuildContext context) {
+    final TextTheme textTheme = Theme.of(context).textTheme;
+    final String terminalLabel = _isQuickNote ? 'Quick note' : 'Log a moment';
+    return Scaffold(
+      backgroundColor: context.hc.background,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              PathHeader(
+                breadcrumbs: <PathHeaderCrumb>[
+                  const PathHeaderCrumb(label: 'Home', route: '/'),
+                  const PathHeaderCrumb(label: 'Care', route: '/medical'),
+                  const PathHeaderCrumb(label: 'Journal', route: '/journal'),
+                  PathHeaderCrumb(label: terminalLabel),
+                ],
+                title: terminalLabel,
+                backLabel: 'Back to Journal',
+                leadingIcon: Icons.edit_note_outlined,
+              ),
+              const SizedBox(height: 16),
+              Expanded(
+                child: _isQuickNote
+                    ? _buildQuickNote(textTheme)
+                    : _buildWizard(textTheme),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildQuickNote(TextTheme textTheme) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          'What happened?',
+          style: textTheme.headlineMedium,
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'Write it however feels natural. You can add structure later.',
+          style: textTheme.bodyMedium?.copyWith(
+            color: context.hc.text.withValues(alpha: 0.7),
+          ),
+        ),
+        const SizedBox(height: 20),
+        Expanded(
+          child: TextField(
+            key: JournalWizardScreen.situationFieldKey,
+            controller: _situationController,
+            textCapitalization: TextCapitalization.sentences,
+            autofocus: true,
+            maxLines: null,
+            expands: true,
+            textAlignVertical: TextAlignVertical.top,
+            keyboardType: TextInputType.multiline,
+            textInputAction: TextInputAction.newline,
+            decoration: InputDecoration(
+              hintText: 'She kept asking to call her mother. I tried '
+                  'redirecting to the photo album…',
+              border: const OutlineInputBorder(),
+              alignLabelWithHint: true,
+              errorText: _situationError,
+            ),
+            onChanged: (_) => setState(() {
+              if (_situationError != null &&
+                  _situationController.text.trim().isNotEmpty) {
+                _situationError = null;
+              }
+            }),
+          ),
+        ),
+        const SizedBox(height: 16),
+        ElevatedButton(
+          key: JournalWizardScreen.submitButtonKey,
+          style: ElevatedButton.styleFrom(
+            // Filled Save → AA-contrast token for white text.
+            backgroundColor: context.hc.ctaFilled,
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            minimumSize: const Size.fromHeight(56),
+          ),
+          onPressed: _submitting ? null : _submit,
+          child: Text(
+            _submitting ? 'Saving…' : 'Save note',
+            style: textTheme.labelLarge,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildWizard(TextTheme textTheme) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        _ProgressDots(
+          key: JournalWizardScreen.progressKey,
+          step: _step,
+          total: JournalWizardScreen.totalSteps,
+        ),
+        const SizedBox(height: 20),
+        Expanded(
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 180),
+            child: _stepContent(textTheme),
+          ),
+        ),
+        Row(
+          children: <Widget>[
+            // In-wizard Back (replaces the removed PathHeader back control):
+            // steps to the previous page, or leaves the wizard from step 0.
+            Expanded(
+              child: OutlinedButton(
+                key: JournalWizardScreen.backButtonKey,
+                onPressed: _onBack,
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  foregroundColor: context.hc.primary,
+                  side: BorderSide(
+                    color: context.hc.primary.withValues(alpha: 0.4),
+                  ),
+                ),
+                child: Text(
+                  '‹ Back',
+                  style: textTheme.labelLarge
+                      ?.copyWith(color: context.hc.primary),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            if (_step == JournalWizardScreen.totalSteps - 1)
+              Expanded(
+                flex: 2,
+                child: ElevatedButton(
+                  key: JournalWizardScreen.submitButtonKey,
+                  style: ElevatedButton.styleFrom(
+                    // Filled Save → AA-contrast token for white text.
+                    backgroundColor: context.hc.ctaFilled,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                  onPressed: _submitting ? null : _submit,
+                  child: Text(
+                    _submitting ? 'Saving…' : 'Save entry',
+                    style: textTheme.labelLarge,
+                  ),
+                ),
+              )
+            else
+              Expanded(
+                flex: 2,
+                child: ElevatedButton(
+                  key: JournalWizardScreen.nextButtonKey,
+                  style: ElevatedButton.styleFrom(
+                    // Filled primary action → AA-contrast token for white text.
+                    backgroundColor: context.hc.ctaFilled,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                  onPressed: _onNext,
+                  child: Text('Next', style: textTheme.labelLarge),
+                ),
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _stepContent(TextTheme textTheme) {
+    switch (_step) {
+      case 0:
+        return _whenStep(textTheme);
+      case 1:
+        return _situationStep(textTheme);
+      case 2:
+        return _attemptsStep(textTheme);
+    }
+    return const SizedBox.shrink();
+  }
+
+  Widget _whenStep(TextTheme textTheme) {
+    return Column(
+      key: const ValueKey<int>(0),
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text('When did it happen?', style: textTheme.headlineMedium),
+        const SizedBox(height: 8),
+        Text(
+          'A close-enough answer is fine — the journal is for you.',
+          style: textTheme.bodyMedium?.copyWith(
+            color: context.hc.text.withValues(alpha: 0.7),
+          ),
+        ),
+        const SizedBox(height: 20),
+        _PresetTile(
+          tileKey: JournalWizardScreen.whenPresetJustNowKey,
+          label: JournalWhen.justNow.label,
+          selected: _whenPreset == JournalWhen.justNow,
+          onTap: () => setState(() {
+            _whenPreset = JournalWhen.justNow;
+            _whenError = null;
+          }),
+        ),
+        const SizedBox(height: 10),
+        _PresetTile(
+          tileKey: JournalWizardScreen.whenPresetEarlierTodayKey,
+          label: JournalWhen.earlierToday.label,
+          selected: _whenPreset == JournalWhen.earlierToday,
+          onTap: () => setState(() {
+            _whenPreset = JournalWhen.earlierToday;
+            _whenError = null;
+          }),
+        ),
+        const SizedBox(height: 10),
+        _PresetTile(
+          tileKey: JournalWizardScreen.whenPresetYesterdayKey,
+          label: JournalWhen.yesterday.label,
+          selected: _whenPreset == JournalWhen.yesterday,
+          onTap: () => setState(() {
+            _whenPreset = JournalWhen.yesterday;
+            _whenError = null;
+          }),
+        ),
+        const SizedBox(height: 10),
+        _PresetTile(
+          tileKey: JournalWizardScreen.whenPresetCustomKey,
+          label: _customOccurredAt == null
+              ? JournalWhen.custom.label
+              : _formatCustomTime(_customOccurredAt!),
+          selected: _whenPreset == JournalWhen.custom,
+          onTap: _pickCustomDateTime,
+        ),
+        if (_whenError != null) ...<Widget>[
+          const SizedBox(height: 12),
+          Text(
+            _whenError!,
+            style: textTheme.bodyMedium?.copyWith(color: context.hc.error),
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _situationStep(TextTheme textTheme) {
+    return Column(
+      key: const ValueKey<int>(1),
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text('What was happening?', style: textTheme.headlineMedium),
+        const SizedBox(height: 8),
+        Text(
+          'A few sentences in your own words. The voice you would use '
+          'telling a friend about it.',
+          style: textTheme.bodyMedium?.copyWith(
+            color: context.hc.text.withValues(alpha: 0.7),
+          ),
+        ),
+        const SizedBox(height: 20),
+        TextField(
+          key: JournalWizardScreen.situationFieldKey,
+          controller: _situationController,
+          textCapitalization: TextCapitalization.sentences,
+          minLines: 5,
+          maxLines: 10,
+          maxLength: 2000,
+          decoration: InputDecoration(
+            hintText: 'She kept asking to call her mother…',
+            errorText: _situationError,
+          ),
+          onChanged: (_) => setState(() {
+            if (_situationError != null &&
+                _situationController.text.trim().isNotEmpty) {
+              _situationError = null;
+            }
+          }),
+        ),
+      ],
+    );
+  }
+
+  Widget _attemptsStep(TextTheme textTheme) {
+    return Column(
+      key: const ValueKey<int>(2),
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text('What did you try?', style: textTheme.headlineMedium),
+        const SizedBox(height: 8),
+        Text(
+          'Whatever you reached for — words, redirects, walking away to '
+          'breathe. "Nothing yet" is a real answer too.',
+          style: textTheme.bodyMedium?.copyWith(
+            color: context.hc.text.withValues(alpha: 0.7),
+          ),
+        ),
+        const SizedBox(height: 20),
+        TextField(
+          key: JournalWizardScreen.attemptsFieldKey,
+          controller: _attemptsController,
+          textCapitalization: TextCapitalization.sentences,
+          minLines: 5,
+          maxLines: 10,
+          maxLength: 2000,
+          decoration: InputDecoration(
+            hintText: 'I told her Mom was at the store and we walked '
+                'to the kitchen for tea.',
+            errorText: _attemptsError,
+          ),
+          onChanged: (_) => setState(() {
+            if (_attemptsError != null &&
+                _attemptsController.text.trim().isNotEmpty) {
+              _attemptsError = null;
+            }
+          }),
+        ),
+      ],
+    );
+  }
+
+  static String _formatCustomTime(DateTime dt) {
+    final String hh = dt.hour.toString().padLeft(2, '0');
+    final String mm = dt.minute.toString().padLeft(2, '0');
+    return '${dt.month}/${dt.day} at $hh:$mm';
+  }
+}
+
+class _ProgressDots extends StatelessWidget {
+  const _ProgressDots({super.key, required this.step, required this.total});
+
+  final int step;
+  final int total;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List<Widget>.generate(total, (int i) {
+        final bool active = i <= step;
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 5),
+          child: Container(
+            width: 36,
+            height: 5,
+            decoration: BoxDecoration(
+              color: active
+                  ? context.hc.cta
+                  : context.hc.text.withValues(alpha: 0.18),
+              borderRadius: BorderRadius.circular(3),
+            ),
+          ),
+        );
+      }),
+    );
+  }
+}
+
+class _PresetTile extends StatelessWidget {
+  const _PresetTile({
+    required this.tileKey,
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final Key tileKey;
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final TextTheme textTheme = Theme.of(context).textTheme;
+    return Material(
+      key: tileKey,
+      color: selected
+          ? context.hc.primary
+          : context.hc.surfaceWarm,
+      borderRadius: BorderRadius.circular(14),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(14),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
+          child: Row(
+            children: <Widget>[
+              Icon(
+                selected
+                    ? Icons.radio_button_checked
+                    : Icons.radio_button_unchecked,
+                color: selected
+                    ? Colors.white
+                    : context.hc.text.withValues(alpha: 0.45),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  label,
+                  style: textTheme.bodyLarge?.copyWith(
+                    color: selected
+                        ? Colors.white
+                        : context.hc.text,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
