@@ -66,6 +66,13 @@ class CareTeamHubScreen extends ConsumerWidget {
           chipColor: context.hc.cta,
         ),
         _TeamTileSpec(
+          icon: Icons.groups_2_outlined,
+          label: 'Clients',
+          subLabel: 'who the team cares for',
+          route: '/team/clients',
+          chipColor: context.hc.accentDeep,
+        ),
+        _TeamTileSpec(
           icon: Icons.diversity_3_outlined,
           label: 'People',
           subLabel: 'who is helping',

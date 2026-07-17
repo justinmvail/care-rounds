@@ -53,6 +53,7 @@ import '../screens/team/activity_screen.dart';
 import '../screens/team/calendar_screen.dart';
 import '../screens/team/care_circle_screen.dart';
 import '../screens/team/care_team_hub_screen.dart';
+import '../screens/team/clients_roster_screen.dart';
 import '../screens/team/circle_qr_screen.dart';
 import '../screens/team/circle_scan_screen.dart';
 import '../screens/team/username_screen.dart';
@@ -738,6 +739,14 @@ GoRouter buildRouter({
                     path: 'my-rounds',
                     builder: (BuildContext context, GoRouterState state) =>
                         const MyRoundsScreen(),
+                  ),
+                  // Care Rounds "Clients" — the team's roster of the people it
+                  // cares for (vs People, the caregiver roster). In the Care
+                  // branch so the tab bar stays.
+                  GoRoute(
+                    path: 'clients',
+                    builder: (BuildContext context, GoRouterState state) =>
+                        const ClientsRosterScreen(),
                   ),
                   // Activity feed (Phase 14.32) — the chronological,
                   // filterable feed of every care event. In the Care branch
