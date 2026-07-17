@@ -124,8 +124,8 @@ void main() {
       expect(await db.select(db.identificationDocsTable).get(), isEmpty);
     });
 
-    test('schemaVersion is 20 (v20: hot-column indices + v15 orphan repair)', () {
-      expect(db.schemaVersion, 20);
+    test('schemaVersion is 21 (v21: teams table + caregivers.team_id)', () {
+      expect(db.schemaVersion, 21);
     });
   });
 }

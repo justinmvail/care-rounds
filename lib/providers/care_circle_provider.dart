@@ -4,6 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../db/database.dart';
 import '../models/care_circle_membership.dart';
 import '../models/caregiver.dart';
+import '../models/team.dart';
 import '../services/sync_sink.dart';
 
 part 'care_circle_provider.g.dart';
@@ -38,6 +39,7 @@ class CareCircleRepository with SyncSinkHost {
             phone: Value<String?>(caregiver.phone),
             email: Value<String?>(caregiver.email),
             avatarPath: Value<String?>(caregiver.avatarPath),
+            teamId: Value<String?>(caregiver.teamId),
           ),
         );
     emitUpsert('caregivers', caregiver.id, caregiver.toJson());
@@ -118,6 +120,64 @@ class CareCircleRepository with SyncSinkHost {
     return rows.map(_decodeMembership).toList();
   }
 
+  // ---- Teams (Care Rounds) ----------------------------------------------
+
+  /// Insert-or-replace [team] by id.
+  Future<void> upsertTeam(Team team) async {
+    await _db.into(_db.teamsTable).insertOnConflictUpdate(
+          TeamsTableCompanion.insert(
+            id: team.id,
+            name: team.name,
+            createdAtMs: team.createdAt.millisecondsSinceEpoch,
+          ),
+        );
+    emitUpsert('teams', team.id, team.toJson());
+  }
+
+  /// One team by id, or null if absent.
+  Future<Team?> getTeam(String id) async {
+    final TeamsTableData? row = await (_db.select(_db.teamsTable)
+          ..where((t) => t.id.equals(id)))
+        .getSingleOrNull();
+    return row == null ? null : _decodeTeam(row);
+  }
+
+  /// Every team, oldest first.
+  Future<List<Team>> listTeams() async {
+    final List<TeamsTableData> rows = await (_db.select(_db.teamsTable)
+          ..orderBy(<OrderClauseGenerator<$TeamsTableTable>>[
+            (t) => OrderingTerm(expression: t.createdAtMs),
+          ]))
+        .get();
+    return rows.map(_decodeTeam).toList();
+  }
+
+  /// The team every caregiver belongs to by default, creating it on first
+  /// call. One team per install today (Care Rounds); returns the oldest
+  /// existing team if any are already on file. Idempotent.
+  Future<Team> ensureDefaultTeam({String name = 'My Team'}) async {
+    final List<Team> existing = await listTeams();
+    if (existing.isNotEmpty) return existing.first;
+    final Team team = Team(
+      id: 'team-default',
+      name: name,
+      createdAt: DateTime.now().toUtc(),
+    );
+    await upsertTeam(team);
+    return team;
+  }
+
+  /// Point [caregiverId] at [teamId] (grouping the caregiver into a team).
+  /// No-op if the caregiver is absent.
+  Future<void> assignCaregiverToTeam(
+    String caregiverId,
+    String teamId,
+  ) async {
+    final Caregiver? caregiver = await getCaregiver(caregiverId);
+    if (caregiver == null) return;
+    await upsertCaregiver(caregiver.copyWith(teamId: teamId));
+  }
+
   // ---- Decoders ---------------------------------------------------------
 
   Caregiver _decodeCaregiver(CaregiversTableData row) => Caregiver(
@@ -127,6 +187,14 @@ class CareCircleRepository with SyncSinkHost {
         phone: row.phone,
         email: row.email,
         avatarPath: row.avatarPath,
+        teamId: row.teamId,
+      );
+
+  Team _decodeTeam(TeamsTableData row) => Team(
+        id: row.id,
+        name: row.name,
+        createdAt:
+            DateTime.fromMillisecondsSinceEpoch(row.createdAtMs, isUtc: true),
       );
 
   CareCircleMembership _decodeMembership(CareCircleMembershipsTableData row) =>

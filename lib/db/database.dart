@@ -58,6 +58,7 @@ part 'database.g.dart';
     PowerOfAttorneyDocsTable,
     IdentificationDocsTable,
     CaregiversTable,
+    TeamsTable,
     CareCircleMembershipsTable,
     CareEventsTable,
     CareTasksTable,
@@ -115,7 +116,7 @@ class CareRoundsDatabase extends _$CareRoundsDatabase {
 
   /// The schema version, as a const so [open] can hand it to the file-level
   /// repair before any drift machinery exists.
-  static const int _schemaVersion = 20;
+  static const int _schemaVersion = 21;
 
   /// The memoisation behind [open], with an injectable [executor] so the
   /// singleton + no-op-close behaviour is testable without the platform
@@ -408,6 +409,21 @@ class CareRoundsDatabase extends _$CareRoundsDatabase {
             // still returned by entriesForMedication).
             await customStatement(cleanupOrphanedWindowEntriesSql);
           }
+          if (from < 21) {
+            // Care Rounds: group caregivers into teams. Additive + purely
+            // STRUCTURAL — create the teams table and add the nullable
+            // caregivers.team_id column. Both are safe to run TWICE
+            // (createTable emits CREATE TABLE IF NOT EXISTS;
+            // _addColumnIfMissing guards the ALTER against "duplicate column
+            // name"), which matters because drift doesn't run migrations in a
+            // transaction and re-runs an interrupted one from the same version.
+            // No data backfill here — the default team is created lazily by
+            // CareCircleRepository.ensureDefaultTeam(), so a re-run can't
+            // half-write rows.
+            await m.createTable(teamsTable);
+            await _addColumnIfMissing(
+                m, caregiversTable, caregiversTable.teamId);
+          }
         },
         beforeOpen: (OpeningDetails details) async {
           await customStatement('PRAGMA foreign_keys = ON');
@@ -474,6 +490,7 @@ class CareRoundsDatabase extends _$CareRoundsDatabase {
       await delete(identificationDocsTable).go();
       await delete(careCircleMembershipsTable).go();
       await delete(caregiversTable).go();
+      await delete(teamsTable).go();
       await delete(careEventsTable).go();
       await delete(careTasksTable).go();
       await delete(careShiftsTable).go();

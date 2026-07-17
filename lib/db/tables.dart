@@ -500,6 +500,29 @@ class CaregiversTable extends Table {
   TextColumn get email => text().nullable()();
   TextColumn get avatarPath => text().nullable()();
 
+  /// The team this caregiver belongs to (Care Rounds), or null if
+  /// unassigned. Added in schema v21 via `_addColumnIfMissing`.
+  TextColumn get teamId => text().nullable()();
+
+  @override
+  Set<Column<Object>> get primaryKey => <Column<Object>>{id};
+}
+
+/// A team of caregivers (Care Rounds) — the organisational unit above the
+/// caregiver roster (agency / direct-care team / family sharing clients).
+///
+/// Typed columns (not a JSON payload) so teams can be joined/queried.
+/// [createdAtMs] is epoch-ms. Caregivers link here via
+/// [CaregiversTable.teamId]; the caregiver↔client assignments stay on
+/// [CareCircleMembershipsTable] (which already joins caregiver ↔ patient).
+class TeamsTable extends Table {
+  @override
+  String get tableName => 'teams';
+
+  TextColumn get id => text()();
+  TextColumn get name => text()();
+  IntColumn get createdAtMs => integer()();
+
   @override
   Set<Column<Object>> get primaryKey => <Column<Object>>{id};
 }

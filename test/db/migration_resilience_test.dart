@@ -82,7 +82,7 @@ void main() {
       //   "index journal_entries_created_idx already exists" (bare CREATE INDEX)
       //   "duplicate column name: attachment_key"           (bare ADD COLUMN)
       await expectLater(
-        db.migration.onUpgrade(m, 1, 20),
+        db.migration.onUpgrade(m, 1, 21),
         completes,
         reason: 'an interrupted migration re-runs from the SAME version — '
             'every step must tolerate work that is already done',
@@ -129,9 +129,9 @@ void main() {
       wipe.dispose();
       expect(versionOf(dbPath), 0);
 
-      stampSchemaVersionIfMissing(dbPath, 20);
+      stampSchemaVersionIfMissing(dbPath, 21);
 
-      expect(versionOf(dbPath), 20, reason: 'the stamp must be restored');
+      expect(versionOf(dbPath), 21, reason: 'the stamp must be restored');
 
       // ...and drift now opens it without trying to create anything.
       final CareRoundsDatabase db =
@@ -146,7 +146,7 @@ void main() {
       final raw.Database fresh = raw.sqlite3.open(dbPath);
       fresh.dispose();
 
-      stampSchemaVersionIfMissing(dbPath, 20);
+      stampSchemaVersionIfMissing(dbPath, 21);
 
       expect(versionOf(dbPath), 0,
           reason: 'no schema → no stamp → drift creates the tables normally');
@@ -154,11 +154,11 @@ void main() {
 
     test('an already-stamped database is not touched', () async {
       await materialiseSchema();
-      expect(versionOf(dbPath), 20);
+      expect(versionOf(dbPath), 21);
 
       stampSchemaVersionIfMissing(dbPath, 999); // must be ignored
 
-      expect(versionOf(dbPath), 20);
+      expect(versionOf(dbPath), 21);
     });
   });
 

@@ -51,6 +51,11 @@ abstract class Caregiver with _$Caregiver {
     /// Optional on-disk pointer to a profile photo; the roster shows
     /// initials when this is null.
     String? avatarPath,
+
+    /// The team this caregiver belongs to (Care Rounds), or null if
+    /// unassigned. Caregivers group into teams via this field; their
+    /// client assignments remain the [CareCircleMembership] rows.
+    String? teamId,
   }) = _Caregiver;
 
   factory Caregiver.fromJson(Map<String, dynamic> json) =>
