@@ -69,6 +69,14 @@ const String appSettingsSingletonId = 'singleton';
 /// settings reset/wipe clears it for free.
 const String activePatientSettingsId = 'active-patient';
 
+/// Fixed primary key for the "self caregiver" pointer row in
+/// [AppSettingsTable] (Care Rounds). Records which caregiver in the roster
+/// is *this device's user*, so "My Rounds" can filter shifts to the signed-in
+/// worker across every client. Rides as its own `id`/`payload` row (payload =
+/// the caregiver id string) exactly like [activePatientSettingsId] — no schema
+/// bump, cleared for free by a settings reset.
+const String selfCaregiverSettingsId = 'self-caregiver';
+
 /// One persisted caregiving chat thread (TASKS.md Phase 11.2). Each
 /// row carries the full freezed [Conversation] as a JSON [payload] so
 /// new fields on the model don't require a schema bump; [createdAtMs]

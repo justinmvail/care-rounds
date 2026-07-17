@@ -96,6 +96,16 @@ abstract class StorageProvider {
   /// then falls back to the first row if the active id can't be resolved.
   Future<void> setActivePatientId(String patientId);
 
+  /// The caregiver in the roster who is *this device's user* (Care Rounds),
+  /// or null when it hasn't been chosen yet. Drives "My Rounds" — the
+  /// signed-in worker's shifts across every client. Persisted, so it survives
+  /// a relaunch.
+  Future<String?> getSelfCaregiverId();
+
+  /// Persist [caregiverId] as this device's user (Care Rounds). Callers
+  /// invalidate `selfCaregiverIdProvider` so the running app re-reads.
+  Future<void> setSelfCaregiverId(String caregiverId);
+
   /// The persisted settings, or [AppSettings.defaults] if the user has
   /// never opened Settings. Never returns null.
   Future<AppSettings> getSettings();
@@ -263,6 +273,26 @@ class DriftStorageProvider with SyncSinkHost implements StorageProvider {
   }
 
   @override
+  Future<String?> getSelfCaregiverId() async {
+    final AppSettingsTableData? row = await (_db.select(_db.appSettingsTable)
+          ..where((t) => t.id.equals(selfCaregiverSettingsId)))
+        .getSingleOrNull();
+    return row?.payload;
+  }
+
+  @override
+  Future<void> setSelfCaregiverId(String caregiverId) async {
+    // Its own key/payload row (id = [selfCaregiverSettingsId]), same shape as
+    // the active-patient pointer.
+    await _db.into(_db.appSettingsTable).insertOnConflictUpdate(
+          AppSettingsTableCompanion.insert(
+            id: selfCaregiverSettingsId,
+            payload: caregiverId,
+          ),
+        );
+  }
+
+  @override
   Future<AppSettings> getSettings() async {
     final AppSettingsTableData? row = await (_db.select(_db.appSettingsTable)
           ..where((t) => t.id.equals(appSettingsSingletonId)))
@@ -308,6 +338,7 @@ class InMemoryStorageProvider with SyncSinkHost implements StorageProvider {
   /// the Drift impl would, regardless of insertion order.
   final Map<String, Patient> _patients = <String, Patient>{};
   String? _activePatientId;
+  String? _selfCaregiverId;
   AppSettings? _settings;
   final StreamController<void> _changes =
       StreamController<void>.broadcast();
@@ -422,6 +453,14 @@ class InMemoryStorageProvider with SyncSinkHost implements StorageProvider {
   }
 
   @override
+  Future<String?> getSelfCaregiverId() async => _selfCaregiverId;
+
+  @override
+  Future<void> setSelfCaregiverId(String caregiverId) async {
+    _selfCaregiverId = caregiverId;
+  }
+
+  @override
   Future<AppSettings> getSettings() async =>
       _settings ?? AppSettings.defaults();
 
@@ -435,6 +474,7 @@ class InMemoryStorageProvider with SyncSinkHost implements StorageProvider {
     _entries.clear();
     _patients.clear();
     _activePatientId = null;
+    _selfCaregiverId = null;
     _settings = null;
     _notify();
   }

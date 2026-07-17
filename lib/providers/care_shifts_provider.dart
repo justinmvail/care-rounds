@@ -254,6 +254,19 @@ class CareShiftsRepository with SyncSinkHost {
         .toList();
   }
 
+  /// Every shift assigned to [caregiverId], across ALL clients, earliest
+  /// first (Care Rounds "My Rounds"). Filters in Dart over [listShifts] —
+  /// shifts keep the caregiver in their JSON payload and a team's shift volume
+  /// is small, so this avoids a schema/index change.
+  Future<List<CareShift>> listShiftsForCaregiver(String caregiverId) async {
+    final List<CareShift> all = await listShifts();
+    final List<CareShift> mine = all
+        .where((CareShift s) => s.caregiverId == caregiverId)
+        .toList()
+      ..sort((CareShift a, CareShift b) => a.start.compareTo(b.start));
+    return mine;
+  }
+
   /// Re-file every shift currently stamped [from] under [to], returning the
   /// number of rows moved (the one-time multi-patient migration, Issue #6).
   ///
