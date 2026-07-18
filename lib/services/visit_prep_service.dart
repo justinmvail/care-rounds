@@ -6,7 +6,7 @@ import 'document_scan_transport.dart';
 
 /// Suggests questions a caregiver could ask at an upcoming doctor visit,
 /// grounded in the loved one's care snapshot. Questions only — never advice
-/// or diagnosis (CareRounds's medical guardrails); the caregiver picks which
+/// or diagnosis (Care Rounds's medical guardrails); the caregiver picks which
 /// to keep. Behind an interface with a fake (tests/demo) + real (shim/Worker)
 /// impls, mirroring the scanners.
 abstract class VisitPrepService {

@@ -40,7 +40,7 @@ import 'log_buffer.dart';
 // Product IDs
 // ---------------------------------------------------------------------------
 
-/// The store product identifiers for the CareRounds subscription.
+/// The store product identifiers for the Care Rounds subscription.
 ///
 /// **These are PLACEHOLDERS.** The real identifiers are configured in
 /// **App Store Connect** (Subscriptions → subscription group → product) and
@@ -596,14 +596,14 @@ class FakeBillingService implements BillingService {
       <SubscriptionOffering>[
     SubscriptionOffering(
       id: CareRoundsProductIds.monthly,
-      title: 'CareRounds Premium (Monthly)',
+      title: 'Care Rounds Premium (Monthly)',
       description: 'Your full caregiving suite and coach.',
       price: r'$6.99',
       introTrial: true,
     ),
     SubscriptionOffering(
       id: CareRoundsProductIds.annual,
-      title: 'CareRounds Premium (Annual)',
+      title: 'Care Rounds Premium (Annual)',
       description: 'Your full caregiving suite and coach — best value.',
       price: r'$59.99',
       introTrial: true,

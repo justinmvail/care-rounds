@@ -195,6 +195,32 @@ dev_dependencies:
   # when Dart ships analyzer 9.x.
   custom_lint: ^0.8.0
   riverpod_lint: ">=3.0.0 <3.1.1"
+  # Brand-asset generators (Care Rounds). Source art lives in branding/.
+  flutter_launcher_icons: ^0.14.1
+  flutter_native_splash: ^2.4.3
+
+# App icon (Care Rounds orbit mark) — regenerate with
+# `dart run flutter_launcher_icons`.
+flutter_launcher_icons:
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  image_path: "branding/app_icon.png"
+  adaptive_icon_background: "#0E5C57"
+  adaptive_icon_foreground: "branding/app_icon_fg.png"
+
+# Launch splash (Care Rounds) — regenerate with
+# `dart run flutter_native_splash:create`.
+flutter_native_splash:
+  color: "#FFFFFF"
+  image: "branding/splash_logo.png"
+  color_dark: "#0B1615"
+  image_dark: "branding/splash_logo.png"
+  android_12:
+    image: "branding/splash_logo.png"
+    color: "#FFFFFF"
+    image_dark: "branding/splash_logo.png"
+    color_dark: "#0B1615"
 
 flutter:
   uses-material-design: true

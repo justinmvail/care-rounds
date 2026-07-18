@@ -61,7 +61,7 @@ void main() {
       (WidgetTester tester) async {
     await _pump(tester, status: PremiumStatus.free);
     expect(find.text('PREMIUM CONTENT'), findsNothing);
-    expect(find.textContaining('CareRounds Premium'), findsOneWidget);
+    expect(find.textContaining('Care Rounds Premium'), findsOneWidget);
   });
 
   testWidgets('renders a custom locked replacement when provided',
@@ -78,7 +78,7 @@ void main() {
   testWidgets('default upsell routes to the paywall on tap',
       (WidgetTester tester) async {
     await _pump(tester, status: PremiumStatus.free);
-    await tester.tap(find.textContaining('CareRounds Premium'));
+    await tester.tap(find.textContaining('Care Rounds Premium'));
     await tester.pumpAndSettle();
     // Landed on the paywall.
     expect(find.byKey(PaywallScreen.startTrialButtonKey), findsOneWidget);

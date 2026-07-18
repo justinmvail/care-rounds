@@ -152,11 +152,11 @@ Future<({_SpyAuthProvider spy, GoRouter router})> _pumpSignIn(
 
 void main() {
   group('SignInScreen — BUILD_SPEC.md §5.12 layout', () {
-    testWidgets('renders CareRounds wordmark + tagline',
+    testWidgets('renders Care Rounds wordmark + tagline',
         (WidgetTester tester) async {
       await _pumpSignIn(tester);
 
-      expect(find.text('CareRounds'), findsOneWidget);
+      expect(find.text('Care Rounds'), findsOneWidget);
       expect(find.text(SignInScreen.tagline), findsOneWidget);
     });
 

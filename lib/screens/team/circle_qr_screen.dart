@@ -113,7 +113,7 @@ class _CircleQrScreenState extends ConsumerState<CircleQrScreen> {
       );
       await ref
           .read(sharerProvider)
-          .share('Join my care circle on CareRounds: $link');
+          .share('Join my care circle on Care Rounds: $link');
     } on ForumApiException catch (e) {
       logNonFatal('circle.qrInviteLink', e);
       messenger.showSnackBar(

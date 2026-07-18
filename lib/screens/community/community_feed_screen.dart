@@ -44,7 +44,7 @@ enum CommunitySegment {
   /// The social feed of caregiver + official posts (the tab's landing).
   feed,
 
-  /// The CareRounds content library — videos + playbooks (Phase 14.37
+  /// The Care Rounds content library — videos + playbooks (Phase 14.37
   /// lands the real `LearnScreen` here).
   learn,
 
@@ -262,7 +262,7 @@ class _CommunityFeedScreenState extends ConsumerState<CommunityFeedScreen> {
           ],
         );
       case CommunitySegment.learn:
-        // The CareRounds content library — videos + playbooks (Phase
+        // The Care Rounds content library — videos + playbooks (Phase
         // 14.37). Keyed with [learnSegmentKey] so the sub-nav swap tests
         // still find the Learn body.
         return const LearnScreen(key: CommunityFeedScreen.learnSegmentKey);

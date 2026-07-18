@@ -48,11 +48,11 @@ void main() {
       (WidgetTester tester) async {
     await _pump(tester);
 
-    expect(find.text('CareRounds Premium'), findsOneWidget);
+    expect(find.text('Care Rounds Premium'), findsOneWidget);
     expect(find.byKey(PaywallScreen.planListKey), findsOneWidget);
     expect(
-        find.text('CareRounds Premium (Monthly)'), findsOneWidget);
-    expect(find.text('CareRounds Premium (Annual)'), findsOneWidget);
+        find.text('Care Rounds Premium (Monthly)'), findsOneWidget);
+    expect(find.text('Care Rounds Premium (Annual)'), findsOneWidget);
     // The single, emoji-free "Start free trial" CTA.
     expect(find.byKey(PaywallScreen.startTrialButtonKey), findsOneWidget);
     expect(find.text('Start free trial'), findsOneWidget);
@@ -106,7 +106,7 @@ void main() {
       (WidgetTester tester) async {
     final FakeBillingService billing = await _pump(tester);
     // Tap the annual plan card, then start the trial.
-    await tester.tap(find.text('CareRounds Premium (Annual)'));
+    await tester.tap(find.text('Care Rounds Premium (Annual)'));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(PaywallScreen.startTrialButtonKey));
     await tester.pumpAndSettle();

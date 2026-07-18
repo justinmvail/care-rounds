@@ -440,7 +440,7 @@ void main() {
           _ScriptedChatBackend(<ChatDelta>[
         const ChatDeltaText('Sundowning '),
         const ChatDeltaText('is the late-afternoon '),
-        const ChatDeltaText('shift many CareRounds notice.'),
+        const ChatDeltaText('shift many Care Rounds notice.'),
       ]);
       final ChatService svc = ChatService(
         repository: repo,
@@ -469,8 +469,8 @@ void main() {
             '',
             'Sundowning ',
             'Sundowning is the late-afternoon ',
-            'Sundowning is the late-afternoon shift many CareRounds notice.',
-            'Sundowning is the late-afternoon shift many CareRounds notice.',
+            'Sundowning is the late-afternoon shift many Care Rounds notice.',
+            'Sundowning is the late-afternoon shift many Care Rounds notice.',
           ]);
       // The final snapshot is the only one with streamingDone=true.
       expect(

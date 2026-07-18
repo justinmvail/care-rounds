@@ -2,7 +2,7 @@
 /// (BUILD_SPEC.md §5.16, TASKS.md Phase 14.37).
 ///
 /// Two content kinds live here:
-///   * [LearnVideo] — short CareRounds framework videos. Real video
+///   * [LearnVideo] — short Care Rounds framework videos. Real video
 ///     hosting is deferred to a later phase; the detail screen renders a
 ///     soft "coming soon" placeholder over this metadata.
 ///   * [LearnPlaybook] — "what do I do when…" step-by-step guides grouped

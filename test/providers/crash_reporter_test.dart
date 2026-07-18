@@ -217,7 +217,7 @@ void main() {
       final SentryEvent phi = SentryEvent(
         contexts: Contexts(
           operatingSystem: SentryOperatingSystem(name: 'iOS', version: '17.5'),
-          app: SentryApp(name: 'CareRounds', version: '0.1.0'),
+          app: SentryApp(name: 'Care Rounds', version: '0.1.0'),
           // Device can carry a user-set device name → PHI-adjacent, must drop.
           device: SentryDevice(name: "Sarah's iPhone", model: 'iPhone15,2'),
         ),
@@ -225,7 +225,7 @@ void main() {
 
       final SentryEvent scrubbed = scrubEvent(phi);
       expect(scrubbed.contexts.operatingSystem?.name, 'iOS');
-      expect(scrubbed.contexts.app?.name, 'CareRounds');
+      expect(scrubbed.contexts.app?.name, 'Care Rounds');
       expect(scrubbed.contexts.device, isNull,
           reason: 'device name/identifiers must not leave the device');
     });

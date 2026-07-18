@@ -83,14 +83,14 @@ class _DefaultLocked extends StatelessWidget {
     final TextTheme tt = Theme.of(context).textTheme;
     return Semantics(
       button: true,
-      label: 'Unlock with CareRounds Premium',
+      label: 'Unlock with Care Rounds Premium',
       child: InkWell(
         onTap: () => context.pushNamed(CareRoundsRoutes.paywall),
         borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Text(
-            'Unlock this with CareRounds Premium.',
+            'Unlock this with Care Rounds Premium.',
             style: tt.bodyMedium,
           ),
         ),

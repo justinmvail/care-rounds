@@ -205,7 +205,7 @@ void main() {
       expect(v.durationLabel, isNull);
     });
 
-    test('every seeded video is a real CareRounds YouTube link', () {
+    test('every seeded video is a real Care Rounds YouTube link', () {
       for (final LearnVideo v in learnVideos) {
         expect(v.youtubeId, isNotEmpty);
         expect(v.youtubeUrl, 'https://www.youtube.com/watch?v=${v.youtubeId}');

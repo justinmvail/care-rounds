@@ -11,7 +11,7 @@ import 'medication.dart';
 /// data — the review screen fills the gaps with human input.
 ///
 /// Extraction is pure transcription (reading printed text), never
-/// medical advice — consistent with CareRounds's medical guardrails — and
+/// medical advice — consistent with Care Rounds's medical guardrails — and
 /// nothing is saved without the caregiver's explicit approval.
 class MedicationDraft {
   const MedicationDraft({

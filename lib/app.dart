@@ -190,7 +190,7 @@ class _CareRoundsAppState extends ConsumerState<CareRoundsApp> {
     final FontSizeMultiplier fontSize =
         ref.watch(settingsProvider.select((AppSettings s) => s.fontSize));
     return MaterialApp.router(
-      title: 'CareRounds',
+      title: 'Care Rounds',
       debugShowCheckedModeBanner: false,
       theme: careroundsLightTheme,
       darkTheme: careroundsDarkTheme,

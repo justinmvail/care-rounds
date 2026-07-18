@@ -100,27 +100,35 @@ class CareRoundsColors extends ThemeExtension<CareRoundsColors> {
 /// Light brand palette (BUILD_SPEC.md §3.1). Source of truth for light
 /// mode and the safe const fallback for any context that can't reach a
 /// [BuildContext] (theme construction, top-level functions, static data).
+// Care Rounds brand palette — "Teal & Amber" (deliberately distinct from
+// Holdclose's warm navy + salmon). Deep teal reads professional, clean, and
+// trustworthy for a direct-care-team tool; a warm amber accent supplies the
+// energy (the mic, active states, highlights). Cool mist surfaces replace
+// Holdclose's warm cream.
 const CareRoundsColors careroundsColors = CareRoundsColors(
-  primary: Color(0xFF1F2A44),
-  primarySoft: Color(0xFF2A3B61),
-  text: Color(0xFF33373D),
-  cta: Color(0xFFC97458),
-  // Filled-button background: white text on this measures 4.72:1 (WCAG-AA
-  // pass), vs. 3.43:1 on the lighter decorative [cta].
-  ctaFilled: Color(0xFFB05C40),
-  accentDeep: Color(0xFFB05C40),
-  surfaceWarm: Color(0xFFF8F6F3),
+  primary: Color(0xFF0E5C57),
+  primarySoft: Color(0xFF157A72),
+  text: Color(0xFF1B2B29),
+  // Decorative amber accent (icons / borders / highlights — NOT white-text).
+  cta: Color(0xFFE8973C),
+  // Filled-button background: deep teal carries white text at ~5.4:1
+  // (WCAG-AA pass), keeping the button system accessible without a per-widget
+  // foreground audit. Amber stays the decorative accent on [cta].
+  ctaFilled: Color(0xFF0B665E),
+  // Deep amber for amber-toned text/borders that need AA on white (~4.9:1).
+  accentDeep: Color(0xFFB4711A),
+  surfaceWarm: Color(0xFFEDF4F2),
   background: Color(0xFFFFFFFF),
-  link: Color(0xFF4054B2),
+  link: Color(0xFF127A72),
   error: Color(0xFFCF2E2E),
-  success: Color(0xFF2A7C4F),
+  success: Color(0xFF2E7D5B),
 );
 
 // Dark palette derived per BUILD_SPEC.md §3.1: navy surface, warm-white
 // text, orange CTA unchanged.
-const Color _darkSurface = Color(0xFF0F1422);
-const Color _darkSurfaceVariant = Color(0xFF1A2236);
-const Color _darkText = Color(0xFFE8E6E2);
+const Color _darkSurface = Color(0xFF0B1615);
+const Color _darkSurfaceVariant = Color(0xFF13211F);
+const Color _darkText = Color(0xFFE6EBE9);
 
 /// Dark brand palette. Same token slots as [careroundsColors] but tuned
 /// for a dark navy/charcoal canvas:
@@ -134,17 +142,17 @@ const Color _darkText = Color(0xFFE8E6E2);
 ///   keeps AA contrast on the dark canvas while staying on-brand.
 /// - `link`/`error`/`success` are lightened for contrast on dark.
 const CareRoundsColors careroundsColorsDark = CareRoundsColors(
-  primary: Color(0xFFB7C4E0),
-  primarySoft: Color(0xFF8C9BBF),
+  primary: Color(0xFF6FD0C4),
+  primarySoft: Color(0xFF4FA89E),
   text: _darkText,
-  cta: Color(0xFFE08A6B),
-  // Filled-button background on dark: pairs with the dark-navy
-  // `onSecondary`, so the bright orange carries dark text at high contrast.
-  ctaFilled: Color(0xFFE08A6B),
-  accentDeep: Color(0xFFC97458),
+  cta: Color(0xFFF0A94E),
+  // Filled-button background on dark: bright teal that pairs with the
+  // dark `onSecondary`, so it carries dark text at high contrast.
+  ctaFilled: Color(0xFF2AA99B),
+  accentDeep: Color(0xFFE8973C),
   surfaceWarm: _darkSurfaceVariant,
   background: _darkSurface,
-  link: Color(0xFF8FA2E8),
+  link: Color(0xFF5FB8AE),
   error: Color(0xFFF06A6A),
   success: Color(0xFF5FBF8C),
 );
@@ -163,22 +171,22 @@ TextTheme _careroundsTextTheme({
   required Color headingColor,
 }) {
   return TextTheme(
-    displayLarge: GoogleFonts.montserrat(
+    displayLarge: GoogleFonts.sora(
       fontSize: 32,
       fontWeight: FontWeight.w700,
       color: headingColor,
     ),
-    headlineLarge: GoogleFonts.montserrat(
+    headlineLarge: GoogleFonts.sora(
       fontSize: 26,
       fontWeight: FontWeight.w700,
       color: headingColor,
     ),
-    headlineMedium: GoogleFonts.montserrat(
+    headlineMedium: GoogleFonts.sora(
       fontSize: 22,
       fontWeight: FontWeight.w600,
       color: headingColor,
     ),
-    titleLarge: GoogleFonts.montserrat(
+    titleLarge: GoogleFonts.sora(
       fontSize: 20,
       fontWeight: FontWeight.w600,
       color: headingColor,
@@ -204,20 +212,20 @@ TextTheme _careroundsTextTheme({
 ThemeData _buildLightTheme() {
   const ColorScheme scheme = ColorScheme(
     brightness: Brightness.light,
-    primary: Color(0xFF1F2A44),
+    primary: Color(0xFF0E5C57),
     onPrimary: Color(0xFFFFFFFF),
-    // `secondary` is the FILLED-CTA background (the accessible #B05C40, not
-    // the lighter decorative salmon), so `onSecondary` white text on a
-    // filled button clears WCAG-AA. Decorative salmon stays on `cb.cta`.
-    secondary: Color(0xFFB05C40),
+    // `secondary` is the FILLED-CTA background (the accessible deep teal
+    // #0B665E), so `onSecondary` white text on a filled button clears
+    // WCAG-AA. The decorative amber accent stays on `cr.cta`.
+    secondary: Color(0xFF0B665E),
     onSecondary: Color(0xFFFFFFFF),
-    tertiary: Color(0xFFB05C40),
+    tertiary: Color(0xFF0B665E),
     onTertiary: Color(0xFFFFFFFF),
     error: Color(0xFFCF2E2E),
     onError: Color(0xFFFFFFFF),
     surface: Color(0xFFFFFFFF),
-    onSurface: Color(0xFF33373D),
-    surfaceContainerHighest: Color(0xFFF8F6F3),
+    onSurface: Color(0xFF1B2B29),
+    surfaceContainerHighest: Color(0xFFEDF4F2),
   );
 
   return ThemeData(
@@ -234,7 +242,7 @@ ThemeData _buildLightTheme() {
       backgroundColor: careroundsColors.background,
       foregroundColor: careroundsColors.primary,
       elevation: 0,
-      titleTextStyle: GoogleFonts.montserrat(
+      titleTextStyle: GoogleFonts.sora(
         fontSize: 22,
         fontWeight: FontWeight.w600,
         color: careroundsColors.primary,
@@ -273,7 +281,7 @@ ThemeData _buildDarkTheme() {
       backgroundColor: _darkSurface,
       foregroundColor: _darkText,
       elevation: 0,
-      titleTextStyle: GoogleFonts.montserrat(
+      titleTextStyle: GoogleFonts.sora(
         fontSize: 22,
         fontWeight: FontWeight.w600,
         color: _darkText,

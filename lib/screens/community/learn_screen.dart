@@ -8,7 +8,7 @@ import '../../seed/learn_content.dart';
 import '../../theme.dart';
 
 /// The **Learn** segment of the Community tab (BUILD_SPEC.md §5.16,
-/// TASKS.md Phase 14.37) — the CareRounds content library.
+/// TASKS.md Phase 14.37) — the Care Rounds content library.
 ///
 /// Rendered as the in-tab body when the Community sub-nav's Learn segment
 /// is active (it is NOT a routed screen of its own; the

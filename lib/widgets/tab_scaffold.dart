@@ -455,8 +455,10 @@ class _CenterVoiceButtonState extends ConsumerState<_CenterVoiceButton> {
           : 'Speak to the coach. Tap and say what you need.',
       child: Material(
         key: TabScaffold.centerVoiceButtonKey,
-        // Filled center mic carries a white glyph → AA-contrast token.
-        color: context.hc.ctaFilled,
+        // Amber center mic — the warm brand signature anchored in the tab bar
+        // on every screen. Carries a DARK teal glyph: white on amber fails
+        // WCAG, teal-on-amber clears it (~4.7:1).
+        color: context.hc.cta,
         shape: const CircleBorder(),
         elevation: 3,
         child: InkWell(
@@ -467,15 +469,16 @@ class _CenterVoiceButtonState extends ConsumerState<_CenterVoiceButton> {
             height: 52,
             child: Center(
               child: _busy
-                  ? const SizedBox(
+                  ? SizedBox(
                       width: 22,
                       height: 22,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(context.hc.primary),
                       ),
                     )
-                  : const Icon(Icons.mic_none, size: 26, color: Colors.white),
+                  : Icon(Icons.mic_none, size: 26, color: context.hc.primary),
             ),
           ),
         ),

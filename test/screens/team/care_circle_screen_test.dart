@@ -273,7 +273,7 @@ void main() {
       // off the backend origin + the minted token.
       expect(
         shared.single,
-        'Join my care circle on CareRounds: '
+        'Join my care circle on Care Rounds: '
         'https://forum.example.test/join/tok_link_123',
       );
     });

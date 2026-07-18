@@ -122,7 +122,7 @@ void main() {
       expect(sharer.shared, hasLength(1));
       expect(
         sharer.shared.single.text,
-        'Join my care circle on CareRounds: '
+        'Join my care circle on Care Rounds: '
         'https://forum.example.test/join/tok_2',
       );
     });

@@ -1,7 +1,7 @@
 {
   "@@locale": "en",
 
-  "appTitle": "CareRounds",
+  "appTitle": "Care Rounds",
   "@appTitle": {
     "description": "The application's name, shown as the MaterialApp title."
   },
@@ -94,7 +94,7 @@
     "description": "Screen-reader (Semantics) label for the welcome-carousel Skip button."
   },
 
-  "signInTitle": "CareRounds",
+  "signInTitle": "Care Rounds",
   "@signInTitle": {
     "description": "Brand wordmark shown at the top of the sign-in screen."
   },

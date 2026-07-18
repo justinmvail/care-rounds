@@ -525,12 +525,12 @@ class DataExporter {
   /// Decode UTF-8 JSON [bytes] (a previously-exported backup) and restore
   /// them via [importInto]. Throws [FormatException] when the bytes aren't a
   /// JSON object — the Settings "Restore from backup" row catches that and
-  /// tells the caregiver the file wasn't a valid CareRounds backup. Returns
+  /// tells the caregiver the file wasn't a valid Care Rounds backup. Returns
   /// the number of records written across every section.
   Future<int> importFromBytes(ExportSources sources, Uint8List bytes) async {
     final Object? decoded = jsonDecode(utf8.decode(bytes));
     if (decoded is! Map<String, dynamic>) {
-      throw const FormatException('Backup file is not a CareRounds backup.');
+      throw const FormatException('Backup file is not a Care Rounds backup.');
     }
     return importInto(sources, decoded);
   }

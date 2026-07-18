@@ -31,7 +31,7 @@ import '../../theme.dart';
 ///   * **Expert Q&A** — a read-only list of the curated [expertAnswers].
 ///
 /// Per BUILD_SPEC.md §13.1 this is wellbeing/peer-support content, not
-/// medical advice: the copy refers CareRounds to professional help and
+/// medical advice: the copy refers Care Rounds to professional help and
 /// never diagnoses or prescribes.
 class SupportScreen extends ConsumerStatefulWidget {
   const SupportScreen({super.key});

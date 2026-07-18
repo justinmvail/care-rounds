@@ -269,7 +269,7 @@ void main() {
       await tester.tap(find.byKey(SettingsScreen.restoreDataButtonKey));
       await tester.pumpAndSettle();
 
-      expect(find.text("That file isn't a CareRounds backup."), findsOneWidget);
+      expect(find.text("That file isn't a Care Rounds backup."), findsOneWidget);
       expect(await pumped.storage.getPatient(), isNull);
     });
   });

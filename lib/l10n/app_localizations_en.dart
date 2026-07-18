@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'CareRounds';
+  String get appTitle => 'Care Rounds';
 
   @override
   String get commonSave => 'Save';
@@ -76,7 +76,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get welcomeSkipSemantics => 'Skip onboarding and go to sign-in.';
 
   @override
-  String get signInTitle => 'CareRounds';
+  String get signInTitle => 'Care Rounds';
 
   @override
   String get signInTagline =>

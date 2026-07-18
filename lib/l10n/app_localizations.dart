@@ -101,7 +101,7 @@ abstract class AppLocalizations {
   /// The application's name, shown as the MaterialApp title.
   ///
   /// In en, this message translates to:
-  /// **'CareRounds'**
+  /// **'Care Rounds'**
   String get appTitle;
 
   /// Generic confirm/save button label, reused across forms.
@@ -233,7 +233,7 @@ abstract class AppLocalizations {
   /// Brand wordmark shown at the top of the sign-in screen.
   ///
   /// In en, this message translates to:
-  /// **'CareRounds'**
+  /// **'Care Rounds'**
   String get signInTitle;
 
   /// Tagline beneath the wordmark on the sign-in screen; mirrors welcome-carousel page 1.

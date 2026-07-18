@@ -9,7 +9,7 @@ class AppLocalizationsEs extends AppLocalizations {
   AppLocalizationsEs([String locale = 'es']) : super(locale);
 
   @override
-  String get appTitle => 'CareRounds';
+  String get appTitle => 'Care Rounds';
 
   @override
   String get commonSave => 'Guardar';
@@ -77,7 +77,7 @@ class AppLocalizationsEs extends AppLocalizations {
       'Omitir la introducción e ir al inicio de sesión.';
 
   @override
-  String get signInTitle => 'CareRounds';
+  String get signInTitle => 'Care Rounds';
 
   @override
   String get signInTagline =>

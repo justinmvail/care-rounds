@@ -52,18 +52,18 @@ void main() {
 
   group('CareRoundsColors', () {
     test('all 10 tokens match BUILD_SPEC.md §3.1 verbatim', () {
-      expect(careroundsColors.primary, const Color(0xFF1F2A44));
-      expect(careroundsColors.primarySoft, const Color(0xFF2A3B61));
-      expect(careroundsColors.text, const Color(0xFF33373D));
-      expect(careroundsColors.cta, const Color(0xFFC97458));
+      expect(careroundsColors.primary, const Color(0xFF0E5C57));
+      expect(careroundsColors.primarySoft, const Color(0xFF157A72));
+      expect(careroundsColors.text, const Color(0xFF1B2B29));
+      expect(careroundsColors.cta, const Color(0xFFE8973C));
       // Accessible filled-CTA background: white text on it clears WCAG-AA.
-      expect(careroundsColors.ctaFilled, const Color(0xFFB05C40));
-      expect(careroundsColors.accentDeep, const Color(0xFFB05C40));
-      expect(careroundsColors.surfaceWarm, const Color(0xFFF8F6F3));
+      expect(careroundsColors.ctaFilled, const Color(0xFF0B665E));
+      expect(careroundsColors.accentDeep, const Color(0xFFB4711A));
+      expect(careroundsColors.surfaceWarm, const Color(0xFFEDF4F2));
       expect(careroundsColors.background, const Color(0xFFFFFFFF));
-      expect(careroundsColors.link, const Color(0xFF4054B2));
+      expect(careroundsColors.link, const Color(0xFF127A72));
       expect(careroundsColors.error, const Color(0xFFCF2E2E));
-      expect(careroundsColors.success, const Color(0xFF2A7C4F));
+      expect(careroundsColors.success, const Color(0xFF2E7D5B));
     });
   });
 
@@ -87,7 +87,7 @@ void main() {
       expect(ratio, greaterThanOrEqualTo(4.5));
     });
 
-    test('white on the DECORATIVE salmon would FAIL AA (documents the '
+    test('white on the DECORATIVE amber accent would FAIL AA (documents the '
         'reason the filled token exists)', () {
       final double ratio = contrast(Colors.white, careroundsColors.cta);
       expect(ratio, lessThan(4.5));
@@ -103,25 +103,25 @@ void main() {
       expect(careroundsLightTheme.brightness, Brightness.light);
     });
 
-    test('colorScheme.primary is the navy brand token (#1F2A44)', () {
-      expect(careroundsLightTheme.colorScheme.primary, const Color(0xFF1F2A44));
+    test('colorScheme.primary is the teal brand token (#0E5C57)', () {
+      expect(careroundsLightTheme.colorScheme.primary, const Color(0xFF0E5C57));
       expect(careroundsLightTheme.colorScheme.primary, careroundsColors.primary);
     });
 
     test('colorScheme.secondary is the accessible filled-CTA background '
-        '(#B05C40), not the lighter decorative salmon', () {
+        '(#0B665E), not the lighter decorative amber', () {
       // Filled buttons read their background from `secondary` and foreground
-      // from `onSecondary`; the decorative salmon (`cb.cta`) is too light for
-      // white text (3.43:1). `secondary` is the darker AA-passing tone.
+      // from `onSecondary`; the decorative amber (`cr.cta`) is too light for
+      // white text. `secondary` is the darker AA-passing teal.
       expect(
         careroundsLightTheme.colorScheme.secondary,
         careroundsColors.ctaFilled,
       );
-      expect(careroundsLightTheme.colorScheme.secondary, const Color(0xFFB05C40));
+      expect(careroundsLightTheme.colorScheme.secondary, const Color(0xFF0B665E));
     });
 
-    test('colorScheme.tertiary is accentDeep (#B05C40)', () {
-      expect(careroundsLightTheme.colorScheme.tertiary, careroundsColors.accentDeep);
+    test('colorScheme.tertiary is the teal filled token (#0B665E)', () {
+      expect(careroundsLightTheme.colorScheme.tertiary, careroundsColors.ctaFilled);
     });
 
     test('colorScheme.error is the brand error red', () {
@@ -202,11 +202,11 @@ void main() {
     });
 
     test('surface is the dark navy (#0F1422)', () {
-      expect(careroundsDarkTheme.colorScheme.surface, const Color(0xFF0F1422));
+      expect(careroundsDarkTheme.colorScheme.surface, const Color(0xFF0B1615));
     });
 
     test('onSurface is the warm-white text (#E8E6E2)', () {
-      expect(careroundsDarkTheme.colorScheme.onSurface, const Color(0xFFE8E6E2));
+      expect(careroundsDarkTheme.colorScheme.onSurface, const Color(0xFFE6EBE9));
     });
 
     test('secondary is the dark-palette CTA (brightened for contrast)', () {
@@ -244,7 +244,7 @@ void main() {
     test('scaffoldBackgroundColor matches the dark surface', () {
       expect(
         careroundsDarkTheme.scaffoldBackgroundColor,
-        const Color(0xFF0F1422),
+        const Color(0xFF0B1615),
       );
     });
   });

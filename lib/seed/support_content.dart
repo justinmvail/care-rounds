@@ -89,7 +89,7 @@ class RespiteResource {
 }
 
 /// National caregiver + crisis help lines (Phase 14.38). These refer
-/// CareRounds to professional support; per BUILD_SPEC.md §13.1 they do
+/// Care Rounds to professional support; per BUILD_SPEC.md §13.1 they do
 /// not diagnose or prescribe. A local respite directory is deferred — the
 /// "search local respite" affordance launches [respiteSearchUrl] instead.
 const List<RespiteResource> respiteResources = <RespiteResource>[
@@ -136,7 +136,7 @@ const List<RespiteResource> respiteResources = <RespiteResource>[
 /// crisis line is"). Reuses [RespiteResource] so the same tappable row
 /// renders both lists; kept as its own const so the crisis card is
 /// unmistakable and can't be collapsed out of reach. These refer
-/// CareRounds to professional support; per BUILD_SPEC.md §13.1 they do not
+/// Care Rounds to professional support; per BUILD_SPEC.md §13.1 they do not
 /// diagnose or prescribe. The community guidelines' "In crisis" section
 /// points here by name — keep the two in sync.
 const List<RespiteResource> crisisResources = <RespiteResource>[

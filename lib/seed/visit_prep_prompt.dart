@@ -1,7 +1,7 @@
 /// System prompt for AI doctor-visit prep — suggesting questions the
 /// caregiver could ask, grounded in the loved one's care data.
 ///
-/// Questions ONLY: this stays inside CareRounds's medical guardrails — it
+/// Questions ONLY: this stays inside Care Rounds's medical guardrails — it
 /// never advises, diagnoses, or recommends dosing/treatment. The caregiver
 /// reviews and picks which questions to keep. Vendor/model never named.
 const String visitPrepSystemPrompt = r'''

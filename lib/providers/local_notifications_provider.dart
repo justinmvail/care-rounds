@@ -55,7 +55,7 @@ class LocalNotificationsProvider implements NotificationsProvider {
   static const String _channelId = 'carerounds_trackers';
   static const String _channelName = 'Tracker reminders';
   static const String _channelDesc =
-      'Dose + appointment reminders from CareRounds.';
+      'Dose + appointment reminders from Care Rounds.';
 
   static void _defaultInitTimezones(String _) {
     tz_data.initializeTimeZones();

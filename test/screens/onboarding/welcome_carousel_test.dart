@@ -70,7 +70,7 @@ void main() {
       await _pumpCarousel(tester);
 
       final WelcomeCarouselPage page1 = WelcomeCarousel.pages[0];
-      expect(page1.title, 'CareRounds');
+      expect(page1.title, 'Care Rounds');
       expect(page1.body,
           'We make caring for someone you love a little easier.');
       expect(find.text(page1.title), findsOneWidget);
@@ -195,7 +195,7 @@ void main() {
 
       // UIUX_REVIEW: Skip must NOT flip the onboarding flag — doing so made
       // the value prop reachable exactly once (a reflexive Skip permanently
-      // deleted the only explanation of what CareRounds is). The real
+      // deleted the only explanation of what Care Rounds is). The real
       // router's onboarding gate lets `/sign-in` through even while
       // incomplete, so Skip still reaches sign-in; onboarding then
       // completes on a successful sign-in.

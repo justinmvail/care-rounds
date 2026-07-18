@@ -927,11 +927,11 @@ class _DataSectionState extends ConsumerState<_DataSection> {
         ),
       );
     } on FormatException {
-      // The picked file wasn't a CareRounds backup (or was corrupt).
+      // The picked file wasn't a Care Rounds backup (or was corrupt).
       if (!mounted) return;
       messenger.showSnackBar(
         const SnackBar(
-          content: Text("That file isn't a CareRounds backup."),
+          content: Text("That file isn't a Care Rounds backup."),
         ),
       );
     } catch (error, stack) {

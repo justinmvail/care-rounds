@@ -34,7 +34,7 @@ class WelcomeCarousel extends ConsumerStatefulWidget {
   static const List<WelcomeCarouselPage> pages = <WelcomeCarouselPage>[
     WelcomeCarouselPage(
       glyph: 'H',
-      title: 'CareRounds',
+      title: 'Care Rounds',
       body: 'We make caring for someone you love a little easier.',
       // Concrete value prop so page 1 isn't a pleasant-but-empty promise
       // (UIUX_REVIEW: page 1 named no capability). Kept as a separate
@@ -92,7 +92,7 @@ class _WelcomeCarouselState extends ConsumerState<WelcomeCarousel> {
     // Skip does NOT mark onboarding complete (UIUX_REVIEW: doing so made
     // the value prop reachable exactly once — a reflexive Skip in the
     // first two seconds permanently deleted the only explanation of what
-    // CareRounds is). Onboarding is marked complete only by "Get started"
+    // Care Rounds is). Onboarding is marked complete only by "Get started"
     // or a successful sign-in; the router's onboarding gate lets `/sign-in`
     // through even while incomplete, so a skipper who has second thoughts
     // can still get back to the carousel.
@@ -196,17 +196,14 @@ class _PageBody extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          // Page 1 ('H' glyph) renders the brand "Hc" split mark —
-          // navy left / white "H", white right / navy "c" — matching
-          // the AppIcon + LaunchImage. Pages 2 & 3 keep their emoji
-          // glyphs in a plain navy block since they're feature
-          // illustrations, not brand marks. Centralizing the mark here
-          // means future icon updates only need a Flutter-side change
-          // here PLUS the PNG regen for AppIcon / LaunchImage
-          // (tools: scratchpad gen_brand_assets.py recipe — Montserrat
-          // 700 at 0.6× the canvas, letters layout-centered per half).
+          // Page 1 (glyph sentinel 'H') renders the Care Rounds "rounds"
+          // brand mark — a teal tile with a white orbit ring + amber
+          // waypoint. Pages 2 & 3 keep their emoji glyphs in a plain teal
+          // block since they're feature illustrations, not brand marks.
+          // The AppIcon / LaunchImage PNGs still carry the old mark and are
+          // a separate raster regen (follow-up).
           if (page.glyph == 'H')
-            const _HcBrandMark()
+            const _RoundsBrandMark()
           else
             Container(
               width: 120,
@@ -316,54 +313,57 @@ class WelcomeCarouselPage {
   final String? subtitle;
 }
 
-/// The brand "Hc" split mark: navy left / white capital H, white
-/// right / navy lowercase c. Same design as the iOS AppIcon and
-/// LaunchImage so onboarding page 1 matches the icon the user tapped
-/// to launch the app. Sized at 120×120 to drop into the carousel's
-/// logo slot.
-///
-/// Letter glyphs use the same Montserrat 700 the type ramp + the
-/// LaunchImage master use (BUILD_SPEC.md §3.2 + §3.4).
-class _HcBrandMark extends StatelessWidget {
-  const _HcBrandMark();
+/// The Care Rounds "rounds" mark: a deep-teal rounded tile carrying a white
+/// orbit ring with a single amber waypoint dot — a caregiver's circuit of
+/// visits. Deliberately distinct from Holdclose's "Hc" split mark. Sized at
+/// 120×120 to drop into the carousel's logo slot.
+class _RoundsBrandMark extends StatelessWidget {
+  const _RoundsBrandMark();
 
   @override
   Widget build(BuildContext context) {
-    final TextStyle letter = Theme.of(context).textTheme.displayLarge!.copyWith(
-          fontSize: 72,
-          fontWeight: FontWeight.w700,
-          height: 1.0,
-        );
     return ClipRRect(
       borderRadius: BorderRadius.circular(28),
-      child: SizedBox(
+      child: Container(
         width: 120,
         height: 120,
-        child: Row(
-          children: <Widget>[
-            Expanded(
-              child: ColoredBox(
-                color: context.hc.primary,
-                child: Center(
-                  child: Text(
-                    'H',
-                    style: letter.copyWith(color: Colors.white),
+        color: context.hc.primary,
+        child: Center(
+          child: SizedBox(
+            width: 84,
+            height: 84,
+            child: Stack(
+              alignment: Alignment.center,
+              clipBehavior: Clip.none,
+              children: <Widget>[
+                // The orbit ring — Positioned.fill so the DecoratedBox takes
+                // the whole 84×84 box (a bare DecoratedBox has no child and
+                // would collapse to zero size, hiding the ring).
+                Positioned.fill(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 11),
+                    ),
                   ),
                 ),
-              ),
-            ),
-            Expanded(
-              child: ColoredBox(
-                color: context.hc.background,
-                child: Center(
-                  child: Text(
-                    'c',
-                    style: letter.copyWith(color: context.hc.primary),
+                // The amber waypoint sitting on the ring at 12 o'clock.
+                Positioned(
+                  top: -5,
+                  left: 31,
+                  child: Container(
+                    width: 22,
+                    height: 22,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: context.hc.cta,
+                      border: Border.all(color: context.hc.primary, width: 3),
+                    ),
                   ),
                 ),
-              ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

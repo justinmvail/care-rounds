@@ -112,7 +112,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                   PathHeaderCrumb(label: 'Home', route: '/'),
                   PathHeaderCrumb(label: 'Premium'),
                 ],
-                title: 'CareRounds Premium',
+                title: 'Care Rounds Premium',
                 leadingIcon: Icons.workspace_premium_outlined,
               ),
             ),
@@ -130,7 +130,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'CareRounds Premium keeps your full caregiving suite and '
+                    'Care Rounds Premium keeps your full caregiving suite and '
                     'your coach — grounded in your loved one’s real care '
                     'details — working together in one place.',
                     style: tt.bodyMedium?.copyWith(color: context.hc.text),
@@ -152,7 +152,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
-                        'You have CareRounds Premium. Thank you for being here.',
+                        'You have Care Rounds Premium. Thank you for being here.',
                         style: tt.bodyMedium?.copyWith(color: context.hc.text),
                       ),
                     ),

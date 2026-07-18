@@ -4,7 +4,7 @@
 /// This is a pure **transcription** task: the assistant reads the text
 /// printed on a photographed medication label / prescription bottle and
 /// returns it as structured JSON. It NEVER gives dosing guidance, medical
-/// advice, warnings, or a diagnosis — that stays inside CareRounds's
+/// advice, warnings, or a diagnosis — that stays inside Care Rounds's
 /// non-negotiable medical guardrails — and the caregiver reviews and
 /// approves every field on the import screen before anything is saved.
 ///

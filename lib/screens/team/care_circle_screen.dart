@@ -229,7 +229,7 @@ class _ConnectActions extends ConsumerWidget {
         token: invite.token,
       );
       await shareCircleInvite(
-        'Join my care circle on CareRounds: $link',
+        'Join my care circle on Care Rounds: $link',
       );
     } on ForumApiException catch (e) {
       logNonFatal('circle.inviteLink', e);
