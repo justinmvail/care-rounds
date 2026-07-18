@@ -146,6 +146,62 @@ void main() {
     expect(find.text('No visits scheduled today.'), findsOneWidget);
   });
 
+  testWidgets('the next visit gets a "Start visit" action + a Next chip',
+      (WidgetTester tester) async {
+    // now = 09:00; the 10:00 visit is the next one due.
+    await _pump(
+      tester,
+      storage: await _storage(self: 'cg-1'),
+      rounds: <CareShift>[
+        _shift('s-early', 'p-mary', DateTime(2026, 7, 18, 10)),
+        _shift('s-late', 'p-frank', DateTime(2026, 7, 18, 14)),
+      ],
+    );
+
+    expect(find.byKey(TodayVisitsCard.startVisitKey('s-early')), findsOneWidget);
+    // Only the focus visit gets a Start action.
+    expect(find.byKey(TodayVisitsCard.startVisitKey('s-late')), findsNothing);
+    expect(find.text('Next'), findsOneWidget);
+    expect(find.text('Now'), findsNothing);
+  });
+
+  testWidgets('a visit in progress shows the Now chip',
+      (WidgetTester tester) async {
+    // now = 09:00 sits inside the 08:30–09:30 shift.
+    await _pump(
+      tester,
+      storage: await _storage(self: 'cg-1'),
+      rounds: <CareShift>[
+        CareShift(
+          id: 's-now',
+          caregiverId: 'cg-1',
+          start: DateTime(2026, 7, 18, 8, 30),
+          end: DateTime(2026, 7, 18, 9, 30),
+          patientId: 'p-mary',
+        ),
+      ],
+    );
+
+    expect(find.text('Now'), findsOneWidget);
+    expect(find.byKey(TodayVisitsCard.startVisitKey('s-now')), findsOneWidget);
+  });
+
+  testWidgets('tapping Start visit switches the active client and opens Schedule',
+      (WidgetTester tester) async {
+    final InMemoryStorageProvider storage = await _storage(self: 'cg-1');
+    await _pump(
+      tester,
+      storage: storage,
+      rounds: <CareShift>[_shift('s-early', 'p-frank', DateTime(2026, 7, 18, 10))],
+    );
+
+    await tester.tap(find.byKey(TodayVisitsCard.startVisitKey('s-early')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('SCHEDULE'), findsOneWidget);
+    expect(await storage.getActivePatientId(), 'p-frank');
+  });
+
   testWidgets('tapping a visit switches the active client and opens Schedule',
       (WidgetTester tester) async {
     final InMemoryStorageProvider storage = await _storage(self: 'cg-1');
