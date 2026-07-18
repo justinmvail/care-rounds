@@ -1,9 +1,12 @@
+import 'package:carerounds/db/database.dart';
 import 'package:carerounds/models/journal_entry.dart';
 import 'package:carerounds/models/visit_note_draft.dart';
 import 'package:carerounds/providers/storage_provider.dart';
+import 'package:carerounds/providers/supervisor_flags_provider.dart';
 import 'package:carerounds/providers/visit_note_service_provider.dart';
 import 'package:carerounds/screens/medical/visit_note_screen.dart';
 import 'package:carerounds/services/visit_note_service.dart';
+import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -46,6 +49,12 @@ Future<InMemoryStorageProvider> _pump(
       overrides: <Override>[
         storageBackendProvider.overrideWithValue(storage),
         visitNoteServiceProvider.overrideWithValue(service),
+        // Save auto-raises a supervisor flag on a needs-attention note (#17);
+        // pin the flags repo to an in-memory DB so it never opens on-device
+        // sqlite.
+        supervisorFlagsRepositoryProvider.overrideWithValue(
+          SupervisorFlagsRepository(CareRoundsDatabase(NativeDatabase.memory())),
+        ),
       ],
       child: MaterialApp.router(routerConfig: router),
     ),

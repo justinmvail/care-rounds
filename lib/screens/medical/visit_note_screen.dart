@@ -4,9 +4,12 @@ import 'package:go_router/go_router.dart';
 
 import '../../models/journal_entry.dart';
 import '../../models/visit_note_draft.dart';
+import '../../providers/active_patient_provider.dart';
+import '../../providers/my_rounds_provider.dart' show selfCaregiverIdProvider;
 import '../../providers/storage_provider.dart';
 import '../../providers/visit_note_service_provider.dart';
 import '../../providers/voice_capture_provider.dart';
+import '../team/flags_screen.dart' show raiseSupervisorFlag;
 import '../../services/voice_intake.dart' show showVoiceCapturePermissionDeniedSnackBar;
 import '../../theme.dart';
 import '../../widgets/path_header.dart';
@@ -159,11 +162,30 @@ class _VisitNoteScreenState extends ConsumerState<VisitNoteScreen> {
       notes: notes.isEmpty ? null : notes,
     );
     await ref.read(storageProvider).insertJournalEntry(entry);
+
+    // Human-in-the-loop escalation (#17): when the AI flagged the visit,
+    // raise a supervisor flag carrying the concern so it lands in the Team
+    // Flags inbox — the note documents, the flag escalates.
+    if (_needsAttention) {
+      final String patientId = await ref.read(activePatientIdProvider.future);
+      final String self =
+          await ref.read(selfCaregiverIdProvider.future) ?? '';
+      await raiseSupervisorFlag(
+        ref,
+        patientId: patientId,
+        raisedByCaregiverId: self,
+        message: concern.isEmpty ? _summary.text.trim() : concern,
+      );
+    }
+
     if (!mounted) return;
     ScaffoldMessenger.of(context)
       ..clearSnackBars()
-      ..showSnackBar(
-          const SnackBar(content: Text('Visit note saved to the journal.')));
+      ..showSnackBar(SnackBar(
+        content: Text(_needsAttention
+            ? 'Visit note saved — and flagged for your supervisor.'
+            : 'Visit note saved to the journal.'),
+      ));
     if (context.canPop()) context.pop();
   }
 

@@ -64,6 +64,7 @@ part 'database.g.dart';
     CareTasksTable,
     CareShiftsTable,
     ExpensesTable,
+    SupervisorFlagsTable,
     SyncOutboxTable,
     CircleMemberCacheTable,
     ForumPostCacheTable,
@@ -116,7 +117,7 @@ class CareRoundsDatabase extends _$CareRoundsDatabase {
 
   /// The schema version, as a const so [open] can hand it to the file-level
   /// repair before any drift machinery exists.
-  static const int _schemaVersion = 21;
+  static const int _schemaVersion = 22;
 
   /// The memoisation behind [open], with an injectable [executor] so the
   /// singleton + no-op-close behaviour is testable without the platform
@@ -423,6 +424,14 @@ class CareRoundsDatabase extends _$CareRoundsDatabase {
             await m.createTable(teamsTable);
             await _addColumnIfMissing(
                 m, caregiversTable, caregiversTable.teamId);
+          }
+          if (from < 22) {
+            // Care Rounds (#17): the supervisor escalation channel. Additive
+            // + purely STRUCTURAL — create the flags table. Safe to run TWICE
+            // (createTable emits CREATE TABLE IF NOT EXISTS), which matters
+            // because drift doesn't run migrations in a transaction and
+            // re-runs an interrupted one from the same version. No backfill.
+            await m.createTable(supervisorFlagsTable);
           }
         },
         beforeOpen: (OpeningDetails details) async {

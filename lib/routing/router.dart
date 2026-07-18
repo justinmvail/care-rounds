@@ -47,6 +47,7 @@ import '../screens/team/calendar_screen.dart';
 import '../screens/team/care_circle_screen.dart';
 import '../screens/team/care_team_hub_screen.dart';
 import '../screens/team/clients_roster_screen.dart';
+import '../screens/team/flags_screen.dart';
 import '../screens/team/circle_qr_screen.dart';
 import '../screens/team/circle_scan_screen.dart';
 import '../screens/team/username_screen.dart';
@@ -133,6 +134,7 @@ class CareRoundsRoutes {
   static const String teamCircleQr = 'team-circle-qr';
   static const String teamCircleScan = 'team-circle-scan';
   static const String teamActivity = 'team-activity';
+  static const String teamFlags = 'team-flags';
 }
 
 /// Build a fresh GoRouter wired with every BUILD_SPEC.md §5 route.
@@ -669,6 +671,14 @@ GoRouter buildRouter({
                     name: CareRoundsRoutes.teamActivity,
                     builder: (BuildContext context, GoRouterState state) =>
                         const ActivityScreen(),
+                  ),
+                  // Supervisor escalation inbox (Track-2 #17) — open flags
+                  // across clients; the flagship visit note feeds it.
+                  GoRoute(
+                    path: 'flags',
+                    name: CareRoundsRoutes.teamFlags,
+                    builder: (BuildContext context, GoRouterState state) =>
+                        const FlagsScreen(),
                   ),
                   // Care Circle roster (Phase 14.27). In the Care branch so
                   // the tab bar stays; the connect flow below (username / QR

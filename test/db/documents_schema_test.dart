@@ -124,8 +124,8 @@ void main() {
       expect(await db.select(db.identificationDocsTable).get(), isEmpty);
     });
 
-    test('schemaVersion is 21 (v21: teams table + caregivers.team_id)', () {
-      expect(db.schemaVersion, 21);
+    test('schemaVersion is 22 (v22: supervisor_flags table)', () {
+      expect(db.schemaVersion, 22);
     });
   });
 }

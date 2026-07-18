@@ -9,15 +9,16 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart' show Override;
 
-/// The five tiles in their documented order: (label, icon, route). The
+/// The six tiles in their documented order: (label, icon, route). The
 /// Track-2 focus pass dropped Expenses (family cost-sharing, off-thesis for
 /// the paid workforce); the roster tile is "Caregivers", the client tile
-/// "Clients".
+/// "Clients"; "Flags" is the supervisor escalation inbox (#17).
 const List<(String, IconData, String)> _expected = <(String, IconData, String)>[
   ('Clients', Icons.groups_2_outlined, '/team/clients'),
   ('Caregivers', Icons.diversity_3_outlined, '/team/circle'),
   ('Shifts', Icons.access_time_outlined, '/team/shifts'),
   ('Tasks', Icons.task_alt_outlined, '/team/tasks'),
+  ('Flags', Icons.outlined_flag, '/team/flags'),
   ('Activity', Icons.timeline_outlined, '/team/activity'),
 ];
 
@@ -57,7 +58,7 @@ InMemoryStorageProvider _seededStorage({required bool teamEnabled}) {
   return storage;
 }
 
-/// Pumps the hub at a tall phone surface so all five tiles render inside
+/// Pumps the hub at a tall phone surface so all six tiles render inside
 /// the viewport (the grid scrolls, but a tall surface keeps every tile
 /// hittable). We deliberately skip `careroundsLightTheme` — its
 /// google_fonts TextStyles fire fire-and-forget Futures that surface as
@@ -87,7 +88,7 @@ Future<GoRouter> _pumpHub(
 
 void main() {
   group('CareTeamHubScreen — coordination enabled', () {
-    testWidgets('renders all five tiles in the documented order',
+    testWidgets('renders all six tiles in the documented order',
         (WidgetTester tester) async {
       await _pumpHub(tester);
 

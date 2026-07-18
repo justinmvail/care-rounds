@@ -74,6 +74,15 @@ class CareTeamHubScreen extends ConsumerWidget {
           route: '/team/tasks',
           chipColor: context.hc.primary,
         ),
+        // Supervisor escalation inbox (Track-2 #17) — where flagged visits
+        // and worker escalations land.
+        _TeamTileSpec(
+          icon: Icons.outlined_flag,
+          label: 'Flags',
+          subLabel: 'escalations for a supervisor',
+          route: '/team/flags',
+          chipColor: context.hc.accentDeep,
+        ),
         _TeamTileSpec(
           icon: Icons.timeline_outlined,
           label: 'Activity',

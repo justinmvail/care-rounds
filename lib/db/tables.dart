@@ -648,6 +648,28 @@ class CareShiftsTable extends Table {
 /// from the circle rather than cascade-deleting the spending history, so
 /// the `paidByCaregiverId` inside the payload stays a logical link the
 /// screen resolves softly at read time.
+/// One supervisor escalation (Track-2 #17). Same blob-with-lifted-keys
+/// pattern as the care-shift / expense tables: the full [SupervisorFlag]
+/// lives in [payload] as JSON so a new model field needs no schema bump.
+/// [createdAtMs] is lifted so the inbox orders newest-first without decoding
+/// every blob; [resolvedAtMs] is lifted (nullable) so the open-vs-resolved
+/// filter is a column read, not a per-row parse. No DB foreign key onto the
+/// patients/caregivers tables — a flag should outlive either being removed,
+/// so those stay logical links resolved softly at read time.
+class SupervisorFlagsTable extends Table {
+  @override
+  String get tableName => 'supervisor_flags';
+
+  TextColumn get id => text()();
+  TextColumn get patientId => text()();
+  IntColumn get createdAtMs => integer()();
+  IntColumn get resolvedAtMs => integer().nullable()();
+  TextColumn get payload => text()();
+
+  @override
+  Set<Column<Object>> get primaryKey => <Column<Object>>{id};
+}
+
 class ExpensesTable extends Table {
   @override
   String get tableName => 'expenses';
