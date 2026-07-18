@@ -43,7 +43,7 @@ void main() {
       expect(find.text('Good evening, Sarah'), findsOneWidget);
     });
 
-    testWidgets('findHubTile resolves both Care and Care Circle tiles',
+    testWidgets('findHubTile resolves both Care and Team tiles',
         (WidgetTester tester) async {
       await pumpCareRoundsApp(tester);
 
@@ -52,10 +52,10 @@ void main() {
       await tester.pumpAndSettle();
       expect(findHubTile('Medications'), findsOneWidget);
 
-      // Care Circle hub — now reached via the Care hub's gated Care Circle
+      // Team hub — now reached via the Care hub's gated Team
       // tile rather than a top-level Team tab.
       await openCareCircle(tester);
-      expect(findHubTile('People'), findsOneWidget);
+      expect(findHubTile('Caregivers'), findsOneWidget);
     });
 
     testWidgets('returns a usable container the test can read providers from',

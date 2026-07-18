@@ -35,11 +35,14 @@ class MyRoundsScreen extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             const PathHeader(
+              // Rounds is a top-level tab now — a single crumb renders the
+              // title row only (no breadcrumb trail, no Back), same as the
+              // other tab roots.
               breadcrumbs: <PathHeaderCrumb>[
-                PathHeaderCrumb(label: 'Care', route: '/medical'),
-                PathHeaderCrumb(label: 'Care Circle', route: '/team'),
+                PathHeaderCrumb(label: 'Rounds'),
               ],
               title: 'My Rounds',
+              leadingIcon: Icons.route_outlined,
             ),
             Expanded(
               child: self.when(

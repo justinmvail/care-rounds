@@ -43,7 +43,7 @@ class ClientsRosterScreen extends ConsumerWidget {
             const PathHeader(
               breadcrumbs: <PathHeaderCrumb>[
                 PathHeaderCrumb(label: 'Care', route: '/medical'),
-                PathHeaderCrumb(label: 'Care Circle', route: '/team'),
+                PathHeaderCrumb(label: 'Team', route: '/team'),
               ],
               title: 'Clients',
             ),

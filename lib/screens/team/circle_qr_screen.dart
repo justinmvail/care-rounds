@@ -145,8 +145,8 @@ class _CircleQrScreenState extends ConsumerState<CircleQrScreen> {
             const PathHeader(
               breadcrumbs: <PathHeaderCrumb>[
                 PathHeaderCrumb(label: 'Home', route: '/'),
-                PathHeaderCrumb(label: 'Care Circle', route: '/team'),
-                PathHeaderCrumb(label: 'Care Circle', route: '/team/circle'),
+                PathHeaderCrumb(label: 'Team', route: '/team'),
+                PathHeaderCrumb(label: 'Team', route: '/team/circle'),
                 PathHeaderCrumb(label: 'My QR'),
               ],
               title: 'Show my QR',

@@ -103,7 +103,7 @@ class ShiftsScreen extends ConsumerWidget {
               child: PathHeader(
                 breadcrumbs: <PathHeaderCrumb>[
                   PathHeaderCrumb(label: 'Home', route: '/'),
-                  PathHeaderCrumb(label: 'Care Circle', route: '/team'),
+                  PathHeaderCrumb(label: 'Team', route: '/team'),
                   PathHeaderCrumb(label: 'Shifts'),
                 ],
                 title: 'Shifts',

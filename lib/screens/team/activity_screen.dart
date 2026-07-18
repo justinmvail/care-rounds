@@ -524,7 +524,7 @@ class _ActivityScreenState extends ConsumerState<ActivityScreen> {
                   const PathHeader(
                     breadcrumbs: <PathHeaderCrumb>[
                       PathHeaderCrumb(label: 'Home', route: '/'),
-                      PathHeaderCrumb(label: 'Care Circle', route: '/team'),
+                      PathHeaderCrumb(label: 'Team', route: '/team'),
                       PathHeaderCrumb(label: 'Activity'),
                     ],
                     title: 'Activity',

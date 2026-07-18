@@ -165,8 +165,8 @@ class _CircleScanScreenState extends ConsumerState<CircleScanScreen> {
             const PathHeader(
               breadcrumbs: <PathHeaderCrumb>[
                 PathHeaderCrumb(label: 'Home', route: '/'),
-                PathHeaderCrumb(label: 'Care Circle', route: '/team'),
-                PathHeaderCrumb(label: 'Care Circle', route: '/team/circle'),
+                PathHeaderCrumb(label: 'Team', route: '/team'),
+                PathHeaderCrumb(label: 'Team', route: '/team/circle'),
                 PathHeaderCrumb(label: 'Scan'),
               ],
               title: 'Scan to add',

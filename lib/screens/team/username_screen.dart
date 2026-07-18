@@ -228,8 +228,8 @@ class _UsernameScreenState extends ConsumerState<UsernameScreen> {
             const PathHeader(
               breadcrumbs: <PathHeaderCrumb>[
                 PathHeaderCrumb(label: 'Home', route: '/'),
-                PathHeaderCrumb(label: 'Care Circle', route: '/team'),
-                PathHeaderCrumb(label: 'Care Circle', route: '/team/circle'),
+                PathHeaderCrumb(label: 'Team', route: '/team'),
+                PathHeaderCrumb(label: 'Team', route: '/team/circle'),
                 PathHeaderCrumb(label: 'Profile'),
               ],
               title: 'Your profile',

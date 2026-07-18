@@ -9,16 +9,15 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart' show Override;
 
-/// The seven tiles in their documented order (BUILD_SPEC.md §5.13,
+/// The six tiles in their documented order (BUILD_SPEC.md §5.13,
 /// TASKS.md Phase 14.26): (label, icon, route). The 2026-06-06 IA refactor
 /// dropped the Calendar tile (the one schedule now lives under Care) and
 /// renamed the roster tile from "Care Circle" to "People".
 const List<(String, IconData, String)> _expected = <(String, IconData, String)>[
-  ('Tasks', Icons.task_alt_outlined, '/team/tasks'),
-  ('Shifts', Icons.access_time_outlined, '/team/shifts'),
-  ('My Rounds', Icons.route_outlined, '/team/my-rounds'),
   ('Clients', Icons.groups_2_outlined, '/team/clients'),
-  ('People', Icons.diversity_3_outlined, '/team/circle'),
+  ('Caregivers', Icons.diversity_3_outlined, '/team/circle'),
+  ('Shifts', Icons.access_time_outlined, '/team/shifts'),
+  ('Tasks', Icons.task_alt_outlined, '/team/tasks'),
   ('Activity', Icons.timeline_outlined, '/team/activity'),
   ('Expenses', Icons.account_balance_wallet_outlined, '/team/expenses'),
 ];
@@ -59,7 +58,7 @@ InMemoryStorageProvider _seededStorage({required bool teamEnabled}) {
   return storage;
 }
 
-/// Pumps the hub at a tall phone surface so all seven tiles render inside
+/// Pumps the hub at a tall phone surface so all six tiles render inside
 /// the viewport (the grid scrolls, but a tall surface keeps every tile
 /// hittable). We deliberately skip `careroundsLightTheme` — its
 /// google_fonts TextStyles fire fire-and-forget Futures that surface as
@@ -89,7 +88,7 @@ Future<GoRouter> _pumpHub(
 
 void main() {
   group('CareTeamHubScreen — coordination enabled', () {
-    testWidgets('renders all seven tiles in the documented order',
+    testWidgets('renders all six tiles in the documented order',
         (WidgetTester tester) async {
       await _pumpHub(tester);
 
@@ -106,20 +105,20 @@ void main() {
       );
     });
 
-    testWidgets('is a pushed page — Home › Care › Care Circle breadcrumb trail',
+    testWidgets('is a pushed page — Home › Care › Team breadcrumb trail',
         (WidgetTester tester) async {
       await _pumpHub(tester);
 
       // Every trail starts from Home now, so this reads
-      // "Home › Care › Care Circle" with the parent 'Care' crumb as the
+      // "Home › Care › Team" with the parent 'Care' crumb as the
       // back affordance.
       expect(find.byType(PathHeader), findsOneWidget);
       expect(find.text('Home'), findsOneWidget);
-      // "Care Circle" appears twice — as the terminal crumb and as the
+      // "Team" appears twice — as the terminal crumb and as the
       // page title.
-      expect(find.text('Care Circle'), findsNWidgets(2));
+      expect(find.text('Team'), findsNWidgets(2));
       expect(find.widgetWithText(InkWell, 'Care'), findsOneWidget);
-      // Three crumbs (Home › Care › Care Circle) → two separators.
+      // Three crumbs (Home › Care › Team) → two separators.
       expect(find.text('›'), findsNWidgets(2));
     });
 

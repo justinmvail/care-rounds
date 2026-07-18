@@ -115,8 +115,8 @@ class CareCircleScreen extends ConsumerWidget {
             const PathHeader(
               breadcrumbs: <PathHeaderCrumb>[
                 PathHeaderCrumb(label: 'Home', route: '/'),
-                PathHeaderCrumb(label: 'Care Circle', route: '/team'),
-                PathHeaderCrumb(label: 'Care Circle'),
+                PathHeaderCrumb(label: 'Team', route: '/team'),
+                PathHeaderCrumb(label: 'Team'),
               ],
               title: 'Care Circle',
               backLabel: 'Back to Care Circle',

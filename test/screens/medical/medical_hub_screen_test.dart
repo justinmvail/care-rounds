@@ -30,7 +30,7 @@ const List<(String, IconData, String)> _expected = <(String, IconData, String)>[
   ('Health Log', Icons.monitor_heart_outlined, '/medical/health-log'),
   ('Routines', Icons.assignment_outlined, '/medical/routines'),
   ('Journal', Icons.book_outlined, '/journal'),
-  ('Care Circle', Icons.diversity_3_outlined, '/team'),
+  ('Team', Icons.groups_outlined, '/team'),
 ];
 
 /// The route path a tile resolves to, with any `?query` stripped. A
@@ -142,8 +142,8 @@ void main() {
       final List<HubTile> tiles =
           tester.widgetList<HubTile>(find.byType(HubTile)).toList();
       final HubTile careCircle =
-          tiles.firstWhere((HubTile t) => t.label == 'Care Circle');
-      expect(careCircle.subLabel, 'invite family to share the load');
+          tiles.firstWhere((HubTile t) => t.label == 'Team');
+      expect(careCircle.subLabel, 'clients, caregivers & shifts');
       expect(
         find.byKey(MedicalHubScreen.tileKey('/team')),
         findsOneWidget,

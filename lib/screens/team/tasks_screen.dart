@@ -111,7 +111,7 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
                   const PathHeader(
                     breadcrumbs: <PathHeaderCrumb>[
                       PathHeaderCrumb(label: 'Home', route: '/'),
-                      PathHeaderCrumb(label: 'Care Circle', route: '/team'),
+                      PathHeaderCrumb(label: 'Team', route: '/team'),
                       PathHeaderCrumb(label: 'Tasks'),
                     ],
                     title: 'Tasks',

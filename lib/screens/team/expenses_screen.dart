@@ -111,7 +111,7 @@ class ExpensesScreen extends ConsumerWidget {
                       const PathHeader(
                         breadcrumbs: <PathHeaderCrumb>[
                           PathHeaderCrumb(label: 'Home', route: '/'),
-                          PathHeaderCrumb(label: 'Care Circle', route: '/team'),
+                          PathHeaderCrumb(label: 'Team', route: '/team'),
                           PathHeaderCrumb(label: 'Expenses'),
                         ],
                         title: 'Expenses',

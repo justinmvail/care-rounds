@@ -44,12 +44,21 @@ class CareTeamHubScreen extends ConsumerWidget {
   /// docs/MENU_LAYOUT_SPEC.md.
   static List<_TeamTileSpec> _tilesFor(BuildContext context) =>
       <_TeamTileSpec>[
+        // Amber is reserved for the ONE primary action per hub — here, the
+        // Clients roster (the team's core entities). Everything else is teal.
         _TeamTileSpec(
-          icon: Icons.task_alt_outlined,
-          label: 'Tasks',
-          subLabel: 'to-dos & assignments',
-          route: '/team/tasks',
-          chipColor: context.hc.accentDeep,
+          icon: Icons.groups_2_outlined,
+          label: 'Clients',
+          subLabel: 'who the team cares for',
+          route: '/team/clients',
+          chipColor: context.hc.cta,
+        ),
+        _TeamTileSpec(
+          icon: Icons.diversity_3_outlined,
+          label: 'Caregivers',
+          subLabel: 'the team',
+          route: '/team/circle',
+          chipColor: context.hc.success,
         ),
         _TeamTileSpec(
           icon: Icons.access_time_outlined,
@@ -59,25 +68,11 @@ class CareTeamHubScreen extends ConsumerWidget {
           chipColor: context.hc.link,
         ),
         _TeamTileSpec(
-          icon: Icons.route_outlined,
-          label: 'My Rounds',
-          subLabel: 'my visits, all clients',
-          route: '/team/my-rounds',
-          chipColor: context.hc.cta,
-        ),
-        _TeamTileSpec(
-          icon: Icons.groups_2_outlined,
-          label: 'Clients',
-          subLabel: 'who the team cares for',
-          route: '/team/clients',
-          chipColor: context.hc.accentDeep,
-        ),
-        _TeamTileSpec(
-          icon: Icons.diversity_3_outlined,
-          label: 'People',
-          subLabel: 'who is helping',
-          route: '/team/circle',
-          chipColor: context.hc.success,
+          icon: Icons.task_alt_outlined,
+          label: 'Tasks',
+          subLabel: 'to-dos & assignments',
+          route: '/team/tasks',
+          chipColor: context.hc.primary,
         ),
         _TeamTileSpec(
           icon: Icons.timeline_outlined,
@@ -91,7 +86,7 @@ class CareTeamHubScreen extends ConsumerWidget {
           label: 'Expenses',
           subLabel: 'costs & receipts',
           route: '/team/expenses',
-          chipColor: context.hc.primary,
+          chipColor: context.hc.primarySoft,
         ),
       ];
 
@@ -112,9 +107,9 @@ class CareTeamHubScreen extends ConsumerWidget {
               child: PathHeader(
                 breadcrumbs: <PathHeaderCrumb>[
                   PathHeaderCrumb(label: 'Care', route: '/medical'),
-                  PathHeaderCrumb(label: 'Care Circle'),
+                  PathHeaderCrumb(label: 'Team'),
                 ],
-                title: 'Care Circle',
+                title: 'Team',
                 backLabel: 'Back to Care',
                 leadingIcon: Icons.diversity_3_outlined,
               ),

@@ -63,7 +63,7 @@ final DateTime kHarnessClock = DateTime(2026, 6, 1, 11, 0);
 /// (TASKS.md Phase 15.1 — used by 15.4 / 15.9 / 15.19 / 15.20 / 15.21).
 ///
 /// Wired in as the [linkLauncherProvider] override so the decoder
-/// result's "Talk to Natali" CTA, the Care Circle phone/email actions,
+/// result's "Talk to Natali" CTA, the Team phone/email actions,
 /// and the Settings destructive-link surfaces all record their URIs here
 /// for assertion. [launch] always reports success so callers that branch
 /// on the bool stay on the happy path.
@@ -379,15 +379,15 @@ final Finder homeGreeting = find.byKey(HomeScreen.greetingKey);
 /// Scoped to the [NavigationBar] so it never matches a hub tile or screen
 /// body that happens to repeat the word. After the 2026-06-06 IA refactor
 /// the bar is four tabs — `Home · Care · Chat · Community` — with the old
-/// Team tab folded into Care as a gated Care Circle hub.
+/// Team tab folded into Care as a gated Team hub.
 Finder tabFor(String label) => find.descendant(
       of: find.byType(TabScaffoldBar),
       matching: find.text(label),
     );
 
-/// Home → Care tab → Care Circle hub tile → [CareTeamHubScreen].
+/// Home → Care tab → Team hub tile → [CareTeamHubScreen].
 ///
-/// The Care Circle tile is always shown on the Care hub now (UIUX_REVIEW) —
+/// The Team tile is always shown on the Care hub now (UIUX_REVIEW) —
 /// the door to inviting family stays discoverable regardless of the
 /// `teamCoordinationEnabled` setting. When coordination is off the hub greets
 /// a first-time caregiver with the "Caring with others?" onboarding CTA; the
@@ -396,11 +396,11 @@ Finder tabFor(String label) => find.descendant(
 Future<void> openCareCircle(WidgetTester tester) async {
   await tester.tap(tabFor('Care'));
   await tester.pumpAndSettle();
-  // The Care Circle tile is last in the grid; scroll it into view before
+  // The Team tile is last in the grid; scroll it into view before
   // tapping (the grid grew as tiles were added).
-  await tester.ensureVisible(findHubTile('Care Circle'));
+  await tester.ensureVisible(findHubTile('Team'));
   await tester.pumpAndSettle();
-  await tester.tap(findHubTile('Care Circle'));
+  await tester.tap(findHubTile('Team'));
   await tester.pumpAndSettle();
   expect(find.byType(CareTeamHubScreen), findsOneWidget);
 }
@@ -414,5 +414,5 @@ Finder pathHeaderBackTo(String label) =>
     find.widgetWithText(InkWell, label);
 
 /// The hub tile whose primary label is [label] (e.g. `Medications`,
-/// `People`) on the Care or Care Circle tile hub.
+/// `People`) on the Care or Team tile hub.
 Finder findHubTile(String label) => find.widgetWithText(HubTile, label);
