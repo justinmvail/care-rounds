@@ -18,6 +18,7 @@ import '../screens/journal/journal_screen.dart';
 import '../screens/journal/journal_wizard_screen.dart';
 import '../screens/medical/care_plan_routine_form.dart';
 import '../screens/medical/care_plan_routines_screen.dart';
+import '../screens/medical/care_plan_suggest_screen.dart';
 import '../screens/medical/emergency_card_edit_screen.dart';
 import '../screens/medical/care_summary_screen.dart';
 import '../screens/medical/emergency_card_screen.dart';
@@ -115,6 +116,7 @@ class CareRoundsRoutes {
   static const String medicalHealthLogNew = 'medical-health-log-new';
   static const String medicalHealthLogEdit = 'medical-health-log-edit';
   static const String medicalRoutines = 'medical-routines';
+  static const String medicalRoutinesSuggest = 'medical-routines-suggest';
   static const String medicalRoutineNew = 'medical-routine-new';
   static const String medicalRoutineEdit = 'medical-routine-edit';
   static const String medicalCardsEmergency = 'medical-cards-emergency';
@@ -383,6 +385,14 @@ GoRouter buildRouter({
                         name: CareRoundsRoutes.medicalRoutineNew,
                         builder: (BuildContext context, GoRouterState state) =>
                             const CarePlanRoutineForm(),
+                      ),
+                      // AI-guided care-plan checklist (Track-2 #19). Before
+                      // `:id` so the literal `suggest` segment isn't swallowed.
+                      GoRoute(
+                        path: 'suggest',
+                        name: CareRoundsRoutes.medicalRoutinesSuggest,
+                        builder: (BuildContext context, GoRouterState state) =>
+                            const CarePlanSuggestScreen(),
                       ),
                       GoRoute(
                         path: ':id',

@@ -24,6 +24,7 @@ class CarePlanRoutinesScreen extends ConsumerWidget {
   static const Key listKey = Key('care-plan-routines-list');
   static const Key emptyStateKey = Key('care-plan-routines-empty');
   static const Key addFabKey = Key('care-plan-routines-add-fab');
+  static const Key suggestButtonKey = Key('care-plan-routines-suggest');
   static Key rowKey(String id) => Key('care-plan-routine-row-$id');
 
   @override
@@ -63,6 +64,22 @@ class CarePlanRoutinesScreen extends ConsumerWidget {
                   leadingIcon: Icons.assignment_outlined,
                 ),
               ),
+            // AI-guided care-plan checklist entry (Track-2 #19) — propose a
+            // set of visit tasks grounded in the client's profile.
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+              child: OutlinedButton.icon(
+                key: suggestButtonKey,
+                onPressed: () => context.push('/medical/routines/suggest'),
+                icon: Icon(Icons.auto_awesome, color: context.hc.primary),
+                label: const Text('Suggest care tasks'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: context.hc.primary,
+                  side: BorderSide(color: context.hc.primarySoft),
+                  minimumSize: const Size.fromHeight(48),
+                ),
+              ),
+            ),
             Expanded(
               child: async.when(
                 loading: () => const SizedBox.shrink(),
