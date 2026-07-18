@@ -285,7 +285,7 @@ class _EmptyState extends StatelessWidget {
             'When you hit a hard moment — recovery after surgery, a med '
             "timing that's confusing, a walker they won't use, a hard "
             'conversation, or a day that just wore you down — start a chat '
-            'and a coach who knows your loved one will meet you there.',
+            'and a coach who knows your client will meet you there.',
             style: textTheme.bodyLarge?.copyWith(
               color: context.hc.text,
             ),

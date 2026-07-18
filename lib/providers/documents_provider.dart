@@ -10,7 +10,7 @@ import '../services/sync_sink.dart';
 
 part 'documents_provider.g.dart';
 
-/// Persistence for the loved one's documents — emergency card, power of
+/// Persistence for the client's documents — emergency card, power of
 /// attorney, and identification (TASKS.md Phase 14.21).
 ///
 /// Backs Medical → Cards & Documents (BUILD_SPEC.md §5.17). Unlike the
@@ -463,7 +463,7 @@ DocumentsRepository documentsRepositoryBackend(Ref ref) {
 final DocumentsRepositoryBackendProvider documentsRepositoryProvider =
     documentsRepositoryBackendProvider;
 
-/// The loved one's emergency cards (TASKS.md Phase 14.21).
+/// The client's emergency cards (TASKS.md Phase 14.21).
 ///
 /// `build()` loads every card newest-first; [add] / [updateCard] /
 /// [delete] mutate through [documentsRepositoryProvider] and re-read the
@@ -512,7 +512,7 @@ class EmergencyCards extends _$EmergencyCards {
   }
 }
 
-/// The loved one's power-of-attorney documents (TASKS.md Phase 14.21).
+/// The client's power-of-attorney documents (TASKS.md Phase 14.21).
 ///
 /// Same shape as [EmergencyCards] — newest-first load with CRUD mutators
 /// and a synchronous [byPatient] selector.
@@ -553,7 +553,7 @@ class PowerOfAttorneyDocs extends _$PowerOfAttorneyDocs {
   }
 }
 
-/// The loved one's identification documents (TASKS.md Phase 14.21).
+/// The client's identification documents (TASKS.md Phase 14.21).
 ///
 /// Same shape as [EmergencyCards] — newest-first load with CRUD mutators
 /// and a synchronous [byPatient] selector.

@@ -13,7 +13,7 @@ import '../../widgets/path_header.dart';
 /// BUILD_SPEC.md §5.13).
 ///
 /// A [PathHeader] (`Home › Medical › Health Log`, back to Medical) sits
-/// above the loved one's vitals / symptom / note history, grouped by
+/// above the client's vitals / symptom / note history, grouped by
 /// local calendar day with the newest day first. Each row carries a
 /// kind glyph, a one-line summary ([_summaryFor]), and a relative
 /// timestamp.
@@ -124,7 +124,7 @@ class _EmptyState extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             'Jot vitals, a symptom you noticed, or a quick note about your '
-            "loved one's day. It's an easy way to bring the real picture to "
+            "client's day. It's an easy way to bring the real picture to "
             'the next doctor visit.',
             style: textTheme.bodyLarge?.copyWith(
               color: context.hc.text,

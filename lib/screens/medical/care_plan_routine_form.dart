@@ -65,7 +65,7 @@ class _CarePlanRoutineFormState extends ConsumerState<CarePlanRoutineForm> {
   bool _submitting = false;
 
   /// The patientId + startsOn captured off the routine being edited, so a
-  /// save preserves the row's original loved one + start date rather than
+  /// save preserves the row's original client + start date rather than
   /// re-homing it to the active patient / re-anchoring it to "now". Null on
   /// the add path (the new routine resolves the active patient instead).
   String? _editPatientId;
@@ -150,7 +150,7 @@ class _CarePlanRoutineFormState extends ConsumerState<CarePlanRoutineForm> {
     setState(() => _submitting = true);
 
     final String id = widget.routineId ?? mintId('routine');
-    // A new routine is filed under the active loved one's id (was a
+    // A new routine is filed under the active client's id (was a
     // hard-coded 'demo-patient-mary') so it follows whichever person is
     // selected (multi-patient, Issue #6). On the edit path keep the routine's
     // own patientId + startsOn so a save never re-homes or re-anchors it.

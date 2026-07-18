@@ -106,7 +106,7 @@
   "@signInError": {
     "description": "Error banner message shown when an OAuth sign-in flow fails or is cancelled."
   },
-  "signInReassurance": "Signing in keeps your notes safe and in sync across your devices. We never post anything, and your loved one's information stays private.",
+  "signInReassurance": "Signing in keeps your notes safe and in sync across your devices. We never post anything, and your client's information stays private.",
   "@signInReassurance": {
     "description": "Plain-language privacy-reassurance line shown just above the sign-in buttons: why sign in, and that data stays private. Keeps the vendor invisible per the brand rule."
   },
@@ -159,7 +159,7 @@
   "@lovedOneSetupLastStep": {
     "description": "Light overline cue above the setup heading letting a tired caregiver know the onboarding finish line is near."
   },
-  "lovedOneSetupTitle": "Let's set up your person",
+  "lovedOneSetupTitle": "Let's set up your client",
   "@lovedOneSetupTitle": {
     "description": "Heading on the new-user loved-one setup wizard."
   },
@@ -247,7 +247,7 @@
   "@lovedOneSetupSaving": {
     "description": "Busy-state label shown on the setup wizard submit button while the save is in flight."
   },
-  "lovedOneSetupSaveSemantics": "Save your person and continue to the app.",
+  "lovedOneSetupSaveSemantics": "Save your client and continue to the app.",
   "@lovedOneSetupSaveSemantics": {
     "description": "Screen-reader (Semantics) label for the loved-one setup submit button."
   }

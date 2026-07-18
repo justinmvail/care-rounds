@@ -608,7 +608,7 @@ class ChatService {
   final ChatLLMBackend backend;
 
   /// Fetches a compact, plain-text snapshot of the caregiver's CURRENT data
-  /// (loved one, medications, dose windows, upcoming appointments, routines)
+  /// (client, medications, dose windows, upcoming appointments, routines)
   /// to append to the system prompt so the coach can READ what's already in
   /// the app — answering "what meds is she on?", "what are my windows
   /// called?". Called FRESH every turn so the snapshot reflects a write the

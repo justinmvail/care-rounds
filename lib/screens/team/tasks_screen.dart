@@ -842,7 +842,7 @@ class _CreateTaskSheetState extends ConsumerState<_CreateTaskSheet> {
 
     final String body = _body.text.trim();
     final CareTask? existing = widget.existing;
-    // A new task is filed under the active loved one's id (was the
+    // A new task is filed under the active client's id (was the
     // `careTasksPatientId` const) so it follows whichever person is
     // selected (multi-patient, Issue #6). This is the patient the task is
     // *for* — distinct from `currentCaregiverId`, the person who later

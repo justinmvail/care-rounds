@@ -8,9 +8,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart' show Override;
 
-/// Widget coverage for the "Loved ones" manager (Issue #6): it lists every
-/// loved one with the active one flagged, switching the active person
-/// updates the active-patient provider, and "Add a loved one" routes to
+/// Widget coverage for the "Clients" manager (Issue #6): it lists every
+/// client with the active one flagged, switching the active person
+/// updates the active-patient provider, and "Add a client" routes to
 /// the setup screen.
 
 Patient _patient(String id, String name) => Patient(
@@ -77,7 +77,7 @@ Future<({List<String> nav})> _pump(
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('lists every loved one with the active one flagged',
+  testWidgets('lists every client with the active one flagged',
       (WidgetTester tester) async {
     final InMemoryStorageProvider storage = InMemoryStorageProvider();
     addTearDown(storage.dispose);
@@ -99,7 +99,7 @@ void main() {
     expect(find.text('Frank Albright'), findsOneWidget);
   });
 
-  testWidgets('tapping a non-active loved one switches the active patient',
+  testWidgets('tapping a non-active client switches the active patient',
       (WidgetTester tester) async {
     final InMemoryStorageProvider storage = InMemoryStorageProvider();
     addTearDown(storage.dispose);
@@ -165,7 +165,7 @@ void main() {
         'p-frank');
   });
 
-  testWidgets('"Add a loved one" routes to the setup screen',
+  testWidgets('"Add a client" routes to the setup screen',
       (WidgetTester tester) async {
     final InMemoryStorageProvider storage = InMemoryStorageProvider();
     addTearDown(storage.dispose);
@@ -180,7 +180,7 @@ void main() {
     expect(find.text('add-stub'), findsOneWidget);
   });
 
-  testWidgets('renders an empty state with no loved ones',
+  testWidgets('renders an empty state with no clients',
       (WidgetTester tester) async {
     final InMemoryStorageProvider storage = InMemoryStorageProvider();
     addTearDown(storage.dispose);

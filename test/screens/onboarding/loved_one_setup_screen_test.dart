@@ -87,7 +87,7 @@ void main() {
 
       await _pumpSetup(tester, storage: storage);
 
-      expect(find.text("Let's set up your person"), findsOneWidget);
+      expect(find.text("Let's set up your client"), findsOneWidget);
       expect(find.byKey(LovedOneSetupScreen.nameFieldKey), findsOneWidget);
 
       // Save lives at the bottom of the long form — scroll it into the
@@ -117,7 +117,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(
-        hasSemanticsLabel(tester, RegExp('Save your person')),
+        hasSemanticsLabel(tester, RegExp('Save your client')),
         isTrue,
       );
     });
@@ -443,7 +443,7 @@ void main() {
   });
 
   // Multi-patient ADD mode (Issue #6): the same wizard reached from the
-  // "Loved ones" manager appends a loved one + makes them active, and pops
+  // "Clients" manager appends a client + makes them active, and pops
   // back instead of gating to Home.
   group('LovedOneSetupScreen — add mode', () {
     Future<({GoRouter router})> pumpAdd(
@@ -489,11 +489,11 @@ void main() {
     }
 
     testWidgets(
-      'saving appends the loved one, makes them active, and pops back',
+      'saving appends the client, makes them active, and pops back',
       (WidgetTester tester) async {
         final InMemoryStorageProvider storage = InMemoryStorageProvider();
         addTearDown(storage.dispose);
-        // An existing loved one is already on file + active.
+        // An existing client is already on file + active.
         await storage.upsertPatient(
           Patient(
             id: 'p-existing',
@@ -533,7 +533,7 @@ void main() {
         expect(_path(pumped.router), '/loved-ones');
         expect(find.text('manager-stub'), findsOneWidget);
 
-        // Both loved ones on file; the new one is now active.
+        // Both clients on file; the new one is now active.
         expect((await storage.listPatients()).map((Patient p) => p.id),
             containsAll(<String>['p-existing', 'p-new']));
         expect(await storage.getActivePatientId(), 'p-new');
@@ -543,7 +543,7 @@ void main() {
 
     testWidgets(
       'add mode shows a cancel button that backs out WITHOUT creating a '
-      'loved one (fb 2026-06-14: an accidental tap trapped a tester)',
+      'client (fb 2026-06-14: an accidental tap trapped a tester)',
       (WidgetTester tester) async {
         final InMemoryStorageProvider storage = InMemoryStorageProvider();
         addTearDown(storage.dispose);

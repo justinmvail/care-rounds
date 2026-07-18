@@ -709,7 +709,7 @@ class _CreateExpenseSheetState extends ConsumerState<_CreateExpenseSheet> {
       );
       await ref.read(expensesProvider.notifier).updateExpense(updated);
     } else {
-      // A new expense is filed under the active loved one's id (was the
+      // A new expense is filed under the active client's id (was the
       // `expensesPatientId` const) so it follows whichever person is
       // selected (multi-patient, Issue #6). With one patient on file
       // [activePatientIdProvider] resolves to that sole id, identical to the

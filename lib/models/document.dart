@@ -45,7 +45,7 @@ enum IdKind {
 
 /// One emergency contact on an [EmergencyCard] (TASKS.md Phase 14.21).
 ///
-/// A named person plus their [relation] to the loved one and a [phone]
+/// A named person plus their [relation] to the client and a [phone]
 /// number — the people ER staff should call. Stored as a JSON object in
 /// the `emergency_cards.emergencyContacts` TEXT column (a JSON list of
 /// these); see `lib/providers/documents_provider.dart` for the encoding.
@@ -61,7 +61,7 @@ abstract class EmergencyContact with _$EmergencyContact {
       _$EmergencyContactFromJson(json);
 }
 
-/// The loved one's health-insurance block on an [EmergencyCard] (TASKS.md
+/// The client's health-insurance block on an [EmergencyCard] (TASKS.md
 /// Phase 14.21).
 ///
 /// Stored as a single JSON object in the `emergency_cards.insurance` TEXT
@@ -88,7 +88,7 @@ abstract class Insurance with _$Insurance {
 /// (TASKS.md Phase 14.21).
 ///
 /// Lives under Medical → Cards & Documents (BUILD_SPEC.md §5.17). A
-/// caregiver-entered snapshot for paramedic / ER staff: the loved one's
+/// caregiver-entered snapshot for paramedic / ER staff: the client's
 /// active [conditions], [medications], and [allergies] (each a list of
 /// short strings), the people to call ([emergencyContacts]), the
 /// [insurance] block, and [donorStatus]. This is reference data for a
@@ -129,7 +129,7 @@ abstract class EmergencyCard with _$EmergencyCard {
       _$EmergencyCardFromJson(json);
 }
 
-/// A power-of-attorney document on file for the loved one (TASKS.md Phase
+/// A power-of-attorney document on file for the client (TASKS.md Phase
 /// 14.21).
 ///
 /// Lives under Medical → Cards & Documents (BUILD_SPEC.md §5.17).
@@ -138,7 +138,7 @@ abstract class EmergencyCard with _$EmergencyCard {
 /// became [effectiveDate], and an optional [scanPath] to the document
 /// image. Organisational record-keeping — not legal advice.
 ///
-/// [patientId] is the logical link to the single loved one (see
+/// [patientId] is the logical link to the single client (see
 /// [EmergencyCard] for why it's not a DB FK). [attachmentPath] mirrors
 /// the shared column on the other document kinds; [scanPath] is the
 /// POA-specific pointer to the signed document image.
@@ -173,7 +173,7 @@ abstract class PowerOfAttorneyDoc with _$PowerOfAttorneyDoc {
       _$PowerOfAttorneyDocFromJson(json);
 }
 
-/// One identification document captured for the loved one (TASKS.md Phase
+/// One identification document captured for the client (TASKS.md Phase
 /// 14.21).
 ///
 /// Lives under Medical → Cards & Documents (BUILD_SPEC.md §5.17). The
@@ -181,7 +181,7 @@ abstract class PowerOfAttorneyDoc with _$PowerOfAttorneyDoc {
 /// [expiresOn] date, and optional front/back photos. Reference data the
 /// caregiver keeps at hand — the app never validates an ID.
 ///
-/// [patientId] is the logical link to the single loved one (see
+/// [patientId] is the logical link to the single client (see
 /// [EmergencyCard]). [photoFrontPath] / [photoBackPath] point at on-disk
 /// images; [attachmentPath] is the shared optional pointer mirrored
 /// across all three document kinds.

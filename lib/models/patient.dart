@@ -44,7 +44,7 @@ abstract class AdvanceDirectiveStatus with _$AdvanceDirectiveStatus {
       _$AdvanceDirectiveStatusFromJson(json);
 }
 
-/// The single "loved one" the caregiver is using the app for
+/// The single "client" the caregiver is using the app for
 /// (BUILD_SPEC.md §5.9 + §9.1). One row per install — single-patient
 /// model in v1.
 @freezed

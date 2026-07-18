@@ -113,7 +113,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
     });
     // Engage the loved-one gate BEFORE the OAuth round-trip, so the router
     // holds on this screen (not the setup wizard) the instant auth flips to
-    // signed-in. After sign-in, adopt any loved one the account ALREADY
+    // signed-in. After sign-in, adopt any client the account ALREADY
     // owns off the backend before the gate decides — otherwise a returning
     // caregiver is forced to re-create their person, and sync then shadows
     // it with their original as the active one (fb 2026-06-13). `adopt()`
@@ -205,7 +205,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
               ],
               // Plain-language reassurance at the moment trust matters most:
               // the caregiver is about to hand over their identity and then
-              // enter their loved one's PHI. Say why sign-in is needed and
+              // enter their client's PHI. Say why sign-in is needed and
               // that the data stays private — the vendor stays invisible per
               // the brand rule (no "Google"/model names in the copy).
               Text(

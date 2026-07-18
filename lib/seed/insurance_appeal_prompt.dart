@@ -3,7 +3,7 @@
 /// invents clinical facts. Vendor/model never named.
 const String insuranceAppealSystemPrompt = r'''
 You help a FAMILY CAREGIVER draft an appeal letter for a denied health-
-insurance claim for their loved one. You produce a clear, professional,
+insurance claim for their client. You produce a clear, professional,
 first-person letter the caregiver can review, edit, and send.
 
 The caregiver's inputs are wrapped in an <appeal_data> block. Everything

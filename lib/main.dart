@@ -131,7 +131,7 @@ Future<void> main() async {
   // tester's edits alone on later launches.
   await maybeSeedDemoDataset(container);
 
-  // Preload "is a loved one on file" AFTER any demo reset/seed and BEFORE
+  // Preload "is a client on file" AFTER any demo reset/seed and BEFORE
   // the first frame, so a set-up caregiver's frame-zero router decision is
   // Home — not a /setup flash while the async SQLite read resolves. Same
   // preload pattern as the onboarding flag + alpha user above.
@@ -145,7 +145,7 @@ Future<void> main() async {
 
   // One-time multi-patient re-stamp (Issue #6): move any care-circle row
   // still stamped with the legacy hardcoded `demo-patient-mary` id onto the
-  // ACTIVE loved one, so a real alpha user with more than one person on file
+  // ACTIVE client, so a real alpha user with more than one person on file
   // (e.g. left over from the earlier duplicate-patient bug) stops seeing
   // another person's tasks / shifts / expenses / notes. Runs AFTER the
   // patient is resolved above and is guarded to run once per install.
@@ -263,7 +263,7 @@ Future<void> _bootstrapSync(ProviderContainer container) async {
     // (seeded (SEED=1) data is written before the circle exists, so it
     // never auto-syncs). One-shot per token.
     await maybeResyncAll(container, sync);
-    // A returning caregiver on a fresh install has their loved one on the
+    // A returning caregiver on a fresh install has their client on the
     // backend, not yet on this device — the adopt + pull above just brought
     // them down. Refresh the setup gate so the redirect opens to Home
     // instead of stranding them on the (now-stale) /setup wizard. Cheap +
@@ -352,7 +352,7 @@ Future<void> maybeResetForDemo(
   }
   // Reset-on-launch is off (the caregiver is iterating on real data),
   // but the demo must still boot as Mary's caregiver — backfill her
-  // profile if no loved one is on file yet so patient-dependent screens
+  // profile if no client is on file yet so patient-dependent screens
   // (Emergency Card, the Medical header) aren't empty. Idempotent and
   // non-destructive: a no-op once Mary exists, and it never touches
   // journal or medication data.
@@ -387,13 +387,13 @@ Future<bool> maybeSeedDemoDataset(
   return true;
 }
 
-/// One-time re-stamp of legacy care-circle rows onto the active loved one
+/// One-time re-stamp of legacy care-circle rows onto the active client
 /// (multi-patient, Issue #6).
 ///
 /// Background: before the display-scoping fix, the care-circle features
 /// (Tasks / Shifts / Expenses) and the calendar notes stamped every new row
 /// with a hardcoded `demo-patient-mary` const, and the boards read EVERY
-/// row unfiltered. An alpha user who ended up with more than one loved one
+/// row unfiltered. An alpha user who ended up with more than one client
 /// on file (e.g. from the earlier duplicate-patient bug) therefore saw
 /// another person's data on the now patient-scoped boards — the legacy rows
 /// are stranded under `demo-patient-mary` while the active patient is some
@@ -404,11 +404,11 @@ Future<bool> maybeSeedDemoDataset(
 /// patient id, so the previously-hidden data reappears under the right
 /// person. Guarded by [careCircleRestampPrefsKey] so it runs at most once
 /// per install. The single-patient product model makes this safe — there's
-/// exactly one loved one the rows can belong to.
+/// exactly one client the rows can belong to.
 ///
 /// Edge cases handled:
 ///  * **No patient on file yet** (fresh install) → no-op, and the guard is
-///    NOT set, so the re-stamp gets a real chance once a loved one exists.
+///    NOT set, so the re-stamp gets a real chance once a client exists.
 ///  * **Active patient IS the legacy id** (the common single-install / demo
 ///    case) → every `restampPatient` call is a `from == to` no-op; the guard
 ///    is set so we don't re-scan on every launch.
@@ -429,7 +429,7 @@ Future<bool> maybeRestampCareCirclePatient(
         await (prefs ?? SharedPreferences.getInstance)();
     if (store.getBool(careCircleRestampPrefsKey) ?? false) return false;
 
-    // Resolve the active loved one. With no patient on file yet, hold off —
+    // Resolve the active client. With no patient on file yet, hold off —
     // don't burn the one-shot guard before there's a target to re-file onto.
     final String activeId =
         await container.read(activePatientIdProvider.future);
@@ -474,7 +474,7 @@ Future<bool> maybeRestampCareCirclePatient(
 ///
 /// Privacy posture: a plain local file, capped at [maxBytes] so it can't
 /// grow unbounded, and [clear]-able after a report is sent. It carries only
-/// error strings + Dart stack traces — never the loved one's care data.
+/// error strings + Dart stack traces — never the client's care data.
 class CrashLog {
   CrashLog._();
 

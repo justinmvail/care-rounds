@@ -68,10 +68,10 @@ class LovedOneSetupScreen extends ConsumerStatefulWidget {
   const LovedOneSetupScreen({super.key, this.isAdd = false});
 
   /// `false` (default) — the first-run onboarding gate: saving the very
-  /// first loved one flips [PatientConfigured] and lets the router
+  /// first client flips [PatientConfigured] and lets the router
   /// through to Home.
   ///
-  /// `true` — reused from the "Loved ones" manager to ADD another loved
+  /// `true` — reused from the "Clients" manager to ADD another loved
   /// one (multi-patient, Issue #6): saving appends a patient, makes them
   /// the active one, and pops back to the manager instead of gating /
   /// resetting the navigation stack. Same form, two entry points.
@@ -88,7 +88,7 @@ class LovedOneSetupScreen extends ConsumerStatefulWidget {
   static const Key saveButtonKey = Key('loved-one-setup-save');
 
   /// Cancel/close affordance — shown ONLY in ADD mode (`isAdd: true`) so a
-  /// caregiver who opened "add another loved one" from the Loved ones
+  /// caregiver who opened "add another client" from the Clients
   /// manager (or hit it by accident) can back out. The first-run onboarding
   /// gate (`isAdd: false`) deliberately has NO escape — the caregiver must
   /// create their first person before reaching the app — so this is absent
@@ -210,15 +210,15 @@ class _LovedOneSetupScreenState extends ConsumerState<LovedOneSetupScreen> {
 
     await ref.read(storageProvider).upsertPatient(patient);
 
-    // Server-authoritative sync: when this is the FIRST loved one, make
+    // Server-authoritative sync: when this is the FIRST client, make
     // them circle-owned by creating a backend circle that owns them.
     // Strictly best-effort + fail-safe and FIRE-AND-FORGET — onboarding
     // navigation must NEVER wait on the network. If the backend is offline
     // or unconfigured this no-ops inside ensureCircleForActivePatient and
     // the app proceeds exactly as it does today (local patient, no circle);
     // bootstrap retries the circle creation on a later launch. We don't do
-    // this in ADD mode — a second loved one on the same device isn't a new
-    // circle in v1 (the single-circle model owns the active loved one).
+    // this in ADD mode — a second client on the same device isn't a new
+    // circle in v1 (the single-circle model owns the active client).
     if (!widget.isAdd) {
       try {
         // Intentionally NOT awaited — the patient is already saved
@@ -235,7 +235,7 @@ class _LovedOneSetupScreenState extends ConsumerState<LovedOneSetupScreen> {
     }
 
     if (widget.isAdd) {
-      // ADD mode (from the "Loved ones" manager): make the new loved one
+      // ADD mode (from the "Clients" manager): make the new client
       // active so the whole app re-centres on them, then refresh the
       // active-patient providers + the setup gate (which stays true since
       // a patient is still on file) and pop back to the manager. We do
@@ -288,7 +288,7 @@ class _LovedOneSetupScreenState extends ConsumerState<LovedOneSetupScreen> {
     }
   }
 
-  /// Back out of ADD mode without creating a loved one — pop to the Loved
+  /// Back out of ADD mode without creating a client — pop to the Loved
   /// ones manager (or navigate there if this was somehow a root entry).
   /// Only reachable from the ADD-mode close button.
   void _cancelAdd() {
@@ -305,8 +305,8 @@ class _LovedOneSetupScreenState extends ConsumerState<LovedOneSetupScreen> {
     final AppLocalizations l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: context.hc.background,
-      // ADD mode is a pushed modal task off the Loved ones manager — it MUST
-      // have a way out. (fb 2026-06-14: a tester hit "add a loved one" by
+      // ADD mode is a pushed modal task off the Clients manager — it MUST
+      // have a way out. (fb 2026-06-14: a tester hit "add a client" by
       // accident and got trapped — no back button, no top bar.) The first-run
       // gate (isAdd false) intentionally keeps NO AppBar / no escape: the
       // caregiver has to create their first person before reaching the app.

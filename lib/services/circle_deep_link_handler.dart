@@ -120,7 +120,7 @@ class CircleDeepLinkHandler {
     final ForumApiClient client = _ref.read(forumApiClientProvider);
     try {
       final CircleDto circle = await client.joinCircle(token);
-      // Server-authoritative sync: adopt the shared loved one + pull the
+      // Server-authoritative sync: adopt the shared client + pull the
       // rest. Best-effort, fire-and-forget — the join already succeeded
       // server-side, so we never block success on the follow-up sync. The
       // adopt step is read through [circleAdoptProvider] so tests can

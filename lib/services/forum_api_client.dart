@@ -254,7 +254,7 @@ class SyncDocWrite {
       };
 }
 
-/// The circle-owned loved one a client is pushing up
+/// The circle-owned client a client is pushing up
 /// (server-authoritative sync). [payload] is the [Patient]'s `toJson`
 /// map; [syncPush] encodes it to the wire's JSON string.
 class SyncPatientWrite {

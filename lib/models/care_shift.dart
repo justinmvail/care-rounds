@@ -6,7 +6,7 @@ part 'care_shift.g.dart';
 /// One caregiving shift on the Care Team coverage board (TASKS.md Phase
 /// 14.31, BUILD_SPEC.md §5.14).
 ///
-/// A caregiver ([caregiverId]) signs up to cover the loved one for a
+/// A caregiver ([caregiverId]) signs up to cover the client for a
 /// window [start]..[end], with optional [notes] (a handoff reminder, where
 /// they'll be, etc.). The Shifts screen lays a day's shifts onto a 24-hour
 /// bar and flags the spans no shift covers; the gap math (see

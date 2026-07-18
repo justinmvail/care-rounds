@@ -76,7 +76,7 @@ class _FeedbackSheetState extends ConsumerState<FeedbackSheet> {
   bool _dictating = false;
 
   /// Whether the screen capture rides along. **Opt-in** (default OFF): a
-  /// screenshot of the current screen can carry the loved one's PHI (meds,
+  /// screenshot of the current screen can carry the client's PHI (meds,
   /// the emergency card, journal text), so the caregiver must deliberately
   /// choose to attach it rather than have it default on.
   bool _includeScreenshot = false;
@@ -377,7 +377,7 @@ class _FeedbackSheetState extends ConsumerState<FeedbackSheet> {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      "Attach a screenshot (may show your loved one's details)",
+                      "Attach a screenshot (may show your client's details)",
                       style: textTheme.bodyMedium?.copyWith(fontSize: 14),
                     ),
                   ),

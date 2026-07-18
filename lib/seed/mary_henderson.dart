@@ -1,6 +1,6 @@
 import '../models/patient.dart';
 
-/// The demo loved one's profile (BUILD_SPEC.md §9.1).
+/// The demo client's profile (BUILD_SPEC.md §9.1).
 ///
 /// Loaded into the crisis card on first launch when the storage layer
 /// has no Patient yet AND the build is in `DEMO_MODE`. Real-mode builds

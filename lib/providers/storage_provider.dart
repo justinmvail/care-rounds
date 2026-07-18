@@ -58,7 +58,7 @@ abstract class StorageProvider {
   /// Delete the entry with this id. No-op if absent.
   Future<void> deleteJournalEntry(String id);
 
-  /// The configured loved one the app is currently centred on, or null
+  /// The configured client the app is currently centred on, or null
   /// if onboarding hasn't populated one yet (BUILD_SPEC.md §5.9 + §9.1).
   ///
   /// With one patient on file this returns that sole row — the
@@ -69,27 +69,27 @@ abstract class StorageProvider {
   /// patient never blanks the active-patient surfaces.
   Future<Patient?> getPatient();
 
-  /// Every loved one on file, ordered by name (case-insensitive) so the
-  /// "Loved ones" manager renders a stable list. Empty before onboarding
+  /// Every client on file, ordered by name (case-insensitive) so the
+  /// "Clients" manager renders a stable list. Empty before onboarding
   /// populates one. Backs the multi-patient switcher (Issue #6); the
   /// single-patient surfaces keep reading [getPatient].
   Future<List<Patient>> listPatients();
 
   /// Insert-or-replace a patient row by [patient.id]. Adding a second
-  /// (or third…) loved one goes through here just like the first — the
+  /// (or third…) client goes through here just like the first — the
   /// table keys by id, so a new id appends rather than overwriting.
   Future<void> upsertPatient(Patient patient);
 
-  /// The id of the loved one the app is currently centred on, or null
+  /// The id of the client the app is currently centred on, or null
   /// when none has been explicitly selected yet (in which case callers
   /// fall back to the sole / first patient — see [getPatient]).
   ///
   /// Persisted, so the choice survives a relaunch. Set via
-  /// [setActivePatientId] when the caregiver switches in the "Loved ones"
+  /// [setActivePatientId] when the caregiver switches in the "Clients"
   /// manager or adds a new person.
   Future<String?> getActivePatientId();
 
-  /// Persist [patientId] as the active loved one. The caller is
+  /// Persist [patientId] as the active client. The caller is
   /// responsible for invalidating `activePatientProvider` so the running
   /// app re-reads. Passing an id with no matching patient row is allowed
   /// (the manager always writes an id it just upserted); [getPatient]

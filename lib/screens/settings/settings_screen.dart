@@ -192,12 +192,12 @@ class _SectionCard extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
-// Loved ones (multi-patient, Issue #6) — entry to the switcher/manager
+// Clients (multi-patient, Issue #6) — entry to the switcher/manager
 // ---------------------------------------------------------------------------
 
-/// Settings card linking to the "Loved ones" manager (multi-patient,
+/// Settings card linking to the "Clients" manager (multi-patient,
 /// Issue #6). One row → [LovedOnesScreen], where the caregiver switches
-/// the active loved one or adds another. Kept out of the way (a plain
+/// the active client or adds another. Kept out of the way (a plain
 /// navigation row) since most caregivers manage a single person.
 class _LovedOnesSection extends StatelessWidget {
   const _LovedOnesSection();
@@ -208,7 +208,7 @@ class _LovedOnesSection extends StatelessWidget {
       key: SettingsScreen.lovedOnesSectionKey,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        const _SectionHeader(title: 'Loved ones'),
+        const _SectionHeader(title: 'Clients'),
         _SectionCard(
           child: ListTile(
             key: SettingsScreen.lovedOnesRowKey,
@@ -217,7 +217,7 @@ class _LovedOnesSection extends StatelessWidget {
               Icons.people_alt_outlined,
               color: context.hc.primary,
             ),
-            title: const Text('Loved ones'),
+            title: const Text('Clients'),
             subtitle: const Text(
               'Switch between the people you care for, or add another.',
             ),
@@ -832,7 +832,7 @@ class _CareTeamSection extends StatelessWidget {
             contentPadding: EdgeInsets.zero,
             title: const Text('Coordinate with others'),
             subtitle: const Text(
-              "Turn this on if other people help care for your loved one — "
+              "Turn this on if other people help care for your client — "
               "it adds a Care Circle to the Care tab for sharing the "
               "schedule, tasks, and expenses. Leave it off if you're "
               "caring on your own.",

@@ -6,7 +6,7 @@ import '../../widgets/hub_tile.dart';
 import '../../widgets/path_header.dart';
 
 /// The Care tile-hub at `/medical` (route path kept internal) — the single
-/// entry point to everything about caring for your person: the emergency
+/// entry point to everything about caring for your client: the emergency
 /// card, meds, schedule, appointments, health log, routines, the journal,
 /// and the Care Circle of helpers.
 ///
@@ -65,10 +65,10 @@ class MedicalHubScreen extends StatelessWidget {
           chipColor: context.hc.primary,
         ),
         _MedicalTileSpec(
-          icon: Icons.person_search_outlined,
-          label: 'Find a provider',
-          subLabel: 'doctors & specialists',
-          route: '/find-provider',
+          icon: Icons.school_outlined,
+          label: 'Learn',
+          subLabel: 'quick training',
+          route: '/learn',
           chipColor: context.hc.link,
         ),
         _MedicalTileSpec(

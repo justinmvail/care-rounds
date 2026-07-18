@@ -28,7 +28,7 @@ CareEvent _note({
       patientId: patientId,
     );
 
-/// Pins the active loved one for the display-scoped [careEvents] (notes
+/// Pins the active client for the display-scoped [careEvents] (notes
 /// portion) + [calendarTaskEvents] providers without hitting the on-device
 /// SQLite file (the default `activePatientIdProvider` reads storage). Tests
 /// pass the same id their seeded rows carry so the calendar sees them.
@@ -348,9 +348,9 @@ void main() {
       expect(appt.detailRoute, '/appointments/a1');
     });
 
-    test('a note filed under another loved one is hidden from the calendar',
+    test('a note filed under another client is hidden from the calendar',
         () async {
-      // Two notes under two different loved ones; the active patient is
+      // Two notes under two different clients; the active patient is
       // _patientId (pinned by makeContainer's _activePatient override).
       await careEventsRepo.upsertEvent(_note(
         id: 'mine',

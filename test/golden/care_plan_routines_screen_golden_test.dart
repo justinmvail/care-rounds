@@ -88,7 +88,7 @@ Widget _host(({CarePlanRepository plan, CareTasksRepository tasks}) repos) {
       careTasksRepositoryProvider.overrideWithValue(repos.tasks),
       // The "· N tasks" suffix flows through routineTaskCounts →
       // careTasksProvider → CareTasks.build(), which now resolves the active
-      // loved one (multi-patient, Issue #6). Pin it to the seeded patient so
+      // client (multi-patient, Issue #6). Pin it to the seeded patient so
       // the count is deterministic and the test never touches on-device
       // storage.
       activePatientIdProvider.overrideWith((Ref ref) async => _patientId),

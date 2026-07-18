@@ -16,7 +16,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart' show Override;
 
-/// The seed loved one's id — both the hydrated card and the persisted edit
+/// The seed client's id — both the hydrated card and the persisted edit
 /// hang off it, so the save read-back can look the card up by patient.
 final String _patientId = maryHenderson().id;
 
@@ -147,12 +147,12 @@ void main() {
       expect(find.text('Unknown'), findsOneWidget);
     });
 
-    testWidgets('with no loved one on file, the form is gated',
+    testWidgets('with no client on file, the form is gated',
         (WidgetTester tester) async {
       await _pumpEdit(tester, view: _view(withPatient: false), repo: repo);
 
       expect(
-          find.text('Add a loved one before filling out the emergency card.'),
+          find.text('Add a client before filling out the emergency card.'),
           findsOneWidget);
       expect(find.byKey(EmergencyCardEditScreen.saveButtonKey), findsNothing);
       expect(find.byType(TextField), findsNothing);

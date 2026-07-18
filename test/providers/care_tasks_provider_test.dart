@@ -31,7 +31,7 @@ CareTask _task({
       patientId: patientId,
     );
 
-/// Pins the active loved one for the display-scoped providers
+/// Pins the active client for the display-scoped providers
 /// ([CareTasks.build], [CareTasksView]) without hitting the on-device
 /// SQLite file (the default `activePatientIdProvider` reads storage). Tests
 /// pass the same id their `_task`s carry so the board sees them.
@@ -287,9 +287,9 @@ void main() {
       expect(await container.read(careTasksProvider.future), isEmpty);
     });
 
-    test('the board shows only the ACTIVE patient — another loved one\'s '
+    test('the board shows only the ACTIVE patient — another client\'s '
         'task is hidden', () async {
-      // Two tasks under two different loved ones; the active patient is
+      // Two tasks under two different clients; the active patient is
       // _patientId (pinned by makeContainer's _activePatient override).
       await repo.upsertTask(_task(id: 'mine', patientId: _patientId));
       await repo.upsertTask(_task(id: 'theirs', patientId: 'other-patient'));

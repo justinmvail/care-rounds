@@ -182,7 +182,7 @@ class PdfExporter {
               style: pw.TextStyle(
                   color: _navy, fontSize: 28, fontWeight: pw.FontWeight.bold)),
           pw.SizedBox(height: 18),
-          _coverRow('Loved one', patient.name),
+          _coverRow('Client', patient.name),
           _coverAgeRow(patient),
           _coverRow('Date', _formatDate(now)),
           if ((caregiverName ?? '').trim().isNotEmpty)
@@ -249,7 +249,7 @@ class PdfExporter {
           ),
         ),
         pw.SizedBox(height: 18),
-        _coverRow('Loved one', patient.name),
+        _coverRow('Client', patient.name),
         _coverAgeRow(patient),
         _coverRow('Date range', _formatRange(range)),
         _coverRow('Caregiver', caregiverName),

@@ -13,7 +13,11 @@ import 'package:carerounds/screens/onboarding/loved_one_setup_screen.dart';
 import 'package:carerounds/seed/mary_henderson.dart';
 import 'package:carerounds/screens/appointment/appointment_list_screen.dart';
 import 'package:carerounds/screens/chat/conversation_list_screen.dart';
-import 'package:carerounds/screens/community/community_feed_screen.dart';
+import 'package:carerounds/providers/my_rounds_provider.dart';
+import 'package:carerounds/models/care_shift.dart';
+import 'package:carerounds/models/patient.dart';
+import 'package:carerounds/screens/settings/loved_ones_screen.dart';
+import 'package:carerounds/screens/team/my_rounds_screen.dart';
 import 'package:carerounds/screens/home_screen.dart';
 import 'package:carerounds/screens/medical/emergency_card_screen.dart';
 import 'package:carerounds/screens/medical/medical_hub_screen.dart';
@@ -82,6 +86,15 @@ Future<GoRouter> pumpRouter(
         // widget mount) precisely BECAUSE rendering a live drift query
         // stream inside the FakeAsync test zone leaves a pending timer.
         chatRepositoryProvider.overrideWith((_) => ChatRepository(db)),
+        // The Rounds branch renders MyRoundsScreen, which otherwise opens a
+        // live drift stream (pending timer → pumpAndSettle hang). Feed it a
+        // resolved, DB-free state so the branch renders deterministically.
+        selfCaregiverIdProvider.overrideWith((_) async => 'me'),
+        myRoundsProvider.overrideWith((_) async => const <CareShift>[]),
+        lovedOnesViewProvider.overrideWith(
+          (_) async =>
+              const LovedOnesView(patients: <Patient>[], activeId: null),
+        ),
       ],
       // Onboarding / sign-in / setup screens reachable through the router
       // read chrome strings via AppLocalizations.of (#18 localization);
@@ -145,15 +158,11 @@ void main() {
           '/appointments/sample-id', <String, String>{'id': 'sample-id'}),
       _NamedRoute(CareRoundsRoutes.appointmentEdit,
           '/appointments/sample-id/edit', <String, String>{'id': 'sample-id'}),
-      // Community shell branch + its pushed companions.
-      _NamedRoute(CareRoundsRoutes.community, '/community'),
-      _NamedRoute(CareRoundsRoutes.communityCompose, '/community/compose'),
-      _NamedRoute(
-          CareRoundsRoutes.communityGuidelines, '/community/guidelines'),
-      _NamedRoute(
-          CareRoundsRoutes.communityAdminReports, '/community/admin/reports'),
-      _NamedRoute(CareRoundsRoutes.communityPostDetail,
-          '/community/sample-post', <String, String>{'postId': 'sample-post'}),
+      // Rounds shell branch (replaces the removed Community forum) + Learn.
+      _NamedRoute(CareRoundsRoutes.rounds, '/rounds'),
+      _NamedRoute(CareRoundsRoutes.learn, '/learn'),
+      _NamedRoute(CareRoundsRoutes.communityLearnPlaybook,
+          '/learn/playbooks/sample-id', <String, String>{'id': 'sample-id'}),
       // New Phase 14 shell branches + the Medical emergency sub-route.
       _NamedRoute(CareRoundsRoutes.medicalHub, '/medical'),
       _NamedRoute(
@@ -225,11 +234,11 @@ void main() {
         expect(find.byType(ConversationListScreen), findsOneWidget);
         expect(find.byType(TabScaffoldBar), findsOneWidget);
 
-        // Community branch — direct landing.
-        router.go('/community');
+        // Rounds branch — direct landing.
+        router.go('/rounds');
         await tester.pumpAndSettle();
-        expect(currentPath(router), '/community');
-        expect(find.byType(CommunityFeedScreen), findsOneWidget);
+        expect(currentPath(router), '/rounds');
+        expect(find.byType(MyRoundsScreen), findsOneWidget);
         expect(find.byType(TabScaffoldBar), findsOneWidget);
 
         // Back to Home.
@@ -551,7 +560,7 @@ void main() {
       'onboarded + signed-in but NO patient funnels everything to /setup',
       () {
         // The third gate: a fresh real-mode install reaches sign-in, signs
-        // in, then has no loved one on file yet — every location collapses
+        // in, then has no client on file yet — every location collapses
         // to the setup wizard until one is saved.
         expect(
           careroundsRedirect(
@@ -589,7 +598,7 @@ void main() {
     });
 
     test('onboarded + signed-in WITH a patient reaches / (no setup gate)', () {
-      // Once a loved one is on file the setup gate is satisfied: Home
+      // Once a client is on file the setup gate is satisfied: Home
       // resolves cleanly and a stray landing on /setup bounces home.
       expect(
         careroundsRedirect(
@@ -687,9 +696,9 @@ void main() {
     });
 
     test(
-      'lookup PENDING is moot once a loved one IS configured (still Home)',
+      'lookup PENDING is moot once a client IS configured (still Home)',
       () {
-        // If the backend lookup pulled a loved one down (patientConfigured
+        // If the backend lookup pulled a client down (patientConfigured
         // flips true) the gate opens to Home regardless of a not-yet-
         // cleared pending flag — patient-on-file always wins.
         expect(
@@ -724,7 +733,7 @@ void main() {
     test(
       'lookup settled (NOT pending) + no patient still funnels to /setup',
       () {
-        // Once the lookup clears with no loved one found (a genuinely new
+        // Once the lookup clears with no client found (a genuinely new
         // caregiver), the setup wizard is exactly right — the default
         // (pending false) preserves the original gate behavior.
         expect(
@@ -833,7 +842,7 @@ void main() {
         final _RedirectSpyAuth auth = _RedirectSpyAuth();
         addTearDown(auth.dispose);
 
-        // Empty store → no loved one on file → the setup gate must hold
+        // Empty store → no client on file → the setup gate must hold
         // the caregiver on the wizard once onboarding + auth pass.
         final InMemoryStorageProvider emptyStore = InMemoryStorageProvider();
         addTearDown(emptyStore.dispose);
@@ -992,7 +1001,7 @@ Future<ProviderContainer> _pumpWiredRouter(
   return container;
 }
 
-/// An in-memory store pre-seeded with a loved one so the setup gate is
+/// An in-memory store pre-seeded with a client so the setup gate is
 /// already satisfied — the default backing store for the wired-router
 /// tests that only care about the onboarding + auth gates.
 StorageProvider _seededStorage() {

@@ -19,10 +19,10 @@ enum PermissionLevel {
   viewer,
 }
 
-/// One caregiver's membership in a loved one's care circle (TASKS.md
+/// One caregiver's membership in a client's care circle (TASKS.md
 /// Phase 14.25, BUILD_SPEC.md §5.14).
 ///
-/// Joins a [Caregiver] (via [caregiverId]) to the loved one (via
+/// Joins a [Caregiver] (via [caregiverId]) to the client (via
 /// [patientId]) with a [permissionLevel] and the invite lifecycle:
 /// [invitedAt] is set when the invite is created, and [acceptedAt] flips
 /// from null to a timestamp when the caregiver accepts. A null

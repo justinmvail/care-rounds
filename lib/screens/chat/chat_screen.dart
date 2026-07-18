@@ -1217,7 +1217,7 @@ class _CrisisCard extends ConsumerWidget {
           ),
           const SizedBox(height: 6),
           Text(
-            'If you or your loved one may be unsafe, reach a trained '
+            'If you or your client may be unsafe, reach a trained '
             'counselor now. Support is free, confidential, and available '
             'around the clock.',
             style: textTheme.bodyMedium?.copyWith(color: context.hc.primary),

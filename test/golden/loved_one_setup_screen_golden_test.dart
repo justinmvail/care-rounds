@@ -10,7 +10,7 @@ import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart' show Override;
 
 /// CI golden of [LovedOneSetupScreen] — the new-user setup wizard the
-/// caregiver lands on after sign-in when no loved one is on file yet.
+/// caregiver lands on after sign-in when no client is on file yet.
 /// Rendered via a minimal router (with a `/` stub the save would land
 /// on) inside the brand background, so the golden catches regressions in
 /// the warm intro + the essentials form stack.

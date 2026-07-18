@@ -17,7 +17,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart' show Override;
 /// Coverage for the multi-patient active-patient providers (Issue #6):
 /// the id defaults to the demo fallback, tracks the stored active
 /// selection, and — crucially — flows into a real patient-scoped query
-/// (the dose-window list) so switching the active loved one changes which
+/// (the dose-window list) so switching the active client changes which
 /// patient's data a downstream provider returns.
 
 Patient _patient(String id, String name) => Patient(

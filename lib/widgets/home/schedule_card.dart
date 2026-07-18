@@ -751,7 +751,7 @@ class _EmptyState extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         Text(
-          "Add what your loved one takes and their appointments, and today's "
+          "Add what your client takes and their appointments, and today's "
           "plan shows up here. Here's a quick start:",
           style: tt.bodyMedium?.copyWith(color: context.hc.text),
         ),

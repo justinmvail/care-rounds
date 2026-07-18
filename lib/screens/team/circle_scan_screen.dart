@@ -107,7 +107,7 @@ class _CircleScanScreenState extends ConsumerState<CircleScanScreen> {
     final ForumApiClient client = ref.read(forumApiClientProvider);
     try {
       final CircleDto circle = await client.joinCircle(token);
-      // Server-authoritative sync: adopt the circle's shared loved one +
+      // Server-authoritative sync: adopt the circle's shared client +
       // pull the rest of the shared data so this device sees the same
       // person (and Stage 2 meds). FIRE-AND-FORGET + best-effort — the
       // join already succeeded server-side, so we never block the success

@@ -1,7 +1,6 @@
 import 'package:carerounds/app.dart';
 import 'package:carerounds/db/database.dart';
 import 'package:carerounds/models/chat.dart';
-import 'package:carerounds/models/forum.dart';
 import 'package:carerounds/models/medication.dart';
 import 'package:carerounds/providers/care_circle_provider.dart';
 import 'package:carerounds/providers/care_events_provider.dart';
@@ -19,7 +18,6 @@ import 'package:carerounds/providers/tts_provider.dart';
 import 'package:carerounds/routing/router.dart';
 import 'package:carerounds/screens/chat/chat_screen.dart';
 import 'package:carerounds/screens/chat/conversation_list_screen.dart';
-import 'package:carerounds/screens/community/community_feed_screen.dart';
 import 'package:carerounds/screens/home_screen.dart';
 import 'package:carerounds/screens/medical/care_plan_routines_screen.dart';
 import 'package:carerounds/screens/medical/emergency_card_screen.dart';
@@ -35,7 +33,6 @@ import 'package:carerounds/screens/team/care_team_hub_screen.dart';
 import 'package:carerounds/services/appointment_repository.dart';
 import 'package:carerounds/services/chat_repository.dart';
 import 'package:carerounds/services/chat_service.dart';
-import 'package:carerounds/services/forum_api_client.dart';
 import 'package:carerounds/services/medication_repository.dart';
 import 'package:carerounds/services/provider_repository.dart';
 import 'package:carerounds/services/seed_repository.dart';
@@ -75,7 +72,7 @@ DateTime _fixedNow() => DateTime(2026, 6, 1, 11, 0);
 /// dose group → dose log → the **Care** hub (Health Log add → Routines →
 /// Emergency Card) → the **Care Circle** hub under Care (People roster +
 /// connect actions) → **Chat** (open a seeded thread, send a message, and
-/// get the canned demo coach's reply back) → **Community** (Feed → Learn →
+/// get the canned demo coach's reply back) → **Rounds** (the worker's shifts
 /// Support → Feed) — capturing a demo screenshot on every hub/tab landing.
 /// Screenshot labels `02_care` / `03_care-circle` supersede the stale
 /// `02_medical` / `03_team` baselines from the five-tab era.
@@ -104,7 +101,7 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   testWidgets(
-    'demo tour — four-tab IA walkthrough: Home · Care · Chat · Community '
+    'demo tour — four-tab IA walkthrough: Home · Care · Chat · Rounds '
     '(BUILD_SPEC.md §10.1)',
     (WidgetTester tester) async {
       if (!demoModeEnabled) {
@@ -201,7 +198,6 @@ void main() {
           // Pin every wall clock so the screenshots stay deterministic.
           homeClockProvider.overrideWithValue(_fixedNow),
           doseLogClockProvider.overrideWithValue(_fixedNow),
-          communityFeedClockProvider.overrideWithValue(_fixedNow),
           // Every drift repository points at the one shared in-memory DB.
           medicationRepositoryBackendProvider.overrideWithValue(medRepo),
           chatRepositoryBackendProvider.overrideWithValue(chatRepo),
@@ -225,9 +221,6 @@ void main() {
               .overrideWithValue(ExpensesRepository(db)),
           documentsRepositoryBackendProvider
               .overrideWithValue(DocumentsRepository(db)),
-          // A canned community feed so the Feed segment renders a stable
-          // set of posts for the screenshot.
-          forumApiClientProvider.overrideWithValue(_demoForumClient()),
         ],
       );
       addTearDown(container.dispose);
@@ -420,23 +413,11 @@ void main() {
       expect(find.byKey(ConversationListScreen.listKey), findsOneWidget);
 
       // ====================================================================
-      // COMMUNITY tab — the social feed fronted by the Feed/Learn/Support
-      // sub-nav. Capture the landing, then swipe the three segments.
+      // ROUNDS tab — the worker's shifts across all clients (replaces the
+      // removed Community forum).
       // ====================================================================
-      await _tapTab(tester, 'Community');
-      expect(find.byKey(CommunityFeedScreen.listKey), findsOneWidget);
-      expect(find.byKey(CommunityFeedScreen.subnavKey), findsOneWidget);
-      await _capture(tester, '05_community');
-
-      // Feed → Learn.
-      await _tapSegment(tester, 'Learn');
-      expect(find.byKey(CommunityFeedScreen.learnSegmentKey), findsOneWidget);
-      // Learn → Support.
-      await _tapSegment(tester, 'Support');
-      expect(find.byKey(CommunityFeedScreen.supportSegmentKey), findsOneWidget);
-      // Support → back to Feed.
-      await _tapSegment(tester, 'Feed');
-      expect(find.byKey(CommunityFeedScreen.listKey), findsOneWidget);
+      await _tapTab(tester, 'Rounds');
+      await _capture(tester, '05_rounds');
     },
     // The tour exercises the full app surface; give it generous headroom on
     // a real device where the demo backends' streaming + drift I/O add up.
@@ -478,77 +459,7 @@ Future<void> _seedThread(
   ));
 }
 
-/// A canned [ForumApiClient] seeded with a deterministic Hot page so the
-/// Community Feed renders the same posts every run.
-ForumApiClient _demoForumClient() {
-  ForumPost post(
-    String id, {
-    required String title,
-    required String body,
-    required int voteCount,
-    required int commentCount,
-    required Duration age,
-  }) {
-    final DateTime at = _fixedNow().subtract(age);
-    return ForumPost(
-      id: id,
-      authorId: 'profile-$id',
-      title: title,
-      body: body,
-      createdAt: at,
-      updatedAt: at,
-      voteCount: voteCount,
-      hidden: false,
-      commentCount: commentCount,
-    );
-  }
 
-  return _CannedForumApiClient(<ForumPost>[
-    post(
-      'a',
-      title: 'Sundowning hit hard at dusk again',
-      body: 'We dimmed the lights and put on her favorite record. She '
-          'settled in about ten minutes — sharing in case it helps another '
-          'Careblazer tonight.',
-      voteCount: 12,
-      commentCount: 5,
-      age: const Duration(minutes: 18),
-    ),
-    post(
-      'b',
-      title: 'Refusing the morning meds — what worked for you?',
-      body: 'Hiding the pill in applesauce stopped working this week. I '
-          'want to hear what other folks do for the routine itself.',
-      voteCount: 7,
-      commentCount: 9,
-      age: const Duration(hours: 3),
-    ),
-  ]);
-}
-
-/// Same fake-client shape the widget + golden tests use — hands back a
-/// fixed first page and an empty page for any pagination cursor.
-class _CannedForumApiClient extends ForumApiClient {
-  _CannedForumApiClient(this._page)
-      : super(
-          tokenLoader: _stubTokenLoader,
-          baseUrl: 'https://example.test',
-        );
-
-  static Future<String> _stubTokenLoader() async => 'fake-jwt';
-
-  final List<ForumPost> _page;
-
-  @override
-  Future<List<ForumPost>> listPosts({
-    ForumPostSort sort = ForumPostSort.hot,
-    String? before,
-    int? limit,
-  }) async {
-    if (before != null) return const <ForumPost>[];
-    return _page;
-  }
-}
 
 /// Capture a demo screenshot at a hub/tab landing.
 ///
@@ -607,14 +518,3 @@ Future<void> _tapCrumb(WidgetTester tester, String label) async {
   await tester.pumpAndSettle();
 }
 
-/// Tap a [SegmentedSubnav] pill by its [label], scoped to the Community
-/// sub-nav so a body's matching text can't trap the finder.
-Future<void> _tapSegment(WidgetTester tester, String label) async {
-  await tester.tap(
-    find.descendant(
-      of: find.byKey(CommunityFeedScreen.subnavKey),
-      matching: find.text(label),
-    ),
-  );
-  await tester.pumpAndSettle();
-}

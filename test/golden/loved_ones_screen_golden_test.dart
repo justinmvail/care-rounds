@@ -7,8 +7,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart' show Override;
 
-/// Golden coverage for the "Loved ones" manager (Issue #6) — the populated
-/// roster with the active loved one flagged, and the empty state.
+/// Golden coverage for the "Clients" manager (Issue #6) — the populated
+/// roster with the active client flagged, and the empty state.
 
 Patient _patient(String id, String name, int age, String diagnosis) => Patient(
       id: id,

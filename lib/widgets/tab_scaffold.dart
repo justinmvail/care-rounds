@@ -6,8 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../models/settings.dart';
-import '../providers/community_feed_provider.dart';
-import '../providers/community_subnav_provider.dart';
 import '../providers/pending_spoken_reply_provider.dart';
 import '../providers/settings_provider.dart';
 import '../providers/tts_provider.dart';
@@ -18,7 +16,7 @@ import '../services/voice_intake.dart';
 import '../theme.dart';
 
 /// Bottom-tab shell for the fixed four-tab bar (IA refactor 2026-06-06):
-/// `Home · Care · Chat · Community`. All four tabs are ALWAYS visible.
+/// `Home · Care · Chat · Rounds`. All four tabs are ALWAYS visible.
 /// The old "Medical" tab was renamed **Care** (the clinical word was
 /// off-brand) and the separate "Team" tab was folded into Care as a
 /// gated "Care Circle" hub — so the bar slot index is the shell-branch
@@ -50,7 +48,7 @@ class TabScaffold extends ConsumerWidget {
     '/',
     '/medical',
     '/chat',
-    '/community',
+    '/rounds',
   ];
 
   /// The inline center voice button (#fb_1780962131440334). It lives in
@@ -65,24 +63,6 @@ class TabScaffold extends ConsumerWidget {
       bottomNavigationBar: TabScaffoldBar(
         currentIndex: navigationShell.currentIndex,
         onDestinationSelected: (int index) {
-          // Selecting the Community destination — a switch from another
-          // tab OR an active-tab re-tap — drops the caregiver back on the
-          // Feed segment of the in-tab sub-nav (Phase 14.36). The segment
-          // lives in CommunityFeedScreen's local state, so the bottom bar
-          // signals the reset rather than reaching into the screen.
-          if (tabBranchPaths[index] == '/community') {
-            ref.read(communityTabReentryProvider.notifier).bump();
-          }
-          if (tabBranchPaths[index] == '/') {
-            // Landing on Home rebuilds the community feed from scratch so the
-            // "From the Community" recap reflects posts created on the
-            // Community tab while Home sat offstage in the shell (alpha
-            // fb_1780965223686636 — "added a post and Home isn't updating").
-            // invalidate (not .refresh()) so the recap's OWN watched instance
-            // re-fetches — .refresh() on this autoDispose provider would just
-            // touch a throwaway instance with no live listener.
-            ref.invalidate(communityFeedProvider);
-          }
           if (index == navigationShell.currentIndex) {
             // Re-tap the active tab — pop the branch back to its hub.
             navigationShell.goBranch(index, initialLocation: true);
@@ -102,7 +82,7 @@ class TabScaffold extends ConsumerWidget {
 /// bar without spinning up a full router. (It still needs a ProviderScope
 /// ancestor because the center mic is a [ConsumerWidget].)
 ///
-/// Layout: `[Home] [Care] (mic) [Chat] [Community]` — five equal-width
+/// Layout: `[Home] [Care] (mic) [Chat] [Rounds]` — five equal-width
 /// slots. The four labelled tabs map to branch indices 0..3 via
 /// [destinations]; the mic occupies the middle slot and carries no branch.
 class TabScaffoldBar extends StatelessWidget {
@@ -137,9 +117,9 @@ class TabScaffoldBar extends StatelessWidget {
       selectedIcon: Icons.chat_bubble,
     ),
     TabScaffoldDestination(
-      label: 'Community',
-      icon: Icons.forum_outlined,
-      selectedIcon: Icons.forum,
+      label: 'Rounds',
+      icon: Icons.route_outlined,
+      selectedIcon: Icons.route,
     ),
   ];
 
@@ -147,7 +127,7 @@ class TabScaffoldBar extends StatelessWidget {
   Widget build(BuildContext context) {
     // Slots, left → right: Home(0), Care(1), [mic], Chat(2), Community(3).
     // The mic sits between the two left and two right tabs so the four-tab
-    // order Home·Care·Chat·Community is preserved visually.
+    // order Home·Care·Chat·Rounds is preserved visually.
     return Material(
       color: context.hc.background,
       elevation: 8,

@@ -9,7 +9,7 @@ import '../../widgets/path_header.dart';
 import 'emergency_card_screen.dart'
     show EmergencyCardView, emergencyCardViewProvider;
 
-/// Edit form for the loved one's Emergency Card. Loads the existing card
+/// Edit form for the client's Emergency Card. Loads the existing card
 /// (if any) via [emergencyCardViewProvider], lets the caregiver edit the
 /// first-responder fields, and persists through
 /// `emergencyCardsProvider.notifier.updateCard`. Reached from the card's
@@ -209,7 +209,7 @@ class _EmergencyCardFormState extends ConsumerState<_EmergencyCardForm> {
           const SizedBox(height: 8),
           if (!hasPatient)
             Text(
-              'Add a loved one before filling out the emergency card.',
+              'Add a client before filling out the emergency card.',
               style: textTheme.bodyLarge?.copyWith(color: context.hc.text),
             )
           else ...<Widget>[

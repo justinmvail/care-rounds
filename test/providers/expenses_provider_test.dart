@@ -34,7 +34,7 @@ Expense _expense({
       patientId: patientId,
     );
 
-/// Pins the active loved one for the display-scoped [Expenses.build] /
+/// Pins the active client for the display-scoped [Expenses.build] /
 /// [expensesView] without hitting the on-device SQLite file.
 Override _activePatient([String id = _patientId]) =>
     activePatientIdProvider.overrideWith((Ref ref) async => id);
@@ -210,7 +210,7 @@ void main() {
       expect(await container.read(expensesProvider.future), isEmpty);
     });
 
-    test('the ledger shows only the ACTIVE patient — another loved one\'s '
+    test('the ledger shows only the ACTIVE patient — another client\'s '
         'expense is hidden', () async {
       await repo.upsertExpense(_expense(id: 'mine', patientId: _patientId));
       await repo

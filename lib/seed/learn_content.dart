@@ -141,7 +141,7 @@ const List<LearnPlaybook> learnPlaybooks = <LearnPlaybook>[
         title: 'Ease the light shift',
         body:
             'Turn on lamps before dusk so the room never dims around your '
-            'loved one. Failing light can read as something wrong, and the '
+            'client. Failing light can read as something wrong, and the '
             'unease shows up as pacing or worry.',
       ),
       PlaybookStep(
@@ -196,7 +196,7 @@ const List<LearnPlaybook> learnPlaybooks = <LearnPlaybook>[
       PlaybookStep(
         title: 'Pause and step back',
         body:
-            'A firm "no" often means your loved one feels rushed or exposed. '
+            'A firm "no" often means your client feels rushed or exposed. '
             'Stop, give space, and try again in a few minutes rather than '
             'pushing through.',
       ),
@@ -224,7 +224,7 @@ const List<LearnPlaybook> learnPlaybooks = <LearnPlaybook>[
       PlaybookStep(
         title: 'Walk alongside',
         body:
-            'Rather than steering your loved one back, fall into step with '
+            'Rather than steering your client back, fall into step with '
             'them. Moving together feels like company, not a barrier, and '
             'the urgency often softens.',
       ),
@@ -253,7 +253,7 @@ const List<LearnPlaybook> learnPlaybooks = <LearnPlaybook>[
       PlaybookStep(
         title: 'Answer calmly, every time',
         body:
-            'For your loved one it is the first time they are asking. Reply '
+            'For your client it is the first time they are asking. Reply '
             'in the same warm tone you used at first — the question is real '
             'to them right now.',
       ),
@@ -288,7 +288,7 @@ const List<LearnPlaybook> learnPlaybooks = <LearnPlaybook>[
       PlaybookStep(
         title: 'Reassure, then guide back',
         body:
-            'Let your loved one know they are safe and it is still night. '
+            'Let your client know they are safe and it is still night. '
             '"Everything is alright — it is sleeping time. I am right down '
             'the hall." Then gently steer back toward bed.',
       ),
@@ -317,7 +317,7 @@ const List<LearnPlaybook> learnPlaybooks = <LearnPlaybook>[
       PlaybookStep(
         title: 'Protect dignity',
         body:
-            'Keep your loved one covered with a towel as much as you can and '
+            'Keep your client covered with a towel as much as you can and '
             'narrate softly what comes next. Feeling exposed is often the '
             'real reason for the resistance.',
       ),
@@ -339,7 +339,7 @@ const List<LearnPlaybook> learnPlaybooks = <LearnPlaybook>[
       PlaybookStep(
         title: 'Stay calm and close',
         body:
-            'What your loved one sees feels completely real to them. A steady '
+            'What your client sees feels completely real to them. A steady '
             'voice and a hand on the shoulder tells them they are not alone '
             'with it.',
       ),

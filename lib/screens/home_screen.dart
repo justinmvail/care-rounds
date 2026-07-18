@@ -6,7 +6,6 @@ import '../providers/home_clock_provider.dart';
 import '../theme.dart';
 import '../widgets/home/add_action_sheet.dart';
 import '../widgets/home/catch_me_up_card.dart';
-import '../widgets/home/community_recap_card.dart';
 import '../widgets/home/schedule_card.dart';
 import '../widgets/path_header.dart';
 
@@ -100,15 +99,6 @@ class HomeScreen extends ConsumerWidget {
                   // a hidden card leaves the dashboard pixel-identical
                   // to having no card at all.
                   CatchMeUpCard(),
-                  // From the Community (alpha fb_1780962188695173): a
-                  // compact recap of a few recent community posts at the
-                  // very bottom of the dashboard, tapping through to the
-                  // Community tab. The card above owns its own 16px bottom
-                  // gap, so this sits directly beneath it; the recap card
-                  // collapses to nothing when the community backend isn't
-                  // configured or has no posts, leaving the dashboard
-                  // pixel-identical to having no card at all.
-                  CommunityRecapCard(),
                 ],
               ),
             ),

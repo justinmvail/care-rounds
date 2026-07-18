@@ -123,7 +123,7 @@ void main() {
   });
 
   test(
-    'adopt() short-circuits (never touches the backend) when a loved one is '
+    'adopt() short-circuits (never touches the backend) when a client is '
     'already on file locally',
     () async {
       final InMemoryStorageProvider storage = InMemoryStorageProvider();
@@ -141,7 +141,7 @@ void main() {
       await container.read(lovedOneLookupProvider.notifier).adopt();
 
       expect(client.listCircleCalls, 0,
-          reason: 'a loved one already on this device needs no backend lookup');
+          reason: 'a client already on this device needs no backend lookup');
     },
   );
 
@@ -157,7 +157,7 @@ void main() {
     await container.read(lovedOneLookupProvider.notifier).adopt();
 
     expect(client.listCircleCalls, greaterThanOrEqualTo(1),
-        reason: 'with no local loved one the backend lookup is attempted');
+        reason: 'with no local client the backend lookup is attempted');
     // Nothing was adopted, so the setup gate stays closed — the caller
     // (redirect) then proceeds to /setup exactly as before.
     await container.read(patientConfiguredProvider.notifier).reload();

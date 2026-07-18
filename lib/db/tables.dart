@@ -25,7 +25,7 @@ class JournalEntriesTable extends Table {
   Set<Column<Object>> get primaryKey => <Column<Object>>{id};
 }
 
-/// The single "loved one" the install is configured for (BUILD_SPEC.md
+/// The single "client" the install is configured for (BUILD_SPEC.md
 /// §5.9 + §9.1). One row per install — the storage layer exposes
 /// `getPatient()` / `upsertPatient(...)` rather than collection CRUD.
 ///
@@ -300,7 +300,7 @@ class AppointmentsTable extends Table {
   Set<Column<Object>> get primaryKey => <Column<Object>>{id};
 }
 
-/// One health-log row for the loved one (TASKS.md Phase 14.16).
+/// One health-log row for the client (TASKS.md Phase 14.16).
 ///
 /// Backs Medical → Health Log (BUILD_SPEC.md §5.13). The full freezed
 /// `HealthLogEntry` (kind + severity + vitals + notes) lives in
@@ -313,7 +313,7 @@ class AppointmentsTable extends Table {
 /// + filter on it) and [patientId] (the `byPatient` query filters on
 /// it). Unlike the appointment / medication tables there's no DB-level
 /// foreign key onto [PatientsTable]: that table is single-row ("one
-/// loved one per install"), so a cascade buys nothing, and keeping the
+/// client per install"), so a cascade buys nothing, and keeping the
 /// link logical leaves room for a future multi-patient model to land
 /// without reworking the FK graph.
 @TableIndex(
@@ -333,7 +333,7 @@ class HealthLogEntriesTable extends Table {
   Set<Column<Object>> get primaryKey => <Column<Object>>{id};
 }
 
-/// One section of the loved one's care plan (TASKS.md Phase 14.18).
+/// One section of the client's care plan (TASKS.md Phase 14.18).
 ///
 /// Backs Medical → Care Plan (BUILD_SPEC.md §5.13). The full freezed
 /// `CarePlanSection` (slot + title + body markdown + appliesInStage)
@@ -366,7 +366,7 @@ class CarePlanRoutinesTable extends Table {
   Set<Column<Object>> get primaryKey => <Column<Object>>{id};
 }
 
-/// The loved one's emergency / hospital-handoff card (TASKS.md Phase
+/// The client's emergency / hospital-handoff card (TASKS.md Phase
 /// 14.21).
 ///
 /// Backs Medical → Cards & Documents → Emergency Card (BUILD_SPEC.md
@@ -381,7 +381,7 @@ class CarePlanRoutinesTable extends Table {
 /// enum's `.name`; [updatedAtMs] is the epoch-ms of `updatedAt`.
 ///
 /// [patientId] is a logical link to [PatientsTable], not a DB foreign
-/// key — that table is single-row ("one loved one per install"), so a
+/// key — that table is single-row ("one client per install"), so a
 /// cascade buys nothing and the link stays logical (mirroring the
 /// health-log + care-plan tables).
 class EmergencyCardsTable extends Table {
@@ -414,7 +414,7 @@ class EmergencyCardsTable extends Table {
   Set<Column<Object>> get primaryKey => <Column<Object>>{id};
 }
 
-/// A power-of-attorney document on file for the loved one (TASKS.md
+/// A power-of-attorney document on file for the client (TASKS.md
 /// Phase 14.21).
 ///
 /// Backs Medical → Cards & Documents (BUILD_SPEC.md §5.17). Typed-column
@@ -450,7 +450,7 @@ class PowerOfAttorneyDocsTable extends Table {
   Set<Column<Object>> get primaryKey => <Column<Object>>{id};
 }
 
-/// An identification document captured for the loved one (TASKS.md Phase
+/// An identification document captured for the client (TASKS.md Phase
 /// 14.21).
 ///
 /// Backs Medical → Cards & Documents (BUILD_SPEC.md §5.17). Typed-column
@@ -486,7 +486,7 @@ class IdentificationDocsTable extends Table {
   Set<Column<Object>> get primaryKey => <Column<Object>>{id};
 }
 
-/// One caregiver in the loved one's care circle (TASKS.md Phase 14.25).
+/// One caregiver in the client's care circle (TASKS.md Phase 14.25).
 ///
 /// Backs Care Team → Care Circle (BUILD_SPEC.md §5.14). Typed-column
 /// schema like the documents tables: [role] is the `CaregiverRole` enum's
@@ -535,7 +535,7 @@ class TeamsTable extends Table {
   Set<Column<Object>> get primaryKey => <Column<Object>>{id};
 }
 
-/// One natively-stored calendar event for the loved one (TASKS.md Phase
+/// One natively-stored calendar event for the client (TASKS.md Phase
 /// 14.29).
 ///
 /// Backs Care Team → Calendar (BUILD_SPEC.md §5.14). The shared calendar
@@ -552,7 +552,7 @@ class TeamsTable extends Table {
 /// [startMs] (the calendar orders chronologically on it) and [patientId]
 /// (room for a future `byPatient` filter). Like the health-log + care-plan
 /// tables there's no DB-level foreign key onto [PatientsTable]: that table
-/// is single-row ("one loved one per install"), so a cascade buys nothing
+/// is single-row ("one client per install"), so a cascade buys nothing
 /// and the [patientId] link stays logical.
 class CareEventsTable extends Table {
   @override
@@ -577,7 +577,7 @@ class CareEventsTable extends Table {
 /// board orders tasks by due time) and [patientId] (room for a future
 /// `byPatient` filter). Like the health-log + care-event tables there's no
 /// DB-level foreign key onto [PatientsTable]: that table is single-row
-/// ("one loved one per install"), so a cascade buys nothing and the
+/// ("one client per install"), so a cascade buys nothing and the
 /// [patientId] link stays logical.
 ///
 /// The [assigneeCaregiverId] is intentionally NOT a DB foreign key onto
@@ -686,7 +686,7 @@ class SyncOutboxTable extends Table {
   IntColumn get deleted => integer()();
 }
 
-/// One caregiver's membership in a loved one's care circle (TASKS.md
+/// One caregiver's membership in a client's care circle (TASKS.md
 /// Phase 14.25).
 ///
 /// Backs Care Team → Care Circle (BUILD_SPEC.md §5.14). FK on

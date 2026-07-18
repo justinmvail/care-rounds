@@ -37,7 +37,7 @@ class SeedRepository {
     }
   }
 
-  /// Idempotently ensure the demo loved one is on file — upserts
+  /// Idempotently ensure the demo client is on file — upserts
   /// [maryHenderson] only when no patient exists yet, touching nothing
   /// else.
   ///

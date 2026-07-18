@@ -22,7 +22,7 @@ enum HealthLogKind {
   note,
 }
 
-/// One health-log row for the loved one (TASKS.md Phase 14.16).
+/// One health-log row for the client (TASKS.md Phase 14.16).
 ///
 /// Lives under Medical → Health Log (BUILD_SPEC.md §5.13). A wellness
 /// record, not a clinical one — the caregiver jots vitals, symptoms, and
@@ -39,7 +39,7 @@ enum HealthLogKind {
 /// trips cleanly.
 ///
 /// [patientId] FKs (logically — see `lib/db/tables.dart` for why no DB
-/// FK) onto the single loved one the install is configured for; it's
+/// FK) onto the single client the install is configured for; it's
 /// carried explicitly so the `byPatient` selector survives a future
 /// multi-patient model without a migration.
 @freezed

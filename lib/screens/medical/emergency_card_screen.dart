@@ -20,7 +20,7 @@ part 'emergency_card_screen.g.dart';
 /// Everything the Emergency Card screen renders, gathered into one bundle
 /// so the screen consumes a single [AsyncValue] (TASKS.md Phase 14.23).
 ///
-/// The card blends three sources: the loved one's identity (the singleton
+/// The card blends three sources: the client's identity (the singleton
 /// [Patient] via [StorageProvider.getPatient]), the structured handoff
 /// data ([EmergencyCard] via [EmergencyCards]), and a **read-only mirror**
 /// of the live medication tracker ([medicationListProvider]). The ICE card
@@ -34,7 +34,7 @@ class EmergencyCardView {
     required this.medications,
   });
 
-  /// The loved one's profile, or null before one is created.
+  /// The client's profile, or null before one is created.
   final Patient? patient;
 
   /// The structured emergency card for [patient], or null if none on file.
@@ -53,7 +53,7 @@ class EmergencyCardView {
 @riverpod
 DateTime Function() emergencyCardClock(Ref ref) => DateTime.now;
 
-/// Bundles the loved one, their emergency card, and the live medication
+/// Bundles the client, their emergency card, and the live medication
 /// mirror for [EmergencyCardScreen] (TASKS.md Phase 14.23).
 ///
 /// Watches [emergencyCardsProvider] (not the repository directly) so an
@@ -118,7 +118,6 @@ class EmergencyCardScreen extends ConsumerWidget {
   static const Key bloodTypeSectionKey = Key('emergency-card-blood-type');
   static const Key contactsSectionKey = Key('emergency-card-contacts');
   static const Key insuranceCallKey = Key('emergency-card-insurance-call');
-  static const Key insuranceAppealKey = Key('emergency-card-insurance-appeal');
   static const Key insuranceSectionKey = Key('emergency-card-insurance');
   static const Key donorSectionKey = Key('emergency-card-donor');
 
@@ -209,7 +208,7 @@ class _Body extends ConsumerWidget {
           else ...<Widget>[
             _SectionCard(
               sectionKey: EmergencyCardScreen.patientSectionKey,
-              label: 'Your loved one',
+              label: 'Your client',
               child: _PatientBlock(patient: patient),
             ),
             const SizedBox(height: 12),
@@ -304,7 +303,7 @@ class _IceHeadline extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
-// Empty placeholder (no loved one's profile yet)
+// Empty placeholder (no client's profile yet)
 // ---------------------------------------------------------------------------
 
 class _EmptyPlaceholder extends StatelessWidget {
@@ -326,7 +325,7 @@ class _EmptyPlaceholder extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            "Add your loved one's profile to build the emergency card.",
+            "Add your client's profile to build the emergency card.",
             style: textTheme.headlineMedium?.copyWith(
               color: context.hc.primary,
             ),
@@ -687,20 +686,6 @@ class _InsuranceBlock extends ConsumerWidget {
             ),
           ),
         ],
-        Align(
-          alignment: Alignment.centerLeft,
-          child: TextButton.icon(
-            key: EmergencyCardScreen.insuranceAppealKey,
-            onPressed: () =>
-                context.push('/insurance-appeal', extra: ins.carrier),
-            icon: const Icon(Icons.description_outlined, size: 18),
-            label: const Text('Draft an appeal letter'),
-            style: TextButton.styleFrom(
-              foregroundColor: context.hc.primary,
-              visualDensity: VisualDensity.compact,
-            ),
-          ),
-        ),
       ],
     );
   }
@@ -785,7 +770,7 @@ String _donorLabel(DonorStatus status) {
 class _BloodTypeBlock extends StatelessWidget {
   const _BloodTypeBlock({required this.bloodType});
 
-  /// The loved one's ABO/Rh type, or null when never entered ("Unknown").
+  /// The client's ABO/Rh type, or null when never entered ("Unknown").
   final String? bloodType;
 
   @override

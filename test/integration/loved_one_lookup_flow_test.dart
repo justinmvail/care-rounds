@@ -42,17 +42,17 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 /// End-to-end regression for the fresh-sign-in loved-one lookup
 /// (fb 2026-06-13). A returning caregiver signing in on a new install has
-/// NO loved one on this device yet, but their account already owns one on
+/// NO client on this device yet, but their account already owns one on
 /// the backend. Before this fix the `/setup` gate (which keys off the LOCAL
 /// patient only) forced them to create a DUPLICATE person, which sync then
 /// shadowed with their original as the active one. This drives the REAL
 /// router redirect + the REAL sign-in screen + the REAL
 /// [lovedOneLookupProvider] against a faked backend, asserting the existing
-/// loved one is adopted and the wizard is skipped.
+/// client is adopted and the wizard is skipped.
 
-/// Backend whose account ALREADY owns a loved one: its single circle
+/// Backend whose account ALREADY owns a client: its single circle
 /// carries the [patient], so `bootstrapCircle` adopts the circle and writes
-/// the loved one onto this device.
+/// the client onto this device.
 class _BackendWithLovedOne extends ForumApiClient {
   _BackendWithLovedOne(this._patient)
       : super(
@@ -162,7 +162,7 @@ class _AlreadyOnboarded extends OnboardingCompleted {
 }
 
 /// A fake-backed [SyncController] over an in-memory drift db that SHARES
-/// [storage] with the app, so an adopted loved one is visible to the
+/// [storage] with the app, so an adopted client is visible to the
 /// `/setup` gate.
 SyncController _buildSync(
   CareRoundsDatabase db,
@@ -260,7 +260,7 @@ void main() {
   driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
 
   testWidgets(
-    'returning caregiver whose account already owns a loved one adopts it '
+    'returning caregiver whose account already owns a client adopts it '
     'and skips /setup (no duplicate)',
     (WidgetTester tester) async {
       final _SpyAuth auth = _SpyAuth();
@@ -275,7 +275,7 @@ void main() {
       expect(find.byType(LovedOneSetupScreen), findsNothing);
 
       // Sign in: the fresh-sign-in lookup adopts the account's existing
-      // loved one off the backend BEFORE the /setup gate can force a dup.
+      // client off the backend BEFORE the /setup gate can force a dup.
       await tester.tap(find.byKey(SignInScreen.googleButtonKey));
       await tester.pumpAndSettle();
 
@@ -284,7 +284,7 @@ void main() {
       expect(find.byType(LovedOneSetupScreen), findsNothing);
       expect(pumped.router.routerDelegate.currentConfiguration.uri.path, '/');
 
-      // Their existing loved one was pulled onto this device (not re-created)
+      // Their existing client was pulled onto this device (not re-created)
       // and the backend's circle was adopted, not a brand-new one minted.
       final Patient? adopted = await pumped.storage.getPatient();
       expect(adopted?.name, mary.name);
@@ -293,7 +293,7 @@ void main() {
   );
 
   testWidgets(
-    'genuinely new caregiver (account owns no loved one) still lands on '
+    'genuinely new caregiver (account owns no client) still lands on '
     '/setup',
     (WidgetTester tester) async {
       final _SpyAuth auth = _SpyAuth();
@@ -307,7 +307,7 @@ void main() {
       await tester.tap(find.byKey(SignInScreen.googleButtonKey));
       await tester.pumpAndSettle();
 
-      // No loved one anywhere → the setup wizard, exactly as before the fix.
+      // No client anywhere → the setup wizard, exactly as before the fix.
       expect(find.byType(LovedOneSetupScreen), findsOneWidget);
       expect(find.byType(HomeScreen), findsNothing);
       expect(await pumped.storage.getPatient(), isNull);

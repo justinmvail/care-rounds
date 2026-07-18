@@ -91,7 +91,7 @@ void main() {
           expenseIdFactoryProvider.overrideWithValue(() => 'new-${ids++}'),
           if (attacher != null)
             photoAttacherProvider.overrideWithValue(attacher),
-          // Creating an expense now resolves the active loved one via
+          // Creating an expense now resolves the active client via
           // activePatientIdProvider → storageProvider; an empty in-memory
           // store keeps the test off the on-device sqlite file and falls
           // back to 'demo-patient-mary' (== _patientId), so the stamped

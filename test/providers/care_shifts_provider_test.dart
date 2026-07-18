@@ -26,7 +26,7 @@ CareShift _shift({
       notes: notes,
     );
 
-/// Pins the active loved one for the display-scoped [CareShifts.build] /
+/// Pins the active client for the display-scoped [CareShifts.build] /
 /// [shiftWeek] without hitting the on-device SQLite file.
 Override _activePatient([String id = _patientId]) =>
     activePatientIdProvider.overrideWith((Ref ref) async => id);
@@ -379,7 +379,7 @@ void main() {
       expect(await container.read(careShiftsProvider.future), isEmpty);
     });
 
-    test('the strip shows only the ACTIVE patient — another loved one\'s '
+    test('the strip shows only the ACTIVE patient — another client\'s '
         'shift is hidden', () async {
       await repo.upsertShift(_shift(
         id: 'mine',

@@ -87,7 +87,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get signInReassurance =>
-      'Signing in keeps your notes safe and in sync across your devices. We never post anything, and your loved one\'s information stays private.';
+      'Signing in keeps your notes safe and in sync across your devices. We never post anything, and your client\'s information stays private.';
 
   @override
   String get signInContinueWithApple => 'Continue with Apple';
@@ -127,7 +127,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get lovedOneSetupLastStep => 'Last step';
 
   @override
-  String get lovedOneSetupTitle => 'Let\'s set up your person';
+  String get lovedOneSetupTitle => 'Let\'s set up your client';
 
   @override
   String get lovedOneSetupIntro =>
@@ -198,5 +198,5 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get lovedOneSetupSaveSemantics =>
-      'Save your person and continue to the app.';
+      'Save your client and continue to the app.';
 }

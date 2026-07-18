@@ -16,6 +16,10 @@ import 'package:carerounds/services/chat_actions.dart';
 import 'package:carerounds/services/chat_repository.dart';
 import 'package:carerounds/services/chat_service.dart';
 import 'package:carerounds/theme.dart';
+import 'package:carerounds/providers/my_rounds_provider.dart';
+import 'package:carerounds/models/care_shift.dart';
+import 'package:carerounds/models/patient.dart';
+import 'package:carerounds/screens/settings/loved_ones_screen.dart';
 import 'package:carerounds/widgets/tab_scaffold.dart';
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
@@ -102,6 +106,14 @@ Future<({GoRouter router, ChatRepository repo})> _pumpRouter(
           ),
         ),
         chatRepositoryProvider.overrideWith((_) => repo),
+        // Rounds tab renders MyRoundsScreen; feed it a resolved, DB-free
+        // state so tapping to that branch doesn't open a live drift stream.
+        selfCaregiverIdProvider.overrideWith((_) async => 'me'),
+        myRoundsProvider.overrideWith((_) async => const <CareShift>[]),
+        lovedOnesViewProvider.overrideWith(
+          (_) async =>
+              const LovedOnesView(patients: <Patient>[], activeId: null),
+        ),
         ...extraOverrides,
       ],
       child: MaterialApp.router(routerConfig: router),
@@ -123,7 +135,7 @@ void main() {
           'Home',
           'Care',
           'Chat',
-          'Community',
+          'Rounds',
         ],
       );
     });
@@ -141,11 +153,11 @@ void main() {
       );
     });
 
-    test('Chat + Community keep their glyphs', () {
+    test('Chat + Rounds keep their glyphs', () {
       expect(TabScaffoldBar.destinations[2].icon, Icons.chat_bubble_outline);
       expect(TabScaffoldBar.destinations[2].selectedIcon, Icons.chat_bubble);
-      expect(TabScaffoldBar.destinations[3].icon, Icons.forum_outlined);
-      expect(TabScaffoldBar.destinations[3].selectedIcon, Icons.forum);
+      expect(TabScaffoldBar.destinations[3].icon, Icons.route_outlined);
+      expect(TabScaffoldBar.destinations[3].selectedIcon, Icons.route);
     });
   });
 
@@ -157,7 +169,7 @@ void main() {
           '/',
           '/medical',
           '/chat',
-          '/community',
+          '/rounds',
         ],
       );
     });
@@ -178,7 +190,7 @@ void main() {
       expect(find.text('Home'), findsOneWidget);
       expect(find.text('Care'), findsOneWidget);
       expect(find.text('Chat'), findsOneWidget);
-      expect(find.text('Community'), findsOneWidget);
+      expect(find.text('Rounds'), findsOneWidget);
       // The mic is an inline center action, not a tab.
       expect(find.byKey(TabScaffold.centerVoiceButtonKey), findsOneWidget);
       // The old Medical/Team labels are gone.
@@ -192,16 +204,16 @@ void main() {
 
       double cx(Finder f) => tester.getCenter(f).dx;
       final double mic = cx(find.byKey(TabScaffold.centerVoiceButtonKey));
-      // Home + Care are left of the mic; Chat + Community are right of it.
+      // Home + Care are left of the mic; Chat + Rounds are right of it.
       expect(cx(find.text('Home')), lessThan(mic));
       expect(cx(find.text('Care')), lessThan(mic));
       expect(cx(find.text('Chat')), greaterThan(mic));
-      expect(cx(find.text('Community')), greaterThan(mic));
+      expect(cx(find.text('Rounds')), greaterThan(mic));
     });
 
     testWidgets('forwards taps to onDestinationSelected by branch index',
         (WidgetTester tester) async {
-      // Tab order: [Home, Care, Chat, Community] → branch 0..3.
+      // Tab order: [Home, Care, Chat, Rounds] → branch 0..3.
       int? tapped;
       await _pumpBar(
         tester,
@@ -209,7 +221,7 @@ void main() {
         onTap: (int index) => tapped = index,
       );
 
-      await tester.tap(find.byIcon(Icons.forum_outlined));
+      await tester.tap(find.byIcon(Icons.route_outlined));
       expect(tapped, 3);
 
       await tester.tap(find.byIcon(Icons.volunteer_activism_outlined));
@@ -268,10 +280,10 @@ void main() {
         expect(_currentPath(router), '/chat');
         expect(find.byType(ConversationListScreen), findsOneWidget);
 
-        // Community — direct landing.
-        await tester.tap(find.byIcon(Icons.forum_outlined));
+        // Rounds — direct landing.
+        await tester.tap(find.byIcon(Icons.route_outlined));
         await tester.pumpAndSettle();
-        expect(_currentPath(router), '/community');
+        expect(_currentPath(router), '/rounds');
 
         // Back to Home.
         await tester.tap(find.byIcon(Icons.home_outlined));
@@ -318,7 +330,7 @@ void main() {
         expect(find.text('Home'), findsOneWidget);
         expect(find.text('Care'), findsOneWidget);
         expect(find.text('Chat'), findsOneWidget);
-        expect(find.text('Community'), findsOneWidget);
+        expect(find.text('Rounds'), findsOneWidget);
         // The mic is an additive inline center element, not a tab.
         expect(find.byKey(TabScaffold.centerVoiceButtonKey), findsOneWidget);
       },

@@ -59,7 +59,7 @@ void main() {
       overrides: <Override>[
         appointmentRepositoryProvider.overrideWithValue(appointmentRepo),
         careTasksRepositoryProvider.overrideWithValue(tasksRepo),
-        // Pin the active loved one so the task projection is scoped without
+        // Pin the active client so the task projection is scoped without
         // touching the on-device SQLite file (the default
         // activePatientIdProvider reads storage); the seeded tasks carry the
         // same id so they surface.
@@ -116,7 +116,7 @@ void main() {
       expect(events, isEmpty);
     });
 
-    test('excludes a standalone task filed under another loved one', () async {
+    test('excludes a standalone task filed under another client', () async {
       // Active patient is _patientId; this task belongs to someone else, so
       // it must not ride the active person's timeline.
       await tasksRepo.upsertTask(_task(

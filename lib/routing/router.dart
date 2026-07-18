@@ -10,13 +10,8 @@ import '../providers/onboarding_provider.dart';
 import '../providers/patient_configured_provider.dart';
 import '../screens/chat/chat_screen.dart';
 import '../screens/chat/conversation_list_screen.dart';
-import '../models/forum.dart';
-import '../screens/community/admin_reports_screen.dart';
-import '../screens/community/community_feed_screen.dart';
-import '../screens/community/community_guidelines_screen.dart';
 import '../screens/community/learn_playbook_detail_screen.dart';
-import '../screens/community/post_compose_screen.dart';
-import '../screens/community/post_detail_screen.dart';
+import '../screens/community/learn_screen.dart';
 import '../screens/home_screen.dart';
 import '../screens/journal/journal_entry_screen.dart';
 import '../screens/journal/journal_screen.dart';
@@ -26,8 +21,6 @@ import '../screens/medical/care_plan_routines_screen.dart';
 import '../screens/medical/emergency_card_edit_screen.dart';
 import '../screens/medical/care_summary_screen.dart';
 import '../screens/medical/emergency_card_screen.dart';
-import '../screens/medical/find_provider_screen.dart';
-import '../screens/medical/insurance_appeal_screen.dart';
 import '../screens/medical/health_log_entry_form.dart';
 import '../screens/medical/health_log_screen.dart';
 import '../screens/medical/medical_hub_screen.dart';
@@ -82,10 +75,9 @@ class CareRoundsRoutes {
   // Subscription paywall (scaffold — NO feature gated yet). Reachable
   // machinery only; there's no route INTO it from a gated feature today.
   static const String paywall = 'paywall';
-  static const String insuranceAppeal = 'insurance-appeal';
-  // Multi-patient "Loved ones" manager (Issue #6). `lovedOnes` → the
+  // Multi-patient "Clients" manager (Issue #6). `lovedOnes` → the
   // switcher/manager; `lovedOnesAdd` → the setup wizard reused in add
-  // mode to append + activate another loved one.
+  // mode to append + activate another client.
   static const String lovedOnes = 'loved-ones';
   static const String lovedOnesAdd = 'loved-ones-add';
   static const String journalEntry = 'journal-entry';
@@ -96,7 +88,8 @@ class CareRoundsRoutes {
   static const String medicationForm = 'medication-form';
   static const String medicationScanReview = 'medication-scan-review';
   static const String scanDocument = 'scan-document';
-  static const String findProvider = 'find-provider';
+  static const String learn = 'learn';
+  static const String rounds = 'rounds';
   static const String careSummary = 'care-summary';
   static const String medicationEdit = 'medication-edit';
   static const String medicationDoseLog = 'medication-dose-log';
@@ -107,16 +100,9 @@ class CareRoundsRoutes {
   static const String appointmentDetail = 'appointment-detail';
   static const String appointmentForm = 'appointment-form';
   static const String appointmentEdit = 'appointment-edit';
-  static const String community = 'community';
-  static const String communityPostDetail = 'community-post-detail';
-  static const String communityPostEdit = 'community-post-edit';
-  static const String communityCompose = 'community-compose';
-  static const String communityGuidelines = 'community-guidelines';
-  static const String communityAdminReports = 'community-admin-reports';
-  // Community → Learn playbook detail (Phase 14.37). Pushed onto the root
-  // navigator so it covers the tab bar, matching the post-detail page.
-  // (Videos deep-link to YouTube and have no in-app route;
-  // fb_1780932492880889.)
+  // Learn playbook detail (worker micro-training), relocated out of the
+  // removed Community tab. (Videos deep-link to YouTube and have no in-app
+  // route; fb_1780932492880889.)
   static const String communityLearnPlaybook = 'community-learn-playbook';
 
   // Phase 14 IA — Medical hub + its feature pages (BUILD_SPEC.md §4–§5).
@@ -228,21 +214,9 @@ GoRouter buildRouter({
         builder: (BuildContext context, GoRouterState state) =>
             const PaywallScreen(),
       ),
-      // AI insurance-appeal helper — reached from the emergency card's
-      // insurance block; pushes onto the root navigator so it covers the
-      // tab bar. `extra` optionally carries the carrier name.
-      GoRoute(
-        path: '/insurance-appeal',
-        name: CareRoundsRoutes.insuranceAppeal,
-        parentNavigatorKey: rootNavigatorKey,
-        builder: (BuildContext context, GoRouterState state) =>
-            InsuranceAppealScreen(
-          carrier: state.extra is String ? state.extra as String : null,
-        ),
-      ),
-      // Multi-patient "Loved ones" manager (Issue #6) — reached from
-      // Settings → "Loved ones". The `add` child reuses the onboarding
-      // [LovedOneSetupScreen] in add mode, so a new loved one is appended
+      // Multi-patient "Clients" manager (Issue #6) — reached from
+      // Settings → "Clients". The `add` child reuses the onboarding
+      // [LovedOneSetupScreen] in add mode, so a new client is appended
       // + made active rather than gating the first-run flow. Both push
       // onto the root navigator so they cover the tab bar like Settings.
       GoRoute(
@@ -261,77 +235,17 @@ GoRouter buildRouter({
           ),
         ],
       ),
+      // Learn playbook detail (worker micro-training). Relocated out of the
+      // removed Community tab to a top-level `/learn` path; pushed onto the
+      // root navigator, reached from the Learn entry under Care.
       GoRoute(
-        path: '/community/compose',
-        name: CareRoundsRoutes.communityCompose,
-        parentNavigatorKey: rootNavigatorKey,
-        builder: (BuildContext context, GoRouterState state) =>
-            const PostComposeScreen(),
-      ),
-      GoRoute(
-        path: '/community/guidelines',
-        name: CareRoundsRoutes.communityGuidelines,
-        parentNavigatorKey: rootNavigatorKey,
-        builder: (BuildContext context, GoRouterState state) =>
-            const CommunityGuidelinesScreen(),
-      ),
-      GoRoute(
-        path: '/community/admin/reports',
-        name: CareRoundsRoutes.communityAdminReports,
-        parentNavigatorKey: rootNavigatorKey,
-        builder: (BuildContext context, GoRouterState state) =>
-            const AdminReportsScreen(),
-      ),
-      // Community → Learn playbook detail (Phase 14.37). The Learn segment
-      // lives in-tab under `/community`; this pushed page renders the
-      // seeded playbook content. Registered before the `/community/:postId`
-      // catch-all so the static `learn` segment is never swallowed by the
-      // post-detail param route. (Videos no longer have an in-app detail
-      // screen — cards deep-link straight to YouTube; fb_1780932492880889.)
-      GoRoute(
-        path: '/community/learn/playbooks/:id',
+        path: '/learn/playbooks/:id',
         name: CareRoundsRoutes.communityLearnPlaybook,
         parentNavigatorKey: rootNavigatorKey,
         builder: (BuildContext context, GoRouterState state) =>
             LearnPlaybookDetailScreen(
           playbookId: state.pathParameters['id'] ?? '',
         ),
-      ),
-      GoRoute(
-        path: '/community/:postId',
-        name: CareRoundsRoutes.communityPostDetail,
-        parentNavigatorKey: rootNavigatorKey,
-        builder: (BuildContext context, GoRouterState state) {
-          // Feed tiles push here with the already-fetched [ForumPost]
-          // as `extra` so the header renders immediately instead of
-          // blanking while the post fetch lands. A deep-link with no
-          // extra falls through to a fetch-by-id path.
-          final Object? extra = state.extra;
-          return PostDetailScreen(
-            postId: state.pathParameters['postId'] ?? '',
-            initialPost: extra is ForumPost ? extra : null,
-          );
-        },
-        routes: <RouteBase>[
-          // Edit one of the caregiver's OWN posts — the compose surface in
-          // edit mode, prefilled from the post and PATCHing the body on save.
-          // Pushed onto the root navigator so it covers the tab bar like the
-          // detail page it launches from; the owner-only entry point lives in
-          // the post header overflow menu (gated on profile ownership). The
-          // post rides along as `extra` so the form prefills without a
-          // fetch-by-id round-trip.
-          GoRoute(
-            path: 'edit',
-            name: CareRoundsRoutes.communityPostEdit,
-            parentNavigatorKey: rootNavigatorKey,
-            builder: (BuildContext context, GoRouterState state) {
-              final Object? extra = state.extra;
-              return PostComposeScreen(
-                editPost: extra is ForumPost ? extra : null,
-              );
-            },
-          ),
-        ],
       ),
       // Crisis card — deep-link compatibility shim (Phase 14.5). The
       // emergency content now lives at `/medical/cards/emergency` under
@@ -493,13 +407,13 @@ GoRouter buildRouter({
                 builder: (BuildContext context, GoRouterState state) =>
                     const ScanDocumentScreen(),
               ),
-              // Find-a-provider (NPI Registry search) — saves matches as
-              // Providers, so they're pickable when booking an appointment.
+              // Learn — worker micro-training playbooks (relocated from the
+              // removed Community tab). Reached from the Care hub.
               GoRoute(
-                path: '/find-provider',
-                name: CareRoundsRoutes.findProvider,
+                path: '/learn',
+                name: CareRoundsRoutes.learn,
                 builder: (BuildContext context, GoRouterState state) =>
-                    const FindProviderScreen(),
+                    const LearnScreen(),
               ),
               // Shareable care summary (PDF) for provider coordination.
               GoRoute(
@@ -840,15 +754,16 @@ GoRouter buildRouter({
               ),
             ],
           ),
-          // Community — direct landing (Feed; Learn/Support sub-nav
-          // arrives in Phase 14.36).
+          // Rounds — the worker's daily shifts across all clients (Care
+          // Rounds' flagship, promoted from a Care sub-menu into the tab bar,
+          // replacing the removed Community forum).
           StatefulShellBranch(
             routes: <RouteBase>[
               GoRoute(
-                path: '/community',
-                name: CareRoundsRoutes.community,
+                path: '/rounds',
+                name: CareRoundsRoutes.rounds,
                 builder: (BuildContext context, GoRouterState state) =>
-                    const CommunityFeedScreen(),
+                    const MyRoundsScreen(),
               ),
             ],
           ),
@@ -886,7 +801,7 @@ GoRouter buildRouter({
 ///
 ///    **Exception — a fresh sign-in's one-time backend lookup
 ///    ([lovedOneLookupPending]).** A returning caregiver signing in on a
-///    new install has no loved one on THIS device yet, but their account
+///    new install has no client on THIS device yet, but their account
 ///    may already own one on the backend. While that one-time lookup is
 ///    in flight we hold on `/sign-in` (which shows its own spinner)
 ///    instead of forcing `/setup` — otherwise the caregiver is made to
@@ -1003,7 +918,7 @@ GoRouter careroundsRouter(Ref ref) {
   );
 
   // The fresh-sign-in loved-one lookup flips a bool while it asks the
-  // backend whether the account already owns a loved one. The redirect
+  // backend whether the account already owns a client. The redirect
   // re-reads it on every evaluation, so the listener just wakes go_router
   // when the gate engages (hold on sign-in) or releases (decide
   // setup-vs-home).

@@ -31,7 +31,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart' show Override;
 /// "Back up my data" row runs end-to-end without hitting the drift file
 /// (`CareRoundsDatabase.open()`) or the `share_plus` platform channel:
 ///   - [exportSourcesProvider] → sources backed by an in-memory DB +
-///     [InMemoryStorageProvider] (seeded with the demo loved one).
+///     [InMemoryStorageProvider] (seeded with the demo client).
 ///   - [dataFileSharerProvider] → [RecordingDataFileSharer] so the test
 ///     asserts the bytes + filename the row handed off.
 ///   - storage + tts are pinned the same way the sibling settings test
@@ -125,7 +125,7 @@ void main() {
       expect(call.filename, startsWith(DataExporter.filenamePrefix));
 
       // The shared bytes are the real export envelope, carrying the seeded
-      // loved one — proof the row gathered through the exporter, not a stub.
+      // client — proof the row gathered through the exporter, not a stub.
       final Map<String, dynamic> parsed =
           jsonDecode(utf8.decode(call.bytes)) as Map<String, dynamic>;
       expect(parsed['schemaVersion'], dataExportSchemaVersion);

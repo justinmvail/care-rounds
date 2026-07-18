@@ -58,7 +58,7 @@ typedef ChatActionExecutor = Future<ChatActionOutcome?> Function(
 /// the model had emitted `add_medication` with no `dosage`, the executor
 /// silently did nothing, and the confirm card reported success. The coach
 /// claimed a write it never made, which is worse than failing loudly: it puts
-/// wrong information into a caregiver's mental model of their loved one's meds.
+/// wrong information into a caregiver's mental model of their client's meds.
 class ChatActionOutcome {
   /// The write happened. [citation] optionally surfaces a chip; [notice] is an
   /// optional caregiver-facing line about what was PARTIALLY done or assumed
@@ -817,7 +817,7 @@ Future<ChatActionOutcome?> _addTask(
   final String? patientId = await _patientId(ref);
   if (patientId == null) {
     return const ChatActionOutcome.failed(
-        "I couldn't save that — set up your loved one's profile first.");
+        "I couldn't save that — set up your client's profile first.");
   }
   final task = CareTask(
     id: _mintId('task', clock),
@@ -834,12 +834,12 @@ Future<ChatActionOutcome?> _completeTask(
   Ref ref,
   Map<String, String> args,
 ) async {
-  // Scope the by-title lookup to the active loved one (multi-patient, Issue
+  // Scope the by-title lookup to the active client (multi-patient, Issue
   // #6) so "complete the pharmacy task" can't match another person's task.
   final String? patientId = await _patientId(ref);
   if (patientId == null) {
     return const ChatActionOutcome.failed(
-        "I couldn't save that — set up your loved one's profile first.");
+        "I couldn't save that — set up your client's profile first.");
   }
   final List<CareTask> tasks = await ref
       .read(careTasksRepositoryProvider)
@@ -858,11 +858,11 @@ Future<ChatActionOutcome?> _deleteTask(
   Map<String, String> args,
 ) async {
   // Same active-patient scoping as _completeTask — a destructive lookup must
-  // never resolve to a different loved one's task (multi-patient, Issue #6).
+  // never resolve to a different client's task (multi-patient, Issue #6).
   final String? patientId = await _patientId(ref);
   if (patientId == null) {
     return const ChatActionOutcome.failed(
-        "I couldn't save that — set up your loved one's profile first.");
+        "I couldn't save that — set up your client's profile first.");
   }
   final List<CareTask> tasks = await ref
       .read(careTasksRepositoryProvider)
@@ -960,7 +960,7 @@ Future<ChatActionOutcome?> _addRoutine(
   final String? patientId = await _patientId(ref);
   if (patientId == null) {
     return const ChatActionOutcome.failed(
-        "I couldn't save that — set up your loved one's profile first.");
+        "I couldn't save that — set up your client's profile first.");
   }
 
   final FrequencyKind frequency = _parseFrequency(args['frequency']);
@@ -1030,7 +1030,7 @@ Future<ChatActionOutcome?> _addHealthLog(
   final String? patientId = await _patientId(ref);
   if (patientId == null) {
     return const ChatActionOutcome.failed(
-        "I couldn't save that — set up your loved one's profile first.");
+        "I couldn't save that — set up your client's profile first.");
   }
   // recorded_at reuses the journal's tolerant relative-time parsing so the
   // coach can say "this morning" the same way it logs a journal entry.
@@ -1151,8 +1151,9 @@ Future<String?> routeForNavTarget(
       return '/team/tasks';
     case 'journal':
       return '/journal';
-    case 'community':
-      return '/community';
+    case 'rounds':
+    case 'my rounds':
+      return '/rounds';
     case 'emergency card':
     case 'emergency':
       return '/medical/cards/emergency';

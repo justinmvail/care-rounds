@@ -10,10 +10,10 @@ import '../services/appointment_repository.dart';
 import '../services/medication_repository.dart';
 import '../services/pdf_exporter.dart';
 
-/// Gathers the loved one's current picture — conditions/allergies (from the
+/// Gathers the client's current picture — conditions/allergies (from the
 /// emergency card), active medications with their schedules, and upcoming
 /// appointments with providers — and renders the shareable care-summary PDF.
-/// Null when no loved one is on file; errors propagate to the caller.
+/// Null when no client is on file; errors propagate to the caller.
 /// autoDispose so it re-gathers each time it's opened.
 final careSummaryPdfProvider =
     FutureProvider.autoDispose<Uint8List?>((ref) async {
@@ -30,7 +30,7 @@ final careSummaryPdfProvider =
     final EmergencyCardView view =
         await ref.watch(emergencyCardViewProvider.future);
     final patient = view.patient;
-    if (patient == null) return null; // no loved one on file → nothing to share
+    if (patient == null) return null; // no client on file → nothing to share
 
     final MedicationRepository medRepo =
         ref.watch(medicationRepositoryBackendProvider);

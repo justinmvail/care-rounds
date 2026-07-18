@@ -26,9 +26,9 @@ library;
 /// where a higher rating signals more strain. Order is fixed — the
 /// scoring sums the answers positionally.
 const List<String> burnoutQuestions = <String>[
-  'I feel emotionally drained by caring for my loved one.',
+  'I feel emotionally drained by caring for my client.',
   'I have less time for myself than I need.',
-  'I feel alone in caring for my loved one.',
+  'I feel alone in caring for my client.',
   "I'm having trouble sleeping or truly resting.",
   'I feel overwhelmed by everything I have to manage.',
   "I get impatient or short-tempered more than I'd like.",
@@ -220,7 +220,7 @@ const List<ExpertAnswer> expertAnswers = <ExpertAnswer>[
     answer:
         'First, please hear that reaching a breaking point does not make '
         'you a failing caregiver — it makes you a human one. On those days, '
-        'lower the bar to only what keeps your loved one safe and fed, and '
+        'lower the bar to only what keeps your client safe and fed, and '
         'let the rest wait. Then reach out to a real person: a respite '
         'line, a counselor, or your own doctor. You are allowed to need '
         'care too.',

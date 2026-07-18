@@ -185,7 +185,7 @@ void main() {
       },
     );
 
-    test('upsertPatient + getPatient round-trip the loved one', () async {
+    test('upsertPatient + getPatient round-trip the client', () async {
       expect(await storage.getPatient(), isNull);
 
       final Patient mary = buildPatient();
@@ -199,7 +199,7 @@ void main() {
     });
 
     test(
-      'multi-patient: listPatients returns every loved one + setActive '
+      'multi-patient: listPatients returns every client + setActive '
       'switches which getPatient resolves (Issue #6)',
       () async {
         // Empty before onboarding.
@@ -241,7 +241,7 @@ void main() {
 
     test('single patient stays the default-active row (backward compat)',
         () async {
-      // The v1 demo case: exactly one loved one, no active id ever set.
+      // The v1 demo case: exactly one client, no active id ever set.
       await storage.upsertPatient(buildPatient());
       expect(await storage.getActivePatientId(), isNull);
       expect((await storage.getPatient())!.id, 'demo-patient-mary');

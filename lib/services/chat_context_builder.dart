@@ -61,7 +61,7 @@ class ChatContextData {
   /// emitted NO action marker, so nothing was ever scheduled (2026-07-14).
   final DateTime? now;
 
-  /// The active loved one, or null when none is on file yet.
+  /// The active client, or null when none is on file yet.
   final Patient? patient;
 
   /// Live medications, alphabetical (as the repo returns them).
@@ -82,7 +82,7 @@ class ChatContextData {
   /// Care routines, sorted by wall-clock time (as the repo returns them).
   final List<CarePlanRoutine> routines;
 
-  /// Titles of the care-team tasks still OPEN for the active loved one.
+  /// Titles of the care-team tasks still OPEN for the active client.
   ///
   /// The coach could `add_task`, `complete_task` and `delete_task` but could
   /// not SEE the task list — so asked to tick one off it invented a plausible
@@ -277,7 +277,7 @@ String sanitizeForPrompt(String value) => value
 /// rule).
 String formatChatContext(ChatContextData data) {
   final StringBuffer sb = StringBuffer();
-  sb.writeln('CURRENT DATA (read-only — the loved one and care details '
+  sb.writeln('CURRENT DATA (read-only — the client and care details '
       'on file right now; use this to answer questions about them):');
 
   // The current date+time, so relative phrases in scheduling requests
@@ -300,7 +300,7 @@ String formatChatContext(ChatContextData data) {
 
   final Patient? p = data.patient;
   if (p != null) {
-    final StringBuffer line = StringBuffer('Loved one: ${p.name}, ${p.age}');
+    final StringBuffer line = StringBuffer('Client: ${p.name}, ${p.age}');
     if (p.diagnosis.trim().isNotEmpty) line.write(', ${p.diagnosis.trim()}');
     line.write('.');
     final List<String> allergies = p.allergies
@@ -312,7 +312,7 @@ String formatChatContext(ChatContextData data) {
     }
     sb.writeln(line.toString());
   } else {
-    sb.writeln('Loved one: none on file yet.');
+    sb.writeln('Client: none on file yet.');
   }
 
   // Medications.

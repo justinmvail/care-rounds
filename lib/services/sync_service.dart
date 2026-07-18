@@ -405,7 +405,7 @@ class SyncController {
   ///
   /// Outbox rows in the `patient` collection are split out and sent on
   /// the protocol's dedicated `patient` field (the server stores the
-  /// loved one in its own per-circle row, not in `care_docs`) — this is
+  /// client in its own per-circle row, not in `care_docs`) — this is
   /// what makes a crisis-card / profile edit reach the rest of the
   /// circle (2026-06-11; previously the patient never synced after
   /// creation).
@@ -576,7 +576,7 @@ class SyncController {
   /// database, where that circle never existed.
   ///
   /// Recovery is safe: dropping the binding makes the next bootstrap ADOPT a
-  /// circle the account already owns, or CREATE one for the local loved one.
+  /// circle the account already owns, or CREATE one for the local client.
   /// Nothing local is deleted, and the outbox still holds every unpushed row,
   /// so the data flows up to the new circle on the following tick.
   Future<void> _recoverIfCircleGone(String circleId, Object error) async {
@@ -727,7 +727,7 @@ class SyncController {
   }
 
   /// Adopt the circle a joiner just joined (server-authoritative sync):
-  /// write its shared loved one locally + make them active, bind the
+  /// write its shared client locally + make them active, bind the
   /// circle id + cursor, then pull the rest of the shared data. Called
   /// from the QR/username join paths after `joinCircle` succeeds.
   /// Best-effort; a failure leaves the join's local state intact.
@@ -1019,7 +1019,7 @@ class SyncController {
   }
 
   Future<void> _applyPatient(SyncPatient patient) async {
-    if (patient.deleted) return; // v1 never deletes the loved one
+    if (patient.deleted) return; // v1 never deletes the client
     if (patient.payload.isEmpty) return;
     final Map<String, dynamic> json =
         jsonDecode(patient.payload) as Map<String, dynamic>;

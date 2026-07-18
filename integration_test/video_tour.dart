@@ -21,7 +21,6 @@ import 'package:carerounds/providers/tts_provider.dart';
 import 'package:carerounds/routing/router.dart';
 import 'package:carerounds/screens/chat/chat_screen.dart';
 import 'package:carerounds/screens/chat/conversation_list_screen.dart';
-import 'package:carerounds/screens/community/community_feed_screen.dart';
 import 'package:carerounds/screens/home_screen.dart';
 import 'package:carerounds/screens/journal/journal_screen.dart';
 import 'package:carerounds/screens/journal/journal_wizard_screen.dart';
@@ -203,7 +202,6 @@ void main() {
               .overrideWith((Ref ref) => ref.watch(settingsProvider)),
           homeClockProvider.overrideWithValue(_fixedNow),
           doseLogClockProvider.overrideWithValue(_fixedNow),
-          communityFeedClockProvider.overrideWithValue(_fixedNow),
           medicationRepositoryBackendProvider.overrideWithValue(medRepo),
           chatRepositoryBackendProvider.overrideWithValue(chatRepo),
           appointmentRepositoryBackendProvider
@@ -360,13 +358,9 @@ void main() {
       _cue('scene 9: coach reply streams');
       await _hold(tester, 5.0);
 
-      // ==== SCENE 10 — Community: feed + Learn ============================
-      await _tapTab(tester, 'Community');
-      expect(find.byKey(CommunityFeedScreen.listKey), findsOneWidget);
-      _cue('scene 10: community feed');
-      await _hold(tester, 3.0);
-      await _tapSegment(tester, 'Learn');
-      _cue('scene 10: Learn — the frameworks');
+      // ==== SCENE 10 — Rounds: the worker's shifts across clients =========
+      await _tapTab(tester, 'Rounds');
+      _cue('scene 10: my rounds');
       await _hold(tester, 4.0);
 
       _cue('end');
@@ -450,15 +444,6 @@ Future<void> _tapCrumb(WidgetTester tester, String label) async {
   await _tap(tester, find.widgetWithText(InkWell, label));
 }
 
-Future<void> _tapSegment(WidgetTester tester, String label) async {
-  await _tap(
-    tester,
-    find.descendant(
-      of: find.byKey(CommunityFeedScreen.subnavKey),
-      matching: find.text(label),
-    ),
-  );
-}
 
 // ---------------------------------------------------------------------------
 // Seeds — same shapes as demo_tour.dart

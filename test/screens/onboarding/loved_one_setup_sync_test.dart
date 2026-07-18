@@ -56,7 +56,7 @@ void main() {
   setUp(() => SharedPreferences.setMockInitialValues(<String, Object>{}));
 
   testWidgets(
-    'first loved one saves locally + navigates to Home when sync backend '
+    'first client saves locally + navigates to Home when sync backend '
     'is unreachable',
     (WidgetTester tester) async {
       await tester.binding.setSurfaceSize(const Size(420, 1400));
@@ -141,7 +141,7 @@ void main() {
       );
       expect(find.text('test-home'), findsOneWidget);
 
-      // The loved one is saved locally.
+      // The client is saved locally.
       final Patient? saved = await storage.getPatient();
       expect(saved?.name, 'Mary Henderson');
 

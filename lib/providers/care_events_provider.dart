@@ -14,12 +14,12 @@ import 'care_tasks_provider.dart';
 
 part 'care_events_provider.g.dart';
 
-/// Last-resort patient id used when no active loved one is on file yet.
+/// Last-resort patient id used when no active client is on file yet.
 ///
 /// Shared neutral fallback constant the medical + care-circle forms and the
 /// appointment-event projection all reference (the appointment projection
 /// FKs onto a provider, not a patient, so it stamps the single-install
-/// loved one here). The string value still matches the bundled seed data so
+/// client here). The string value still matches the bundled seed data so
 /// DEMO_MODE / widget tests that seed records keyed on it keep resolving;
 /// real installs set an explicit active patient and never persist this.
 const String fallbackPatientId = 'demo-patient-mary';
@@ -136,7 +136,7 @@ class CareEventsRepository with SyncSinkHost {
   ///
   /// UNFILTERED across patients on purpose — the sync engine
   /// ([SyncController.resyncAllLocal]) walks this to push EVERY local note up
-  /// regardless of which loved one is active. The calendar's DISPLAY read is
+  /// regardless of which client is active. The calendar's DISPLAY read is
   /// [listEventsForPatient].
   Future<List<CareEvent>> listEvents() async {
     final List<CareEventsTableData> rows = await (_db
@@ -154,7 +154,7 @@ class CareEventsRepository with SyncSinkHost {
   /// Natively-stored events filed under [patientId] only, chronological by
   /// start (multi-patient display scoping, Issue #6).
   ///
-  /// The calendar reads THIS so a caregiver with more than one loved one on
+  /// The calendar reads THIS so a caregiver with more than one client on
   /// file never sees another person's notes. Filters on the lifted
   /// [CareEventsTable.patientId] column. Sync still uses the unfiltered
   /// [listEvents].
@@ -223,7 +223,7 @@ final CareEventsRepositoryBackendProvider careEventsRepositoryProvider =
 @riverpod
 Future<List<CareEvent>> calendarTaskEvents(Ref ref) async {
   final CareTasksRepository repo = ref.watch(careTasksRepositoryProvider);
-  // Scope to the active loved one (multi-patient, Issue #6) so the Schedule
+  // Scope to the active client (multi-patient, Issue #6) so the Schedule
   // calendar never surfaces another person's task blocks.
   final String patientId = await ref.watch(activePatientIdProvider.future);
   final List<CareTask> tasks = await repo.listTasksForPatient(patientId);
@@ -280,7 +280,7 @@ Future<List<CareEvent>> careEvents(Ref ref) async {
       ),
   ];
 
-  // Notes are scoped to the active loved one (multi-patient, Issue #6); the
+  // Notes are scoped to the active client (multi-patient, Issue #6); the
   // appointment / task / shift sources are scoped at their own seams (the
   // appointment projection FKs onto a provider, not a patient, so it isn't
   // filtered here).

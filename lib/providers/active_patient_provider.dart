@@ -6,17 +6,17 @@ import 'storage_provider.dart';
 
 part 'active_patient_provider.g.dart';
 
-/// The loved one the app is currently centred on (multi-patient, Issue
+/// The client the app is currently centred on (multi-patient, Issue
 /// #6).
 ///
 /// Resolves [StorageProvider.getPatient], which itself returns the row
 /// whose id [StorageProvider.getActivePatientId] points at — falling back
 /// to the sole / first patient when no active id has been chosen. So with
-/// exactly one loved one on file (the v1 demo's Mary) this is just "the
+/// exactly one client on file (the v1 demo's Mary) this is just "the
 /// patient", unchanged; with several it tracks the caregiver's selection.
 ///
 /// `keepAlive` so the resolved patient survives the screen rebuilds a tab
-/// switch triggers. The "Loved ones" manager invalidates this (and
+/// switch triggers. The "Clients" manager invalidates this (and
 /// [activePatientIdProvider]) after a switch / add so the whole app
 /// re-reads.
 @Riverpod(keepAlive: true)
@@ -25,7 +25,7 @@ Future<Patient?> activePatient(Ref ref) async {
   return storage.getPatient();
 }
 
-/// The id of the active loved one, defaulting to [fallbackPatientId]
+/// The id of the active client, defaulting to [fallbackPatientId]
 /// ('demo-patient-mary') as a last-resort fallback.
 ///
 /// Threaded into the patient-scoped queries that previously hard-coded

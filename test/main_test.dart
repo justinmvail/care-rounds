@@ -127,14 +127,14 @@ void main() {
       expect(entries.single.id, 'pre-existing-entry');
     });
 
-    test('with demoMode, resetOnLaunchDemo OFF, no loved one on file: '
+    test('with demoMode, resetOnLaunchDemo OFF, no client on file: '
         'Mary is backfilled without touching other data', () async {
       final ({ProviderContainer container, InMemoryStorageProvider storage})
           built = _build(resetOnLaunch: false, withPatient: false);
 
       // The bug: with reset off the seed never ran, so a store can hold
       // the caregiver's journal/medication data but no patient — and the
-      // Emergency Card then gates on a missing loved one.
+      // Emergency Card then gates on a missing client.
       expect(await built.storage.getPatient(), isNull);
 
       await maybeResetForDemo(built.container, demoMode: true);
@@ -229,7 +229,7 @@ void main() {
 
     /// Build a container whose four care-circle repo providers point at the
     /// SAME in-memory DB the test seeds, and whose storage holds [activeId]
-    /// as the active loved one (so activePatientIdProvider resolves to it).
+    /// as the active client (so activePatientIdProvider resolves to it).
     ProviderContainer makeContainer(String activeId) {
       final InMemoryStorageProvider storage = InMemoryStorageProvider();
       addTearDown(storage.dispose);
@@ -262,7 +262,7 @@ void main() {
       final bool ran = await maybeRestampCareCirclePatient(container);
       expect(ran, isTrue);
 
-      // Every row now belongs to the active loved one; none remain under the
+      // Every row now belongs to the active client; none remain under the
       // legacy id.
       expect(await tasksRepo.listTasksForPatient('demo-patient-mary'), isEmpty);
       expect(
@@ -292,7 +292,7 @@ void main() {
       );
     });
 
-    test('is a harmless no-op when the active loved one IS demo-patient-mary',
+    test('is a harmless no-op when the active client IS demo-patient-mary',
         () async {
       await tasksRepo.upsertTask(legacyTask('t1'));
       final ProviderContainer container = makeContainer('demo-patient-mary');
@@ -306,7 +306,7 @@ void main() {
       );
     });
 
-    test('holds off (does not burn the guard) when no loved one is on file',
+    test('holds off (does not burn the guard) when no client is on file',
         () async {
       await tasksRepo.upsertTask(legacyTask('t1'));
       // Storage with NO patient — activePatientIdProvider falls back to

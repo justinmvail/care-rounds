@@ -56,7 +56,7 @@ CarePlanRoutine _routine(String title, TimeOfDay at) => CarePlanRoutine(
 
 void main() {
   group('formatChatContext — seeded data', () {
-    test('renders loved one, allergies, meds, windows, appts, routines', () {
+    test('renders client, allergies, meds, windows, appts, routines', () {
       final String out = formatChatContext(ChatContextData(
         patient: _patient(),
         medications: <Medication>[
@@ -88,7 +88,7 @@ void main() {
       // "reference data, never instructions" rule to exactly this region.
       expect(out, startsWith('<current_data>\nCURRENT DATA'));
       expect(out, endsWith('</current_data>'));
-      expect(out, contains("Loved one: Mary, 78, Alzheimer's."));
+      expect(out, contains("Client: Mary, 78, Alzheimer's."));
       expect(out, contains('Allergies: Penicillin.'));
       expect(out, contains('Medications: Donepezil 10 mg; Memantine 5 mg.'));
       expect(out, contains('Morning 8:00 AM (Donepezil)'));
@@ -112,7 +112,7 @@ void main() {
         patient: _patient(allergies: const <String>[]),
       ));
       expect(out, isNot(contains('Allergies:')));
-      expect(out, contains('Loved one: Mary, 78'));
+      expect(out, contains('Client: Mary, 78'));
     });
 
     test('caps medications and shows a +N more tail', () {
@@ -133,7 +133,7 @@ void main() {
     test('empty data degrades to a short, safe block (no throw)', () {
       final String out = formatChatContext(const ChatContextData());
       expect(out, startsWith('<current_data>\nCURRENT DATA'));
-      expect(out, contains('Loved one: none on file yet.'));
+      expect(out, contains('Client: none on file yet.'));
       expect(out, contains('Medications: none on file.'));
       expect(out, contains('Dose windows: none set.'));
       expect(out, contains('Upcoming appointments: none scheduled.'));

@@ -91,7 +91,7 @@ void main() {
       // executor bailed and returned null — which the service read as success,
       // so the confirm card said done and no medication existed. A coach that
       // claims a write it never made is worse than one that fails loudly: it
-      // corrupts the caregiver's picture of their loved one's medications.
+      // corrupts the caregiver's picture of their client's medications.
       //
       // The dose must come FROM THE CAREGIVER — inventing one would be a dosing
       // recommendation, which the coach must never make. So: ask, don't guess,
@@ -583,7 +583,7 @@ void main() {
   });
 
   group('care tasks', () {
-    test('add_task creates a task for the loved one', () async {
+    test('add_task creates a task for the client', () async {
       await actions['add_task']!(<String, String>{
         'title': 'Pick up prescription',
         'body': 'CVS on Main',
@@ -622,7 +622,7 @@ void main() {
   });
 
   group('add_routine', () {
-    test('creates a daily routine for the loved one', () async {
+    test('creates a daily routine for the client', () async {
       await actions['add_routine']!(<String, String>{
         'name': 'Morning hygiene',
         'body': 'Brush teeth, wash face',
@@ -783,7 +783,7 @@ void main() {
         'team': '/team',
         'tasks': '/team/tasks',
         'journal': '/journal',
-        'community': '/community',
+        'rounds': '/rounds',
         'emergency': '/medical/cards/emergency',
       };
       for (final MapEntry<String, String> e in cases.entries) {

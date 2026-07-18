@@ -15,7 +15,7 @@ import 'care_events_provider.dart' show fallbackPatientId;
 part 'expenses_provider.g.dart';
 
 /// Logical patient id new expenses are stamped with (TASKS.md Phase 14.33)
-/// — the single-install loved one. Aliases the shared neutral
+/// — the single-install client. Aliases the shared neutral
 /// [fallbackPatientId] so there's one source of truth for the value.
 const String expensesPatientId = fallbackPatientId;
 
@@ -70,7 +70,7 @@ class ExpensesRepository with SyncSinkHost {
   ///
   /// UNFILTERED across patients on purpose — the sync engine
   /// ([SyncController.resyncAllLocal]) walks this to push EVERY local row up
-  /// regardless of which loved one is active. The ledger's DISPLAY read is
+  /// regardless of which client is active. The ledger's DISPLAY read is
   /// [listExpensesForPatient].
   Future<List<Expense>> listExpenses() async {
     final List<ExpensesTableData> rows = await (_db.select(_db.expensesTable)
@@ -91,7 +91,7 @@ class ExpensesRepository with SyncSinkHost {
   /// Expenses filed under [patientId] only, newest paid first
   /// (multi-patient display scoping, Issue #6).
   ///
-  /// The ledger reads THIS so a caregiver with more than one loved one on
+  /// The ledger reads THIS so a caregiver with more than one client on
   /// file never sees another person's costs. Filters on the lifted
   /// [ExpensesTable.patientId] column. Sync still uses the unfiltered
   /// [listExpenses].
@@ -166,7 +166,7 @@ final ExpensesRepositoryBackendProvider expensesRepositoryProvider =
 @Riverpod(keepAlive: true)
 DateTime Function() expensesClock(Ref ref) => DateTime.now;
 
-/// The loved one's shared expenses ledger (TASKS.md Phase 14.33).
+/// The client's shared expenses ledger (TASKS.md Phase 14.33).
 ///
 /// `build()` loads every expense, newest-first. The mutators ([addExpense]
 /// / [updateExpense] / [removeExpense]) write through
@@ -177,8 +177,8 @@ class Expenses extends _$Expenses {
   @override
   Future<List<Expense>> build() async {
     final ExpensesRepository repo = ref.watch(expensesRepositoryProvider);
-    // Scope the ledger to the active loved one (multi-patient, Issue #6).
-    // With one loved one [activePatientIdProvider] resolves to that sole id,
+    // Scope the ledger to the active client (multi-patient, Issue #6).
+    // With one client [activePatientIdProvider] resolves to that sole id,
     // identical to the old unfiltered read.
     final String patientId = await ref.watch(activePatientIdProvider.future);
     return repo.listExpensesForPatient(patientId);

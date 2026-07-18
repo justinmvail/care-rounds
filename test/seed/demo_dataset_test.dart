@@ -84,7 +84,7 @@ void main() {
     await db.close();
   });
 
-  test('seeds the loved one', () async {
+  test('seeds the client', () async {
     final patient = await storage.getPatient();
     expect(patient, isNotNull);
     expect(patient!.id, demoPatientId);

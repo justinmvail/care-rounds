@@ -123,7 +123,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   DateTime? _selectedDay;
 
   /// Active "who" filter — null shows everyone's schedule; a caregiver id
-  /// narrows to that person's assignments (plus the loved one's unassigned
+  /// narrows to that person's assignments (plus the client's unassigned
   /// care, which belongs to no one in particular). Answers "what am I on
   /// the hook for?" / "who's doing what?" — the schedule's real job.
   String? _ownerFilter;
@@ -164,7 +164,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   bool _matchesOwner(CareEvent e) {
     // "Everyone" → the whole schedule.
     if (_ownerFilter == null) return true;
-    // A person → their own assignments + the loved one's unassigned care
+    // A person → their own assignments + the client's unassigned care
     // (meds / appointments belong to no single caregiver); other people's
     // assigned tasks + shifts drop away.
     return e.ownerCaregiverId == _ownerFilter || e.ownerCaregiverId == null;
@@ -1229,7 +1229,7 @@ AsyncValue<List<CareEvent>> _combine(
 
 /// Per-person filter row: "Everyone" + a chip per care-circle caregiver.
 /// Selecting a person narrows the schedule to what THEY are on the hook for
-/// (their assigned tasks / shifts) plus the loved one's unassigned care, so
+/// (their assigned tasks / shifts) plus the client's unassigned care, so
 /// the team can see who does what. Collapses to nothing when there's no
 /// care circle yet — a lone "Everyone" chip would do nothing.
 class _OwnerFilter extends ConsumerWidget {

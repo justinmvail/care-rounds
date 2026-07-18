@@ -35,28 +35,25 @@ class WelcomeCarousel extends ConsumerStatefulWidget {
     WelcomeCarouselPage(
       glyph: 'H',
       title: 'Care Rounds',
-      body: 'We make caring for someone you love a little easier.',
-      // Concrete value prop so page 1 isn't a pleasant-but-empty promise
-      // (UIUX_REVIEW: page 1 named no capability). Kept as a separate
-      // subtitle so the brand tagline above stays intact.
-      subtitle: 'A calm place for medications, appointments, and a coach '
-          'that actually knows your person.',
+      body: 'Your whole caseload, organized — with a coach for every visit.',
+      subtitle: 'Meds, schedules, and shift-by-shift guidance grounded in '
+          'each client\'s real care.',
     ),
     WelcomeCarouselPage(
       glyph: '📱',
-      title: 'Your pocket coach for the hard moments.',
+      title: 'A coach that knows each client.',
       body:
-          'When the day turns hard, when you don\'t know what to say, '
-          'when you just need someone who gets it — a coach who knows '
-          'your loved one\'s situation, any hour.',
+          'Before a visit or right in the moment, get step-by-step guidance '
+          'grounded in that client\'s care — and a clear nudge to flag your '
+          'supervisor when something needs more than you.',
     ),
     WelcomeCarouselPage(
       glyph: '📔',
-      title: 'A journal that travels with you.',
+      title: 'Notes that write themselves.',
       body:
-          'Jot down the moments that matter, in your own words. Bring '
-          "the real picture to your next doctor visit — not the 'showtime' "
-          'one your loved one performs in the exam room.',
+          'Speak your visit notes and we turn them into the record. Less '
+          'paperwork at the end of a shift, more time with the people you '
+          'care for.',
     ),
   ];
 

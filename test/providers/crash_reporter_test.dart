@@ -130,7 +130,7 @@ void main() {
       final SentryEvent scrubbed = scrubEvent(phi);
 
       expect(scrubbed.message, isNull,
-          reason: 'a free-text message could carry a loved one\'s care data');
+          reason: 'a free-text message could carry a client\'s care data');
       // The crash SIGNAL survives: the exception TYPE is retained.
       expect(scrubbed.exceptions, hasLength(1));
       expect(scrubbed.exceptions!.single.type, 'StateError');

@@ -227,9 +227,9 @@ abstract class CircleMemberDto with _$CircleMemberDto {
       _$CircleMemberDtoFromJson(json);
 }
 
-/// The circle-owned loved one as it lives on the sync backend
+/// The circle-owned client as it lives on the sync backend
 /// (server-authoritative sync). Carried on every circle response so a
-/// joiner adopts the shared loved one in the same round-trip that joins
+/// joiner adopts the shared client in the same round-trip that joins
 /// them. [payload] is the [Patient]'s `toJson` shape encoded as a JSON
 /// **string** on the wire; decode with `jsonDecode` then
 /// `Patient.fromJson`. [rev] is the server's monotonic revision; [deleted]
@@ -271,9 +271,9 @@ abstract class SyncDoc with _$SyncDoc {
 /// `POST /circles`, `GET /circles`, and `POST /circles/join`. Carries
 /// the denormalized [members] roster so the People surface renders the
 /// circle without a second round-trip, and (server-authoritative sync)
-/// the circle-owned [patient] so a joiner adopts the shared loved one
+/// the circle-owned [patient] so a joiner adopts the shared client
 /// without a separate fetch. [patient] is null for a circle that has no
-/// loved one on file yet.
+/// client on file yet.
 @freezed
 abstract class CircleDto with _$CircleDto {
   const factory CircleDto({

@@ -15,7 +15,7 @@ import 'care_events_provider.dart' show fallbackPatientId;
 part 'care_shifts_provider.g.dart';
 
 /// Logical patient id new shifts are stamped with (TASKS.md Phase 14.31) —
-/// the single-install loved one. Aliases the shared neutral
+/// the single-install client. Aliases the shared neutral
 /// [fallbackPatientId] so there's one source of truth for the value.
 const String careShiftsPatientId = fallbackPatientId;
 
@@ -218,7 +218,7 @@ class CareShiftsRepository with SyncSinkHost {
   ///
   /// UNFILTERED across patients on purpose — the sync engine
   /// ([SyncController.resyncAllLocal]) walks this to push EVERY local row up
-  /// regardless of which loved one is active. The strip's DISPLAY read is
+  /// regardless of which client is active. The strip's DISPLAY read is
   /// [listShiftsForPatient].
   Future<List<CareShift>> listShifts() async {
     final List<CareShiftsTableData> rows = await (_db
@@ -305,7 +305,7 @@ final CareShiftsRepositoryBackendProvider careShiftsRepositoryProvider =
 @Riverpod(keepAlive: true)
 DateTime Function() careShiftsClock(Ref ref) => DateTime.now;
 
-/// The loved one's shift board (TASKS.md Phase 14.31).
+/// The client's shift board (TASKS.md Phase 14.31).
 ///
 /// `build()` loads every shift, earliest first. The mutators ([addShift] /
 /// [removeShift]) write through [careShiftsRepositoryProvider] and re-read
@@ -316,8 +316,8 @@ class CareShifts extends _$CareShifts {
   @override
   Future<List<CareShift>> build() async {
     final CareShiftsRepository repo = ref.watch(careShiftsRepositoryProvider);
-    // Scope the coverage strip to the active loved one (multi-patient, Issue
-    // #6). With one loved one [activePatientIdProvider] resolves to that sole
+    // Scope the coverage strip to the active client (multi-patient, Issue
+    // #6). With one client [activePatientIdProvider] resolves to that sole
     // id, identical to the old unfiltered read.
     final String patientId = await ref.watch(activePatientIdProvider.future);
     return repo.listShiftsForPatient(patientId);

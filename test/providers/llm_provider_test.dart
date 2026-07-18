@@ -62,7 +62,7 @@ void main() {
       expect(fakeActivitySummary, isNot(contains('!')));
       expect(fakeActivitySummary.toLowerCase(), isNot(contains('diagnos')));
       expect(fakeActivitySummary.toLowerCase(), isNot(contains('prescrib')));
-      expect(fakeActivitySummary, contains('your loved one'));
+      expect(fakeActivitySummary, contains('your client'));
     });
   });
 

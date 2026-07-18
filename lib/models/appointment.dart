@@ -76,7 +76,7 @@ abstract class Provider with _$Provider {
 /// the agenda itself so the cross-off state survives an app relaunch
 /// mid-visit. [notes] is the post-appointment debrief and stays null
 /// until the caregiver fills it in. [driverName] is the optional name of
-/// whoever is driving the loved one to this visit — surfaced on the Home
+/// whoever is driving the client to this visit — surfaced on the Home
 /// "Next Appointment" card (Phase 14.10) so the caregiver sees the ride
 /// arrangement at a glance; null when no driver has been assigned.
 ///

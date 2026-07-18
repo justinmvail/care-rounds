@@ -10,7 +10,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart' show Override;
 /// of the day in the family vocabulary, no exclamation marks.
 const String _summary =
     'Over the last day, things have been mostly steady. You logged a '
-    'late-afternoon moment when your loved one got upset, and the gentle '
+    'late-afternoon moment when your client got upset, and the gentle '
     'approach you tried seemed to settle it. Medications stayed on track, '
     'and there is a visit with the doctor coming up on the calendar.';
 

@@ -98,7 +98,7 @@ void main() {
       // to mean merely "the executor didn't throw", so an executor that quietly
       // wrote nothing passed as success and the card said done. A coach that
       // claims a write it never made corrupts the caregiver's picture of their
-      // loved one's medications.
+      // client's medications.
       final ChatService svc = ChatService(
         repository: repo,
         backend: _ScriptedChatBackend(<ChatDelta>[
@@ -328,7 +328,7 @@ void main() {
         // A fresh snapshot per turn — the counter proves it's re-fetched.
         contextSnapshot: () async {
           calls++;
-          return 'CURRENT DATA (read-only):\nLoved one: Mary, 78.';
+          return 'CURRENT DATA (read-only):\nClient: Mary, 78.';
         },
       );
 
@@ -338,7 +338,7 @@ void main() {
 
       expect(calls, 1);
       expect(backend.lastSystemPrompt, startsWith(chatSystemPrompt));
-      expect(backend.lastSystemPrompt, contains('Loved one: Mary, 78.'));
+      expect(backend.lastSystemPrompt, contains('Client: Mary, 78.'));
     });
 
     test('a snapshot failure still streams the reply (prompt unchanged)',

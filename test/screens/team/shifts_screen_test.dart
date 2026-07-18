@@ -80,7 +80,7 @@ void main() {
           careCircleRepositoryProvider.overrideWithValue(circleRepo),
           careShiftsClockProvider.overrideWithValue(() => _clock),
           shiftIdFactoryProvider.overrideWithValue(() => 'new-${ids++}'),
-          // Creating a shift now resolves the active loved one via
+          // Creating a shift now resolves the active client via
           // activePatientIdProvider → storageProvider; an empty in-memory
           // store keeps the test off the on-device sqlite file and falls
           // back to 'demo-patient-mary' (== _patientId), so the stamped
@@ -197,9 +197,9 @@ void main() {
     });
 
     testWidgets(
-        'a new shift is stamped with the ACTIVE loved one (multi-patient)',
+        'a new shift is stamped with the ACTIVE client (multi-patient)',
         (tester) async {
-      // Two loved ones on file with the second selected as active. The new
+      // Two clients on file with the second selected as active. The new
       // shift must follow that selection rather than the demo fallback,
       // proving activePatientIdProvider is threaded into the write path.
       const String activeId = 'patient-bob';

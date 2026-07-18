@@ -17,13 +17,13 @@ import '../../widgets/path_header.dart';
 
 part 'loved_ones_screen.g.dart';
 
-/// Everything the "Loved ones" manager renders, bundled so the screen
+/// Everything the "Clients" manager renders, bundled so the screen
 /// consumes a single [AsyncValue] (multi-patient, Issue #6).
 @immutable
 class LovedOnesView {
   const LovedOnesView({required this.patients, required this.activeId});
 
-  /// Every loved one on file, name-sorted (the storage layer sorts).
+  /// Every client on file, name-sorted (the storage layer sorts).
   final List<Patient> patients;
 
   /// The id [StorageProvider.getPatient] currently resolves to — the row
@@ -46,13 +46,13 @@ Future<LovedOnesView> lovedOnesView(Ref ref) async {
   final List<Patient> patients = await storage.listPatients();
   // The id the app is centred on — the explicitly-chosen active id when
   // set, else the resolved (first/sole) patient so a row is always
-  // flagged when at least one loved one is on file.
+  // flagged when at least one client is on file.
   final String? explicit = await storage.getActivePatientId();
   final String? resolved = explicit ?? (await storage.getPatient())?.id;
   return LovedOnesView(patients: patients, activeId: resolved);
 }
 
-/// Switch the active loved one to [patientId] and refresh every surface
+/// Switch the active client to [patientId] and refresh every surface
 /// that reads the active patient (the active-patient providers + the
 /// medication / dose-window lists that query by patient) so the whole app
 /// re-centres without a relaunch (multi-patient, Issue #6).
@@ -69,11 +69,11 @@ Future<void> switchActivePatient(WidgetRef ref, String patientId) async {
   await ref.read(patientConfiguredProvider.notifier).reload();
 }
 
-/// "Loved ones" manager at `/loved-ones` (multi-patient, Issue #6).
+/// "Clients" manager at `/loved-ones` (multi-patient, Issue #6).
 ///
-/// Reached from Settings → "Loved ones". Lists every loved one on file
+/// Reached from Settings → "Clients". Lists every client on file
 /// with the active one flagged, lets the caregiver switch the active
-/// person with a tap, and offers "Add a loved one" → the
+/// person with a tap, and offers "Add a client" → the
 /// [LovedOneSetupScreen] in add mode. Mirrors the Care Circle roster's
 /// list + PathHeader pattern so it reads consistently with the rest of
 /// the app, and lives off the Home surface so the Home golden is
@@ -108,9 +108,9 @@ class LovedOnesScreen extends ConsumerWidget {
                 breadcrumbs: <PathHeaderCrumb>[
                   PathHeaderCrumb(label: 'Home', route: '/'),
                   PathHeaderCrumb(label: 'Settings', route: '/settings'),
-                  PathHeaderCrumb(label: 'Loved ones'),
+                  PathHeaderCrumb(label: 'Clients'),
                 ],
-                title: 'Loved ones',
+                title: 'Clients',
                 backLabel: 'Back to Settings',
                 leadingIcon: Icons.people_alt_outlined,
               ),
@@ -119,7 +119,7 @@ class LovedOnesScreen extends ConsumerWidget {
               child: async.when(
                 loading: () => const SizedBox.shrink(),
                 error: (Object e, StackTrace _) => FormErrorView(
-                    message: "We couldn't load your loved ones.\n$e"),
+                    message: "We couldn't load your clients.\n$e"),
                 data: (LovedOnesView view) => _Body(view: view),
               ),
             ),
@@ -286,13 +286,13 @@ class _AddButton extends StatelessWidget {
     final TextTheme textTheme = Theme.of(context).textTheme;
     return Semantics(
       button: true,
-      label: 'Add a loved one. Opens the setup form.',
+      label: 'Add a client. Opens the setup form.',
       child: ElevatedButton.icon(
         key: LovedOnesScreen.addButtonKey,
         onPressed: () => context.push(LovedOnesScreen.addRoute),
         icon: const Icon(Icons.person_add_alt_1, color: Colors.white),
         label: Text(
-          'Add a loved one',
+          'Add a client',
           style: textTheme.labelLarge?.copyWith(color: Colors.white),
         ),
         style: ElevatedButton.styleFrom(
@@ -315,7 +315,7 @@ class _EmptyState extends StatelessWidget {
       key: LovedOnesScreen.emptyStateKey,
       padding: const EdgeInsets.fromLTRB(8, 24, 8, 24),
       child: Text(
-        "No loved ones on file yet. Add the person you're caring for to "
+        "No clients on file yet. Add the client to "
         'get started.',
         style: textTheme.bodyLarge?.copyWith(color: context.hc.text),
       ),

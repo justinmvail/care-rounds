@@ -23,7 +23,7 @@ const List<(String, IconData, String)> _expected = <(String, IconData, String)>[
   ('Emergency Card', Icons.shield_outlined, '/medical/cards/emergency'),
   ('Medications', Icons.medication_outlined, '/medications'),
   ('Scan a document', Icons.document_scanner_outlined, '/scan'),
-  ('Find a provider', Icons.person_search_outlined, '/find-provider'),
+  ('Learn', Icons.school_outlined, '/learn'),
   ('Care summary', Icons.summarize_outlined, '/care-summary'),
   ('Schedule', Icons.schedule_outlined, '/team/calendar?from=medical'),
   ('Appointments', Icons.event_outlined, '/appointments'),
@@ -112,8 +112,8 @@ void main() {
 
       final HubTile provider = tester
           .widgetList<HubTile>(find.byType(HubTile))
-          .firstWhere((HubTile t) => t.label == 'Find a provider');
-      expect(provider.subLabel, 'doctors & specialists');
+          .firstWhere((HubTile t) => t.label == 'Learn');
+      expect(provider.subLabel, 'quick training');
       expect(find.textContaining('NPI'), findsNothing);
     });
 

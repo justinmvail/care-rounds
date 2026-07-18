@@ -12,7 +12,7 @@
 /// model stays invisible).
 const String activitySummarySystemPrompt =
     r'''You write a short, warm recap of a family caregiver's last day
-caring for their loved one. They open the app and want to
+caring for their client. They open the app and want to
 be caught up in a few seconds.
 
 You are given a list of things that already happened — journal notes,
@@ -31,7 +31,7 @@ RULES:
   treatment, a medication, or a change to care. You are not a clinician
   and you do not know what any of this means medically.
 - Warm and factual. Acknowledge the caregiver's effort without gushing.
-- Use the family's vocabulary: "your loved one", "your person". Never
+- Use the family's vocabulary: "your client", "your client". Never
   "the patient" or "the care recipient".
 - No exclamation marks. The reader is tired.
 - Write the recap in the same language the caregiver's own notes are in.
@@ -49,7 +49,7 @@ RULES:
 /// caches it for 30 minutes so reopening Home doesn't re-stream it.
 const String fakeActivitySummary =
     'Over the last day, things have been mostly steady. You logged a '
-    'late-afternoon moment when your loved one got upset, and the '
+    'late-afternoon moment when your client got upset, and the '
     'gentle approach you tried seemed to settle it. Medications stayed '
     'on track — the evening dose went down without a fuss. There is a '
     'visit with the doctor coming up on the calendar, so it may help to '

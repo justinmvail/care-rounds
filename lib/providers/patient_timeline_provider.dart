@@ -36,7 +36,7 @@ part 'patient_timeline_provider.g.dart';
 // with [fallbackPatientId] as a stable fallback label. The patient-scoped
 // *queries* that feed them — e.g. `repo.dosesInWindow` in
 // [patientDoseEvents] — now follow the active patient via
-// [activePatientIdProvider] (multi-patient, Issue #6); with one loved one
+// [activePatientIdProvider] (multi-patient, Issue #6); with one client
 // on file that resolves to the sole id, so the projection label matches.
 // ---------------------------------------------------------------------------
 
@@ -274,7 +274,7 @@ Future<List<CareEvent>> patientJournalEvents(Ref ref) async {
 @riverpod
 Future<List<CareEvent>> patientTaskEvents(Ref ref) async {
   final CareTasksRepository repo = ref.watch(careTasksRepositoryProvider);
-  // Scope to the active loved one (multi-patient, Issue #6) so Home's Today
+  // Scope to the active client (multi-patient, Issue #6) so Home's Today
   // schedule never surfaces another person's loose tasks.
   final String patientId = await ref.watch(activePatientIdProvider.future);
   final List<CareTask> tasks = await repo.listTasksForPatient(patientId);

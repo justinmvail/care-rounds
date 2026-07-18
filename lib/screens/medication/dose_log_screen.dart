@@ -43,7 +43,7 @@ DoseLogIdFactory doseLogIdFactory(Ref ref) => _defaultDoseLogIdFactory;
 ///
 /// The patient id comes from [activePatientIdProvider] now (was the
 /// repo's hard-coded 'demo-patient-mary' default) so the checklist
-/// follows whichever loved one is active (multi-patient, Issue #6). With
+/// follows whichever client is active (multi-patient, Issue #6). With
 /// one patient on file the provider resolves that sole id, so the
 /// single-patient behaviour is unchanged.
 @riverpod

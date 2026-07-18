@@ -127,7 +127,7 @@ final HealthLogRepositoryBackendProvider healthLogRepositoryProvider =
 @Riverpod(keepAlive: true)
 DateTime Function() healthLogClock(Ref ref) => DateTime.now;
 
-/// The loved one's health log (TASKS.md Phase 14.16).
+/// The client's health log (TASKS.md Phase 14.16).
 ///
 /// `build()` loads every entry newest-first; [add] / [update] / [delete]
 /// mutate through [healthLogRepositoryProvider] and re-read the list so

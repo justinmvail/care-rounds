@@ -62,7 +62,7 @@ void main() {
           careTasksClockProvider.overrideWithValue(() => _clock),
           currentCaregiverIdProvider.overrideWithValue(_me),
           taskIdFactoryProvider.overrideWithValue(() => 'new-${ids++}'),
-          // Creating a task now resolves the active loved one via
+          // Creating a task now resolves the active client via
           // activePatientIdProvider → storageProvider; an empty in-memory
           // store keeps the test off the on-device sqlite file and falls
           // back to 'demo-patient-mary' (== _patientId), so the stamped

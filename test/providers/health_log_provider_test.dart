@@ -112,7 +112,7 @@ void main() {
           <String>['new', 'mid', 'old']);
     });
 
-    test('byPatient filters to one loved one, newest-first', () async {
+    test('byPatient filters to one client, newest-first', () async {
       await repo.upsert(_entry(
           id: 'm1', patientId: 'mary', recordedAt: DateTime.utc(2026, 6, 1, 8)));
       await repo.upsert(_entry(

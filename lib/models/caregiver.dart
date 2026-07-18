@@ -3,11 +3,11 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'caregiver.freezed.dart';
 part 'caregiver.g.dart';
 
-/// A caregiver in the loved one's care circle (TASKS.md Phase 14.25).
+/// A caregiver in the client's care circle (TASKS.md Phase 14.25).
 ///
 /// The person side of the care-circle model — the [CareCircleMembership]
 /// row carries their permission level and invite state. [role] is the
-/// caregiver's relationship to the loved one, an organisational tag the
+/// caregiver's relationship to the client, an organisational tag the
 /// caregiver chooses; nothing here is a medical or legal designation.
 ///
 /// One token per [CaregiverRole] value so the JSON name matches the enum
@@ -28,7 +28,7 @@ enum CaregiverRole {
 /// §5.14).
 ///
 /// Backs Care Team → Care Circle (BUILD_SPEC.md §5.14). Records the
-/// caregiver's [displayName], their [role] relationship to the loved one,
+/// caregiver's [displayName], their [role] relationship to the client,
 /// and optional [phone] / [email] contact points plus an optional
 /// [avatarPath] pointing at an on-disk photo (the roster falls back to
 /// initials when it's null). The permission level + invite state live on

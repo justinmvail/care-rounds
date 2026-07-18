@@ -49,7 +49,7 @@ import '../services/provider_repository.dart'
     show ProviderRepository, providerRepositoryProvider;
 import 'mary_henderson.dart';
 
-/// The canonical demo loved one's id — every patient-scoped row links to
+/// The canonical demo client's id — every patient-scoped row links to
 /// it (matches the `*PatientId` constants the Care Team providers query by).
 const String demoPatientId = 'demo-patient-mary';
 

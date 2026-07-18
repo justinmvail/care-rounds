@@ -16,7 +16,7 @@ import '../../widgets/path_header.dart';
 part 'health_log_entry_form.g.dart';
 
 /// Pre-hydration placeholder for the form's `_patientId` field, used until
-/// [healthLogFormHydrationProvider] resolves the active loved one. Matches
+/// [healthLogFormHydrationProvider] resolves the active client. Matches
 /// the demo seed's `maryHenderson` id (and the fallback
 /// [activePatientIdProvider] itself uses) so the value is stable even on a
 /// fresh real-mode install where no [Patient] is on file yet.
@@ -45,7 +45,7 @@ class HealthLogFormData {
   /// The row hydrating the edit path, or null on the add path.
   final HealthLogEntry? entry;
 
-  /// The loved one a new entry is filed under. On the edit path this is
+  /// The client a new entry is filed under. On the edit path this is
   /// the existing entry's own [HealthLogEntry.patientId] so a save never
   /// silently re-homes the row.
   final String patientId;
@@ -57,7 +57,7 @@ class HealthLogFormData {
 ///
 /// The id comes from [activePatientIdProvider] now (was a direct
 /// `storage.getPatient()` read) so a freshly-added entry is filed under
-/// whichever loved one is active (multi-patient, Issue #6). That provider
+/// whichever client is active (multi-patient, Issue #6). That provider
 /// already falls back to 'demo-patient-mary' (== [_fallbackPatientId]) when
 /// no patient is on file, so the add-path id is unchanged with one patient.
 ///

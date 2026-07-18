@@ -5,11 +5,11 @@ import 'storage_provider.dart';
 
 part 'patient_configured_provider.g.dart';
 
-/// "Is a loved one ('your person') on file yet?" (new-user setup gate).
+/// "Is a client ('your client') on file yet?" (new-user setup gate).
 ///
 /// The first-run flow is onboarding carousel → sign-in → **loved-one
 /// setup**. Until the caregiver saves a [Patient], the app has no
-/// "your person" to anchor the Emergency Card, the Medical header, or
+/// "your client" to anchor the Emergency Card, the Medical header, or
 /// the decoder context on, so the router redirect (see
 /// `careroundsRedirect`) funnels every authenticated location to
 /// `/setup`.
@@ -67,7 +67,7 @@ class PatientConfigured extends _$PatientConfigured {
   Future<void> reload() => _resolve();
 }
 
-/// The frame-zero answer to "is a loved one on file", read by `main()`
+/// The frame-zero answer to "is a client on file", read by `main()`
 /// BEFORE `runApp` (after the demo reset/seed have run) so a returning
 /// caregiver's very first router evaluation is correct — no transient
 /// `/setup` redirect while the async storage read resolves. Mirrors

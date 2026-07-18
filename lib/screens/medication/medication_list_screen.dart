@@ -560,7 +560,7 @@ class _EmptyState extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(
-            "Add what your loved one takes — name, dosage, and the time "
+            "Add what your client takes — name, dosage, and the time "
             "windows it's given in.",
             style: tt.bodyLarge?.copyWith(color: context.hc.text),
             textAlign: TextAlign.center,

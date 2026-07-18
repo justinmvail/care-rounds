@@ -251,7 +251,7 @@ abstract class AppLocalizations {
   /// Plain-language privacy-reassurance line shown just above the sign-in buttons: why sign in, and that data stays private. Keeps the vendor invisible per the brand rule.
   ///
   /// In en, this message translates to:
-  /// **'Signing in keeps your notes safe and in sync across your devices. We never post anything, and your loved one\'s information stays private.'**
+  /// **'Signing in keeps your notes safe and in sync across your devices. We never post anything, and your client\'s information stays private.'**
   String get signInReassurance;
 
   /// Label on the Sign in with Apple button (iOS only).
@@ -329,7 +329,7 @@ abstract class AppLocalizations {
   /// Heading on the new-user loved-one setup wizard.
   ///
   /// In en, this message translates to:
-  /// **'Let\'s set up your person'**
+  /// **'Let\'s set up your client'**
   String get lovedOneSetupTitle;
 
   /// Warm introductory paragraph under the loved-one setup heading.
@@ -461,7 +461,7 @@ abstract class AppLocalizations {
   /// Screen-reader (Semantics) label for the loved-one setup submit button.
   ///
   /// In en, this message translates to:
-  /// **'Save your person and continue to the app.'**
+  /// **'Save your client and continue to the app.'**
   String get lovedOneSetupSaveSemantics;
 }
 

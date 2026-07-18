@@ -72,7 +72,7 @@ void main() {
       final WelcomeCarouselPage page1 = WelcomeCarousel.pages[0];
       expect(page1.title, 'Care Rounds');
       expect(page1.body,
-          'We make caring for someone you love a little easier.');
+          'Your whole caseload, organized — with a coach for every visit.');
       expect(find.text(page1.title), findsOneWidget);
       expect(find.text(page1.body), findsOneWidget);
     });
@@ -84,9 +84,9 @@ void main() {
       await _tapCta(tester);
 
       final WelcomeCarouselPage page2 = WelcomeCarousel.pages[1];
-      expect(page2.title, 'Your pocket coach for the hard moments.');
+      expect(page2.title, 'A coach that knows each client.');
       expect(page2.body,
-          startsWith('When the day turns hard, when you don'));
+          startsWith('Before a visit or right in the moment'));
       expect(find.text(page2.title), findsOneWidget);
       expect(find.text(page2.body), findsOneWidget);
     });
@@ -99,8 +99,8 @@ void main() {
       await _tapCta(tester); // → page 3
 
       final WelcomeCarouselPage page3 = WelcomeCarousel.pages[2];
-      expect(page3.title, 'A journal that travels with you.');
-      expect(page3.body, startsWith('Jot down the moments that matter'));
+      expect(page3.title, 'Notes that write themselves.');
+      expect(page3.body, startsWith('Speak your visit notes'));
       expect(find.text(page3.title), findsOneWidget);
       expect(find.text(page3.body), findsOneWidget);
     });

@@ -128,7 +128,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get lovedOneSetupLastStep => 'Último paso';
 
   @override
-  String get lovedOneSetupTitle => 'Let\'s set up your person';
+  String get lovedOneSetupTitle => 'Let\'s set up your client';
 
   @override
   String get lovedOneSetupIntro =>
@@ -199,5 +199,5 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get lovedOneSetupSaveSemantics =>
-      'Save your person and continue to the app.';
+      'Save your client and continue to the app.';
 }

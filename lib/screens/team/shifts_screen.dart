@@ -605,7 +605,7 @@ class _ScheduleShiftSheetState extends ConsumerState<_ScheduleShiftSheet> {
 
     final String notes = _notes.text.trim();
     final CareShift? existing = widget.existing;
-    // A new shift is stamped with the active loved one's id (was the
+    // A new shift is stamped with the active client's id (was the
     // `careShiftsPatientId` const) so it's filed under whichever person is
     // selected (multi-patient, Issue #6). The edit path leaves the existing
     // shift's patientId untouched. With one patient on file

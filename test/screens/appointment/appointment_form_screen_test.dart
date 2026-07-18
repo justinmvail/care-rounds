@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:carerounds/db/database.dart';
 import 'package:carerounds/models/appointment.dart' as model;
 import 'package:carerounds/models/appointment_draft.dart';
-import 'package:carerounds/providers/visit_prep_provider.dart';
 import 'package:carerounds/screens/appointment/appointment_form_screen.dart';
 import 'package:carerounds/screens/appointment/appointment_list_screen.dart';
 import 'package:carerounds/services/appointment_repository.dart';
@@ -997,36 +996,4 @@ void main() {
     });
   });
 
-  group('AppointmentFormScreen — suggest questions (AI visit prep)', () {
-    testWidgets('adds the picked questions to the agenda',
-        (WidgetTester tester) async {
-      await _pumpForm(
-        tester,
-        apptRepo: apptRepo,
-        providerRepo: providerRepo,
-        db: db,
-        // Avoid gathering the real care snapshot; the fake service ignores it.
-        extraOverrides: <Override>[
-          careContextTextProvider.overrideWith((Ref ref) async => 'snapshot'),
-        ],
-      );
-      await tester.pumpAndSettle();
-
-      await tester.ensureVisible(
-          find.byKey(AppointmentFormScreen.suggestQuestionsKey));
-      await tester.tap(find.byKey(AppointmentFormScreen.suggestQuestionsKey));
-      await tester.pumpAndSettle();
-
-      // The picker sheet shows the fake questions; add them all.
-      expect(find.text('Add to agenda'), findsOneWidget);
-      await tester.tap(find.text('Add to agenda'));
-      await tester.pumpAndSettle();
-
-      // The fake returns four questions → four agenda rows now exist.
-      expect(find.byKey(AppointmentFormScreen.agendaItemFieldKey(0)),
-          findsOneWidget);
-      expect(find.byKey(AppointmentFormScreen.agendaItemFieldKey(3)),
-          findsOneWidget);
-    });
-  });
 }

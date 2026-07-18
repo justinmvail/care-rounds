@@ -131,12 +131,12 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                   const SizedBox(height: 8),
                   Text(
                     'Care Rounds Premium keeps your full caregiving suite and '
-                    'your coach — grounded in your loved one’s real care '
+                    'your coach — grounded in your client’s real care '
                     'details — working together in one place.',
                     style: tt.bodyMedium?.copyWith(color: context.hc.text),
                   ),
                   const SizedBox(height: 8),
-                  const _ValueRow(text: 'A coach that knows your person'),
+                  const _ValueRow(text: 'A coach that knows your client'),
                   const _ValueRow(
                       text: 'Medications, appointments, and dose windows'),
                   const _ValueRow(

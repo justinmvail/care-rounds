@@ -695,7 +695,7 @@ void main() {
       addTearDown(a.dispose);
       addTearDown(b.dispose);
 
-      // A creates the circle owning the loved one.
+      // A creates the circle owning the client.
       final CircleDto circle = await clientA.createCircle(
         'Mary',
         patient: SyncPatientWrite(

@@ -90,7 +90,7 @@ class SentryCrashReporter implements CrashReporter {
         options.sendDefaultPii = false;
         options.attachStacktrace = true;
         options.attachThreads = false;
-        // Don't screenshot — a captured frame could show a loved one's care
+        // Don't screenshot — a captured frame could show a client's care
         // data. (View-hierarchy capture also defaults off; we leave that
         // experimental option at its default rather than touch it.)
         options.attachScreenshot = false;
@@ -153,7 +153,7 @@ class CrashReporterConfig {
 /// payloads), the request body/headers/cookies, the [SentryUser]'s
 /// email/name/username/ip (replaced by an anonymous install id at most), the
 /// deprecated `extra` bag, `culprit`, and `transaction` (route/screen names
-/// can leak the loved one's name). Tags are dropped wholesale — we can't
+/// can leak the client's name). Tags are dropped wholesale — we can't
 /// prove a tag value is PII-free, and "when in doubt, drop the field."
 ///
 /// Pure + synchronous so it's unit-testable without initializing the SDK.

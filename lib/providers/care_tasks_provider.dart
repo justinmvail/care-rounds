@@ -16,7 +16,7 @@ import 'care_events_provider.dart' show fallbackPatientId;
 part 'care_tasks_provider.g.dart';
 
 /// Logical patient id new tasks are stamped with (TASKS.md Phase 14.30) —
-/// the single-install loved one. Aliases the shared neutral
+/// the single-install client. Aliases the shared neutral
 /// [fallbackPatientId] so there's one source of truth for the value.
 const String careTasksPatientId = fallbackPatientId;
 
@@ -91,7 +91,7 @@ class CareTasksRepository with SyncSinkHost {
   ///
   /// UNFILTERED across patients on purpose — the sync engine
   /// ([SyncController.resyncAllLocal]) walks this to push EVERY local row up
-  /// regardless of which loved one is active. The board's DISPLAY read is
+  /// regardless of which client is active. The board's DISPLAY read is
   /// [listTasksForPatient]; don't swap one for the other.
   Future<List<CareTask>> listTasks() async {
     final List<CareTasksTableData> rows =
@@ -108,7 +108,7 @@ class CareTasksRepository with SyncSinkHost {
   /// (multi-patient display scoping, Issue #6).
   ///
   /// The board / calendar / timeline read THIS so a caregiver with more than
-  /// one loved one on file (e.g. left over from the earlier duplicate-patient
+  /// one client on file (e.g. left over from the earlier duplicate-patient
   /// bug) never sees another person's tasks. Filters on the lifted
   /// [CareTasksTable.patientId] column. Sync still uses the unfiltered
   /// [listTasks].
@@ -178,7 +178,7 @@ final CareTasksRepositoryBackendProvider careTasksRepositoryProvider =
 @Riverpod(keepAlive: true)
 DateTime Function() careTasksClock(Ref ref) => DateTime.now;
 
-/// The loved one's shared task board (TASKS.md Phase 14.30).
+/// The client's shared task board (TASKS.md Phase 14.30).
 ///
 /// `build()` loads every task, due-ordered. The mutators ([addTask] /
 /// [claim] / [unclaim] / [complete] / [removeTask]) write through
@@ -189,9 +189,9 @@ class CareTasks extends _$CareTasks {
   @override
   Future<List<CareTask>> build() async {
     final CareTasksRepository repo = ref.watch(careTasksRepositoryProvider);
-    // Scope the board to the active loved one (multi-patient, Issue #6) so a
+    // Scope the board to the active client (multi-patient, Issue #6) so a
     // caregiver with several people on file sees only the selected person's
-    // tasks. With one loved one [activePatientIdProvider] resolves to that
+    // tasks. With one client [activePatientIdProvider] resolves to that
     // sole id, identical to the old unfiltered read.
     final String patientId = await ref.watch(activePatientIdProvider.future);
     return repo.listTasksForPatient(patientId);

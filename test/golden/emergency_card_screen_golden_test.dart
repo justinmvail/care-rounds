@@ -104,7 +104,7 @@ void main() {
     );
 
     goldenTest(
-      'empty — no loved one on file yet',
+      'empty — no client on file yet',
       fileName: 'emergency_card_screen_empty',
       builder: () => GoldenTestGroup(
         columns: 1,

@@ -93,7 +93,7 @@ Future<CarePlanRepository> _pumpForm(
         // Child tasks (unified task/routine model) reconcile through the
         // tasks repo on the same in-memory db.
         careTasksRepositoryProvider.overrideWithValue(tasksRepo),
-        // The add path now resolves the active loved one via
+        // The add path now resolves the active client via
         // activePatientIdProvider → storageProvider; an empty in-memory
         // store keeps the test off the on-device sqlite file and falls back
         // to 'demo-patient-mary', so a new routine's patientId is unchanged.
