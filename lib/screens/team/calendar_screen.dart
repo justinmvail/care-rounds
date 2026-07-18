@@ -62,7 +62,14 @@ class CalendarScreen extends ConsumerStatefulWidget {
     super.key,
     this.fromMedical = false,
     this.initialDate,
+    this.embedded = false,
   });
+
+  /// When true, this is hosted inside the tabbed [ScheduleScreen] (Track-2
+  /// #32), which supplies the page's PathHeader — so the calendar drops its
+  /// own header (and the spacer under it) to avoid a doubled title, keeping
+  /// only its view switcher / filter / agenda.
+  final bool embedded;
 
   /// When true (the Medical hub's "Schedule" entry passes `?from=medical`,
   /// lifted to this flag by the route builder), the path header shows the
@@ -217,17 +224,21 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                   // One schedule now, always under Care (the Medical/Team
                   // calendar duality is gone). [widget.fromMedical] is kept
                   // for route compatibility but no longer changes chrome.
-                  const PathHeader(
-                    breadcrumbs: <PathHeaderCrumb>[
-                      PathHeaderCrumb(label: 'Home', route: '/'),
-                      PathHeaderCrumb(label: 'Care', route: '/medical'),
-                      PathHeaderCrumb(label: 'Schedule'),
-                    ],
-                    title: 'Schedule',
-                    backLabel: 'Back to Care',
-                    leadingIcon: Icons.schedule_outlined,
-                  ),
-                  const SizedBox(height: 8),
+                  // When embedded in the tabbed ScheduleScreen (#32), the
+                  // wrapper owns the header, so drop it here.
+                  if (!widget.embedded) ...<Widget>[
+                    const PathHeader(
+                      breadcrumbs: <PathHeaderCrumb>[
+                        PathHeaderCrumb(label: 'Home', route: '/'),
+                        PathHeaderCrumb(label: 'Care', route: '/medical'),
+                        PathHeaderCrumb(label: 'Schedule'),
+                      ],
+                      title: 'Schedule',
+                      backLabel: 'Back to Care',
+                      leadingIcon: Icons.schedule_outlined,
+                    ),
+                    const SizedBox(height: 8),
+                  ],
                   _ViewSwitcher(
                     view: _view,
                     onChanged: (CalendarView next) =>

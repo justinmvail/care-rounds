@@ -15,7 +15,11 @@ import '../../widgets/path_header.dart';
 /// patient timeline (see [patientTimelineEventsProvider]); this screen
 /// is just the management surface for adding / editing / deleting.
 class CarePlanRoutinesScreen extends ConsumerWidget {
-  const CarePlanRoutinesScreen({super.key});
+  const CarePlanRoutinesScreen({super.key, this.embedded = false});
+
+  /// When true, hosted inside the tabbed [ScheduleScreen] (#32): the wrapper
+  /// owns the page header, so this screen drops its own PathHeader.
+  final bool embedded;
 
   static const Key listKey = Key('care-plan-routines-list');
   static const Key emptyStateKey = Key('care-plan-routines-empty');
@@ -45,19 +49,20 @@ class CarePlanRoutinesScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            const Padding(
-              padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
-              child: PathHeader(
-                breadcrumbs: <PathHeaderCrumb>[
-                  PathHeaderCrumb(label: 'Home', route: '/'),
-                  PathHeaderCrumb(label: 'Care', route: '/medical'),
-                  PathHeaderCrumb(label: 'Routines'),
-                ],
-                title: 'Routines',
-                backLabel: 'Back to Care',
-                leadingIcon: Icons.assignment_outlined,
+            if (!embedded)
+              const Padding(
+                padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
+                child: PathHeader(
+                  breadcrumbs: <PathHeaderCrumb>[
+                    PathHeaderCrumb(label: 'Home', route: '/'),
+                    PathHeaderCrumb(label: 'Care', route: '/medical'),
+                    PathHeaderCrumb(label: 'Routines'),
+                  ],
+                  title: 'Routines',
+                  backLabel: 'Back to Care',
+                  leadingIcon: Icons.assignment_outlined,
+                ),
               ),
-            ),
             Expanded(
               child: async.when(
                 loading: () => const SizedBox.shrink(),

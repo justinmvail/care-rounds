@@ -50,6 +50,7 @@ import 'package:carerounds/screens/appointment/appointment_detail_screen.dart';
 import 'package:carerounds/screens/appointment/appointment_form_screen.dart';
 import 'package:carerounds/screens/appointment/appointment_list_screen.dart';
 import 'package:carerounds/screens/medical/medical_hub_screen.dart';
+import 'package:carerounds/screens/medical/schedule_screen.dart';
 import 'package:carerounds/services/appointment_repository.dart';
 import 'package:carerounds/services/provider_repository.dart';
 import 'package:carerounds/providers/patient_timeline_provider.dart';
@@ -464,7 +465,14 @@ Future<void> _openAppointmentList(WidgetTester tester) async {
   await tester.pumpAndSettle();
   expect(find.byType(MedicalHubScreen), findsOneWidget);
 
-  await tester.tap(findHubTile('Appointments'));
+  // Appointments folded into the consolidated Schedule surface (Track-2 #32):
+  // Care → Schedule → the Appointments segment.
+  await tester.tap(findHubTile('Schedule'));
+  await tester.pumpAndSettle();
+  expect(find.byType(ScheduleScreen), findsOneWidget);
+
+  await tester.tap(
+      find.byKey(ScheduleScreen.segmentKey(ScheduleSegment.appointments)));
   await tester.pumpAndSettle();
   expect(find.byType(AppointmentListScreen), findsOneWidget);
 }

@@ -44,6 +44,17 @@ class MyRoundsScreen extends ConsumerWidget {
               title: 'My Rounds',
               leadingIcon: Icons.route_outlined,
             ),
+            // Differentiate from the (single-client) Care › Schedule: Rounds
+            // is the worker's whole day ACROSS clients (Track-2 #32).
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+              child: Text(
+                'Your visits across all clients',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: context.hc.primarySoft,
+                    ),
+              ),
+            ),
             Expanded(
               child: self.when(
                 loading: () =>

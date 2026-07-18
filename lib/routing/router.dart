@@ -24,6 +24,7 @@ import '../screens/medical/emergency_card_screen.dart';
 import '../screens/medical/health_log_entry_form.dart';
 import '../screens/medical/health_log_screen.dart';
 import '../screens/medical/medical_hub_screen.dart';
+import '../screens/medical/schedule_screen.dart';
 import '../screens/scan_document_screen.dart';
 import '../screens/appointment/appointment_detail_screen.dart';
 import '../screens/appointment/appointment_form_screen.dart';
@@ -108,6 +109,7 @@ class CareRoundsRoutes {
   // resolve to a registered route today; the rest gain routes as their
   // owning phase lands.
   static const String medicalHub = 'medical-hub';
+  static const String medicalSchedule = 'medical-schedule';
   static const String medicalHealthLog = 'medical-health-log';
   static const String medicalHealthLogNew = 'medical-health-log-new';
   static const String medicalHealthLogEdit = 'medical-health-log-edit';
@@ -297,6 +299,19 @@ GoRouter buildRouter({
                 builder: (BuildContext context, GoRouterState state) =>
                     const MedicalHubScreen(),
                 routes: <RouteBase>[
+                  // Schedule (Track-2 #32) — the single time surface: a
+                  // segmented Calendar / Appointments / Routines wrapper.
+                  // ?tab= opens a specific segment (defaults to Calendar).
+                  GoRoute(
+                    path: 'schedule',
+                    name: CareRoundsRoutes.medicalSchedule,
+                    builder: (BuildContext context, GoRouterState state) =>
+                        ScheduleScreen(
+                      initialSegment: _scheduleSegmentFrom(
+                        state.uri.queryParameters['tab'],
+                      ),
+                    ),
+                  ),
                   // Emergency Card — the read-only ICE card first
                   // responders see. Renders in the Care branch so the tab
                   // bar stays; it's also the `/crisis` redirect target.
@@ -931,3 +946,11 @@ GoRouter careroundsRouter(Ref ref) {
 /// calendar defaults to today).
 DateTime? _calendarDateParam(String? raw) =>
     (raw == null || raw.isEmpty) ? null : DateTime.tryParse(raw);
+
+/// Map the Schedule route's `?tab=` query param to a segment; unknown or
+/// absent → the Calendar segment (Track-2 #32).
+ScheduleSegment _scheduleSegmentFrom(String? raw) => switch (raw) {
+      'appointments' => ScheduleSegment.appointments,
+      'routines' => ScheduleSegment.routines,
+      _ => ScheduleSegment.calendar,
+    };

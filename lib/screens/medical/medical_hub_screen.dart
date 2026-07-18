@@ -49,26 +49,15 @@ class MedicalHubScreen extends StatelessWidget {
         _CareSection(
           title: 'This visit',
           tiles: <_MedicalTileSpec>[
+            // One Schedule surface (Track-2 #32): the segmented
+            // Calendar / Appointments / Routines wrapper replaces the three
+            // former peer tiles.
             _MedicalTileSpec(
               icon: Icons.schedule_outlined,
               label: 'Schedule',
-              subLabel: 'today, tomorrow, this week',
-              route: '/team/calendar?from=medical',
+              subLabel: 'calendar, appointments & routines',
+              route: '/medical/schedule',
               chipColor: context.hc.link,
-            ),
-            _MedicalTileSpec(
-              icon: Icons.event_outlined,
-              label: 'Appointments',
-              subLabel: 'calendar & visits',
-              route: '/appointments',
-              chipColor: context.hc.success,
-            ),
-            _MedicalTileSpec(
-              icon: Icons.assignment_outlined,
-              label: 'Routines',
-              subLabel: 'scheduled care tasks',
-              route: '/medical/routines',
-              chipColor: context.hc.success,
             ),
             _MedicalTileSpec(
               icon: Icons.monitor_heart_outlined,

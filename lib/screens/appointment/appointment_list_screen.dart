@@ -131,7 +131,12 @@ DateTime Function() appointmentListClock(Ref ref) => DateTime.now;
 /// through [appointmentRepositoryProvider], same indirection the other
 /// repository-backed surfaces use.
 class AppointmentListScreen extends ConsumerWidget {
-  const AppointmentListScreen({super.key});
+  const AppointmentListScreen({super.key, this.embedded = false});
+
+  /// When true, hosted inside the tabbed [ScheduleScreen] (#32): the wrapper
+  /// owns the page header, so this screen drops its own PathHeader (the
+  /// scan-a-card action stays reachable from the Care hub's Scan tile).
+  final bool embedded;
 
   static const Key listKey = Key('appointment-list-list');
   static const Key emptyStateKey = Key('appointment-list-empty');
@@ -198,32 +203,33 @@ class AppointmentListScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-              child: PathHeader(
-                breadcrumbs: const <PathHeaderCrumb>[
-                  PathHeaderCrumb(label: 'Home', route: '/'),
-                  PathHeaderCrumb(label: 'Care', route: '/medical'),
-                  PathHeaderCrumb(label: 'Appointments'),
-                ],
-                title: 'Appointments',
-                backLabel: 'Back to Care',
-                leadingIcon: Icons.event_outlined,
-                // Scan an appointment card → pre-fill the add form.
-                trailing: IconButton(
-                  key: AppointmentListScreen.scanButtonKey,
-                  tooltip: 'Scan an appointment card',
-                  iconSize: 24,
-                  padding: EdgeInsets.zero,
-                  constraints:
-                      const BoxConstraints.tightFor(width: 24, height: 24),
-                  visualDensity: VisualDensity.compact,
-                  color: context.hc.primary,
-                  icon: const Icon(Icons.document_scanner_outlined),
-                  onPressed: () => _scanAppointment(context, ref),
+            if (!embedded)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                child: PathHeader(
+                  breadcrumbs: const <PathHeaderCrumb>[
+                    PathHeaderCrumb(label: 'Home', route: '/'),
+                    PathHeaderCrumb(label: 'Care', route: '/medical'),
+                    PathHeaderCrumb(label: 'Appointments'),
+                  ],
+                  title: 'Appointments',
+                  backLabel: 'Back to Care',
+                  leadingIcon: Icons.event_outlined,
+                  // Scan an appointment card → pre-fill the add form.
+                  trailing: IconButton(
+                    key: AppointmentListScreen.scanButtonKey,
+                    tooltip: 'Scan an appointment card',
+                    iconSize: 24,
+                    padding: EdgeInsets.zero,
+                    constraints:
+                        const BoxConstraints.tightFor(width: 24, height: 24),
+                    visualDensity: VisualDensity.compact,
+                    color: context.hc.primary,
+                    icon: const Icon(Icons.document_scanner_outlined),
+                    onPressed: () => _scanAppointment(context, ref),
+                  ),
                 ),
               ),
-            ),
             Expanded(
               child: async.when(
                 loading: () => const SizedBox.shrink(),

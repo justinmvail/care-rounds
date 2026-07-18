@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
-/// The eleven tiles in their display order, grouped into three sections
+/// The nine tiles in their display order, grouped into three sections
 /// (Track-2 #31): (label, icon, route). Order = section order, then tile
 /// order within each section — "This visit", then "Client info", then
 /// "Team & training".
@@ -16,15 +16,12 @@ import 'package:go_router/go_router.dart';
 ///
 /// `route` is the exact string each tile `context.push`es — it doubles as
 /// the per-tile [MedicalHubScreen.tileKey] seed, so it must match the
-/// screen verbatim. The "Schedule" tile reuses the shared calendar screen
-/// but tags the push with `?from=medical`; the query string rides along on
-/// the pushed URI but is not part of the matched route path (see
-/// [_matchedPath]).
+/// screen verbatim. The "Schedule" tile is the single consolidated time
+/// surface (Track-2 #32) — a segmented Calendar / Appointments / Routines
+/// wrapper at `/medical/schedule`, replacing the three former peer tiles.
 const List<(String, IconData, String)> _expected = <(String, IconData, String)>[
   // This visit
-  ('Schedule', Icons.schedule_outlined, '/team/calendar?from=medical'),
-  ('Appointments', Icons.event_outlined, '/appointments'),
-  ('Routines', Icons.assignment_outlined, '/medical/routines'),
+  ('Schedule', Icons.schedule_outlined, '/medical/schedule'),
   ('Health Log', Icons.monitor_heart_outlined, '/medical/health-log'),
   ('Journal', Icons.book_outlined, '/journal'),
   ('Scan a document', Icons.document_scanner_outlined, '/scan'),
@@ -91,13 +88,13 @@ Future<GoRouter> _pumpHub(WidgetTester tester) async {
 void main() {
   group('MedicalHubScreen', () {
     testWidgets(
-        'renders all eleven tiles grouped into three sections, in order',
+        'renders all nine tiles grouped into three sections, in order',
         (WidgetTester tester) async {
       await _pumpHub(tester);
 
       final List<HubTile> tiles =
           tester.widgetList<HubTile>(find.byType(HubTile)).toList();
-      expect(tiles.length, 11);
+      expect(tiles.length, 9);
       // The three section headings render, in order (Track-2 #31).
       expect(find.text('THIS VISIT'), findsOneWidget);
       expect(find.text('CLIENT INFO'), findsOneWidget);
