@@ -60,7 +60,7 @@ class MedicalHubScreen extends StatelessWidget {
         _MedicalTileSpec(
           icon: Icons.document_scanner_outlined,
           label: 'Scan a document',
-          subLabel: 'Rx, appointment, insurance card',
+          subLabel: 'Rx & appointment cards',
           route: '/scan',
           chipColor: context.hc.primary,
         ),

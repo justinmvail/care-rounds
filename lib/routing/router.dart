@@ -40,7 +40,6 @@ import '../screens/onboarding/loved_one_setup_screen.dart';
 import '../screens/onboarding/sign_in_screen.dart';
 import '../screens/onboarding/welcome_carousel.dart';
 import '../screens/settings/loved_ones_screen.dart';
-import '../screens/settings/paywall_screen.dart';
 import '../screens/settings/settings_screen.dart';
 import '../screens/team/activity_screen.dart';
 import '../screens/team/calendar_screen.dart';
@@ -50,7 +49,6 @@ import '../screens/team/clients_roster_screen.dart';
 import '../screens/team/circle_qr_screen.dart';
 import '../screens/team/circle_scan_screen.dart';
 import '../screens/team/username_screen.dart';
-import '../screens/team/expenses_screen.dart';
 import '../screens/team/my_rounds_screen.dart';
 import '../screens/team/shifts_screen.dart';
 import '../screens/team/tasks_screen.dart';
@@ -72,9 +70,6 @@ class CareRoundsRoutes {
   static const String signIn = 'sign-in';
   static const String setup = 'setup';
   static const String settings = 'settings';
-  // Subscription paywall (scaffold — NO feature gated yet). Reachable
-  // machinery only; there's no route INTO it from a gated feature today.
-  static const String paywall = 'paywall';
   // Multi-patient "Clients" manager (Issue #6). `lovedOnes` → the
   // switcher/manager; `lovedOnesAdd` → the setup wizard reused in add
   // mode to append + activate another client.
@@ -136,7 +131,6 @@ class CareRoundsRoutes {
   static const String teamCircleQr = 'team-circle-qr';
   static const String teamCircleScan = 'team-circle-scan';
   static const String teamActivity = 'team-activity';
-  static const String teamExpenses = 'team-expenses';
 }
 
 /// Build a fresh GoRouter wired with every BUILD_SPEC.md §5 route.
@@ -202,17 +196,6 @@ GoRouter buildRouter({
         parentNavigatorKey: rootNavigatorKey,
         builder: (BuildContext context, GoRouterState state) =>
             const SettingsScreen(),
-      ),
-      // Subscription paywall (scaffold — NO feature gated yet). A pushed
-      // root-navigator route like Settings so it covers the tab bar. Nothing
-      // in the app routes here from a gated feature today; it's reachable
-      // machinery only until the pricing decision lands.
-      GoRoute(
-        path: '/premium',
-        name: CareRoundsRoutes.paywall,
-        parentNavigatorKey: rootNavigatorKey,
-        builder: (BuildContext context, GoRouterState state) =>
-            const PaywallScreen(),
       ),
       // Multi-patient "Clients" manager (Issue #6) — reached from
       // Settings → "Clients". The `add` child reuses the onboarding
@@ -670,15 +653,6 @@ GoRouter buildRouter({
                     name: CareRoundsRoutes.teamActivity,
                     builder: (BuildContext context, GoRouterState state) =>
                         const ActivityScreen(),
-                  ),
-                  // Expenses ledger (Phase 14.33) — shared costs grouped by
-                  // month with a sticky current-month total. In the Care
-                  // branch so the tab bar stays.
-                  GoRoute(
-                    path: 'expenses',
-                    name: CareRoundsRoutes.teamExpenses,
-                    builder: (BuildContext context, GoRouterState state) =>
-                        const ExpensesScreen(),
                   ),
                   // Care Circle roster (Phase 14.27). In the Care branch so
                   // the tab bar stays; the connect flow below (username / QR

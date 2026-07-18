@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:carerounds/screens/scan_document_screen.dart';
 
-/// The unified "scan a document" chooser — offers the three extractors.
+/// The unified "scan a document" chooser — offers the two extractors.
 Future<void> _pump(WidgetTester tester) async {
   await tester.binding.setSurfaceSize(const Size(420, 1200));
   addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -26,16 +26,17 @@ Future<void> _pump(WidgetTester tester) async {
 }
 
 void main() {
-  testWidgets('renders the three scan options', (WidgetTester tester) async {
+  testWidgets('renders the two scan options', (WidgetTester tester) async {
     await _pump(tester);
 
     expect(find.byKey(ScanDocumentScreen.optionKey('prescription')),
         findsOneWidget);
     expect(find.byKey(ScanDocumentScreen.optionKey('appointment')),
         findsOneWidget);
+    // Insurance-card scanning was dropped in the Track-2 focus pass.
     expect(find.byKey(ScanDocumentScreen.optionKey('insurance')),
-        findsOneWidget);
+        findsNothing);
     expect(find.text('Prescription label'), findsOneWidget);
-    expect(find.text('Insurance card'), findsOneWidget);
+    expect(find.text('Appointment card'), findsOneWidget);
   });
 }

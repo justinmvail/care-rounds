@@ -9,17 +9,16 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart' show Override;
 
-/// The six tiles in their documented order (BUILD_SPEC.md §5.13,
-/// TASKS.md Phase 14.26): (label, icon, route). The 2026-06-06 IA refactor
-/// dropped the Calendar tile (the one schedule now lives under Care) and
-/// renamed the roster tile from "Care Circle" to "People".
+/// The five tiles in their documented order: (label, icon, route). The
+/// Track-2 focus pass dropped Expenses (family cost-sharing, off-thesis for
+/// the paid workforce); the roster tile is "Caregivers", the client tile
+/// "Clients".
 const List<(String, IconData, String)> _expected = <(String, IconData, String)>[
   ('Clients', Icons.groups_2_outlined, '/team/clients'),
   ('Caregivers', Icons.diversity_3_outlined, '/team/circle'),
   ('Shifts', Icons.access_time_outlined, '/team/shifts'),
   ('Tasks', Icons.task_alt_outlined, '/team/tasks'),
   ('Activity', Icons.timeline_outlined, '/team/activity'),
-  ('Expenses', Icons.account_balance_wallet_outlined, '/team/expenses'),
 ];
 
 /// A router that mounts the hub at `/team` and registers a stub
@@ -58,7 +57,7 @@ InMemoryStorageProvider _seededStorage({required bool teamEnabled}) {
   return storage;
 }
 
-/// Pumps the hub at a tall phone surface so all six tiles render inside
+/// Pumps the hub at a tall phone surface so all five tiles render inside
 /// the viewport (the grid scrolls, but a tall surface keeps every tile
 /// hittable). We deliberately skip `careroundsLightTheme` — its
 /// google_fonts TextStyles fire fire-and-forget Futures that surface as
@@ -88,7 +87,7 @@ Future<GoRouter> _pumpHub(
 
 void main() {
   group('CareTeamHubScreen — coordination enabled', () {
-    testWidgets('renders all six tiles in the documented order',
+    testWidgets('renders all five tiles in the documented order',
         (WidgetTester tester) async {
       await _pumpHub(tester);
 

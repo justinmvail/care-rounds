@@ -8,10 +8,8 @@ library;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:carerounds/models/appointment_draft.dart';
-import 'package:carerounds/models/document.dart' show Insurance;
 import 'package:carerounds/models/medication_draft.dart';
 import 'package:carerounds/services/appointment_scanner.dart';
-import 'package:carerounds/services/insurance_card_scanner.dart';
 import 'package:carerounds/services/prescription_scanner.dart';
 
 const String _baseUrl = String.fromEnvironment('FORUM_API_URL');
@@ -61,16 +59,5 @@ void main() {
     expect(d.startsAt!.month, 8);
     expect(d.startsAt!.day, 3);
     expect(d.startsAt!.hour, 14);
-  }, skip: skip);
-
-  test('insurance card → insurance draft', () async {
-    final Insurance? d = await ApiInsuranceCardScanner(
-      baseUrl: _baseUrl,
-      tokenLoader: _token,
-    ).extractFromImage(imagePath: _ins);
-
-    // ignore: avoid_print
-    print('INS: $d');
-    expect(d, isNotNull, reason: 'the scan produced nothing');
   }, skip: skip);
 }

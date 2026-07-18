@@ -81,13 +81,6 @@ class CareTeamHubScreen extends ConsumerWidget {
           route: '/team/activity',
           chipColor: context.hc.primarySoft,
         ),
-        _TeamTileSpec(
-          icon: Icons.account_balance_wallet_outlined,
-          label: 'Expenses',
-          subLabel: 'costs & receipts',
-          route: '/team/expenses',
-          chipColor: context.hc.primarySoft,
-        ),
       ];
 
   @override

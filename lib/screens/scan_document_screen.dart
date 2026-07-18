@@ -5,9 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../models/appointment_draft.dart';
-import '../models/document.dart' show Insurance;
 import '../providers/appointment_scanner_provider.dart';
-import '../providers/insurance_card_scanner_provider.dart';
 import '../theme.dart';
 import '../widgets/path_header.dart';
 import 'medication/prescription_scan_flow.dart';
@@ -15,7 +13,7 @@ import 'scan_capture.dart';
 
 /// One place to "scan any care document" — routes each type to its extractor
 /// + review flow (prescription → medication review, appointment card →
-/// appointment form, insurance card → emergency card). Addresses the
+/// appointment form). Addresses the
 /// paperwork / organizing-records pain points with a single obvious entry.
 class ScanDocumentScreen extends ConsumerWidget {
   const ScanDocumentScreen({super.key});
@@ -71,13 +69,6 @@ class ScanDocumentScreen extends ConsumerWidget {
                     subtitle: 'Provider, date, time, location',
                     onTap: () => _scanAppointment(context, ref),
                   ),
-                  _ScanOption(
-                    id: 'insurance',
-                    icon: Icons.shield_outlined,
-                    title: 'Insurance card',
-                    subtitle: 'Carrier, member ID, group, phone',
-                    onTap: () => _scanInsurance(context, ref),
-                  ),
                 ],
               ),
             ),
@@ -106,22 +97,6 @@ class ScanDocumentScreen extends ConsumerWidget {
     unawaited(context.push('/appointments/new', extra: draft));
   }
 
-  Future<void> _scanInsurance(BuildContext context, WidgetRef ref) async {
-    final scanner = ref.read(insuranceCardScannerProvider);
-    final Insurance? insurance = await captureScanDraft<Insurance>(
-      context,
-      ref,
-      extract: (String path) => scanner.extractFromImage(imagePath: path),
-      emptyDraft: const Insurance(
-        carrier: '',
-        policyNumber: '',
-        groupNumber: '',
-      ),
-    );
-    if (insurance == null || !context.mounted) return;
-    unawaited(
-        context.push('/medical/cards/emergency/edit', extra: insurance));
-  }
 }
 
 class _ScanOption extends StatelessWidget {

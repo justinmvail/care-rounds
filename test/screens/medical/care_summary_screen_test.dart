@@ -28,7 +28,7 @@ void main() {
 
     expect(find.byKey(CareSummaryScreen.shareButtonKey), findsOneWidget);
     expect(find.text('Share care summary'), findsOneWidget);
-    expect(find.textContaining('same picture for every clinician'),
+    expect(find.textContaining('the same picture for the next caregiver'),
         findsOneWidget);
   });
 }

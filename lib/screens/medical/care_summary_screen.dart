@@ -10,8 +10,8 @@ import '../../widgets/path_header.dart';
 
 /// "Share a care summary" (`/care-summary`) — builds a one-page PDF of the
 /// client's current conditions, allergies, medications, and upcoming
-/// appointments, and hands it to the OS share sheet. The same current
-/// picture for every clinician (coordinating between doctors).
+/// appointments, and hands it to the OS share sheet. One current picture
+/// for a shift handoff — the next caregiver, the supervisor, or a clinician.
 class CareSummaryScreen extends ConsumerStatefulWidget {
   const CareSummaryScreen({super.key});
 
@@ -85,7 +85,8 @@ class _CareSummaryScreenState extends ConsumerState<CareSummaryScreen> {
                     child: Text(
                       "Share a one-page summary of your client's current "
                       'conditions, allergies, medications, and upcoming '
-                      'appointments — the same picture for every clinician.',
+                      'appointments — the same picture for the next '
+                      'caregiver, your supervisor, or a clinician.',
                       style: tt.bodyMedium?.copyWith(color: context.hc.text),
                     ),
                   ),

@@ -45,18 +45,56 @@ ACL lists nine example applications. Care Rounds credibly addresses **eight**
 | # | ACL use case | Care Rounds | Source |
 |---|---|---|---|
 | 1 | **Matching & scheduling** — match workers to clients by skill/location/availability, adjust to reduce missed shifts/overtime | **Care Rounds** = a worker's daily rounds; shifts become worker×client×time; assignment roster; coverage/gap view | Extend existing `shifts`, `calendar`, `tasks`, `care_shift` |
-| 2 | **Documentation** — voice notes → structured docs | Voice dictation → structured **visit note** (health log / journal wizard / care-plan update) | Reuse voice intake, `journal_wizard`, `health_log`, `visit_prep` |
+| 2 | **Documentation** — voice notes → structured docs | **Ambient visit documentation — the note that writes itself.** Voice at the point of care → a structured visit note (health log / journal wizard / care-plan update) with zero typing | Reuse voice intake, `journal_wizard`, `health_log`, `visit_prep` |
 | 3 | **Training** — short, role-specific modules | Reframe **Learn** playbooks as role/experience-level micro-training + refreshers | Reuse `community/learn` |
 | 4 | **Real-time coaching** — step-by-step guidance, flag supervisory support | **The AI coach**, grounded in *that client's* data; code-side crisis watchdog escalates to supervisor | Reuse `chat_service` + `chat_context_builder` + crisis watchdog |
 | 5 | **Predictive analytics** — predict rising need / fall / hospitalization risk | Pattern detector + refill-runway + health-log trends → **care-need/risk flags** | Reuse `pattern_detector`, `medication_supply` |
 | 6 | Remote monitoring (sensors) | **Out of scope** (no hardware); note as roadmap/interoperability | — |
 | 7 | **Data aggregation** — combine notes + environment for care visibility | `chat_context_builder` already aggregates the full care picture per client | Reuse |
 | 8 | **Workforce management** — forecast staffing, coverage, turnover risk | Coverage/gap view over shifts; open-shift surfacing | Extend `shifts`/`calendar` |
-| 9 | **Administrative automation** — time tracking, billing, compliance, quality | Shift check-in/out time capture (EVV-lite), **care-summary PDF**, visit verification | Reuse `pdf_exporter`; extend shifts |
+| 9 | **Administrative automation** — time tracking, billing, compliance, quality | Lightweight shift check-in/out **framed as time-saved** (not an EVV product), **care-summary PDF** handoff | Reuse `pdf_exporter`; extend shifts |
 
-The flagship AI is #4 + #2: **a coach that already knows the client**, plus
-**voice that kills the paperwork** — the two things a direct-care worker feels
-every visit.
+The flagship AI is #2 + #4: **ambient visit documentation — the note that
+writes itself** — plus **a coach that already knows the client**. Those are the
+two things a direct-care worker feels every visit, and both are pure
+AI-innovation / burden-reduction (the contest's thesis), not incumbent parity.
+
+---
+
+## 2a. Strategy lock & non-goals (the thesis guardrail)
+
+This is the fixed point every feature decision is checked against. It exists
+because the fastest way to lose Track 2 is to drift into feature-parity with
+the incumbents (AlayaCare, AxisCare, WellSky, CareSmartz360) — matching their
+checklists dilutes the AI-innovation story the judges are actually scoring.
+
+**What we ARE (the wedge):**
+- **Ambient documentation** — the flagship. Talk during/after a visit; the app
+  produces the structured note. Judged under Documentation (#2) + Burden
+  Reduction (Principle 3).
+- **A client-grounded AI coach** with a supervisor escalation path (#4).
+- **Predictive care-need / risk flags** from visit + health trends (#5).
+- **AI-guided care-plan task checklist** per client/visit (#4/#9).
+- Everything else (rounds, roster, assignments, care-summary handoff) is
+  **supporting connective tissue**, not a headline.
+
+**What we are explicitly NOT (anti-goals — do not build, do not claim):**
+- **NOT an EVV product.** No EVV certification, no state-aggregator
+  integration, no Cures-Act-compliant verification. Check-in/out exists only as
+  a *time-saved* convenience; it is never framed or sold as EVV. (EVV is
+  commodity, non-AI, regulation-owned, and incumbent territory — a parity trap.)
+- **NOT billing / claims / payroll.** No invoicing, no claim submission, no
+  pay runs. The care-summary PDF is a clinical/handoff artifact, not a bill.
+- **NOT a scheduling-optimization engine.** We show a worker's rounds and
+  coverage gaps; we do not solve the staffing-optimization / route-optimization
+  problem the incumbents compete on.
+- **NOT an ATS / hiring / credentialing system.**
+- **NOT remote hardware monitoring** (sensors, #6) — interoperability roadmap
+  only, no hardware.
+
+**The test for any new feature:** does it *reduce a worker's burden through AI*,
+or does it just *match an incumbent's checklist*? Build the first; roadmap or
+drop the second.
 
 ---
 
@@ -126,7 +164,8 @@ four-tab bar, `PathHeader` breadcrumbs, and brand tokens stay.
 
 **Reused essentially as-is:** the AI coach (`chat_service`,
 `chat_context_builder`, crisis watchdog), voice intake, scan-to-import
-(prescription/appointment/insurance), health log, medications + dose windows,
+(prescription/appointment — insurance-card scan dropped as off-thesis), health
+log, medications + dose windows,
 appointments + visit-prep, care-summary PDF, pattern detector, Learn, emergency
 card, the four-tab shell, sync, auth, TTS.
 
@@ -208,8 +247,10 @@ shifts. That's the bulk of the build.
 ## 9. Open decisions / risks
 
 - **Scope creep vs. minimal change:** EVV/billing/compliance (#9) and workforce
-  forecasting (#8) are deep domains — commit to a *credible slice* (visit
-  time-capture + coverage view + care-summary export), roadmap the rest.
+  forecasting (#8) are deep incumbent domains and named **anti-goals** (§2a) —
+  we take only the AI-innovation slice (ambient docs, coaching, risk flags) and
+  a *time-saved* check-in/out, and explicitly roadmap/decline the rest rather
+  than chasing parity.
 - **Single-patient assumptions:** audit every `getPatient()`/`active-patient`
   caller when lifting the single-row limit — this is where reuse could bite.
 - **Sensors (#6):** explicitly out of scope; frame as interoperability roadmap.
