@@ -7,6 +7,7 @@ import '../theme.dart';
 import '../widgets/home/add_action_sheet.dart';
 import '../widgets/home/catch_me_up_card.dart';
 import '../widgets/home/schedule_card.dart';
+import '../widgets/home/today_visits_card.dart';
 import '../widgets/path_header.dart';
 
 /// Home tab root — the "Today" dashboard (BUILD_SPEC.md §4 Home IA,
@@ -85,11 +86,18 @@ class HomeScreen extends ConsumerWidget {
                 key: dashboardListKey,
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
                 children: const <Widget>[
-                  // Schedule: Today + Tomorrow, drawn from the unified
-                  // patient timeline (appointments, doses, health-log
-                  // entries, journal entries, care-plan routines).
-                  // Replaces the single-row Next Appointment card so the
-                  // caregiver sees the days ahead, not just the next item.
+                  // Today's visits ACROSS all clients (Track-2 #34) — the
+                  // worker's rounds for today lead the dashboard. Collapses
+                  // to nothing until the worker has said which caregiver
+                  // they are, so a family-style single-client setup falls
+                  // straight through to the client schedule card below.
+                  // (owns its own bottom gap when shown, and collapses to
+                  // nothing — no spacer — when hidden, so the empty dashboard
+                  // stays pixel-stable).
+                  TodayVisitsCard(),
+                  // Schedule: the ACTIVE client's Today + Tomorrow, drawn
+                  // from the unified patient timeline (appointments, doses,
+                  // health-log entries, journal entries, care-plan routines).
                   ScheduleCard(),
                   SizedBox(height: 16),
                   // Catch me up (Phase 14.12): an optional streamed
