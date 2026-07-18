@@ -16,7 +16,6 @@ const String _baseUrl = String.fromEnvironment('FORUM_API_URL');
 const String _jwt = String.fromEnvironment('LIVE_JWT');
 const String _rx = String.fromEnvironment('RX_IMAGE');
 const String _appt = String.fromEnvironment('APPT_IMAGE');
-const String _ins = String.fromEnvironment('INS_IMAGE');
 
 bool get _configured => _baseUrl.isNotEmpty && _jwt.isNotEmpty;
 Future<String> _token() async => _jwt;

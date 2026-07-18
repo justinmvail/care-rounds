@@ -6,6 +6,7 @@ import '../providers/home_clock_provider.dart';
 import '../theme.dart';
 import '../widgets/home/add_action_sheet.dart';
 import '../widgets/home/catch_me_up_card.dart';
+import '../widgets/home/risk_signals_card.dart';
 import '../widgets/home/schedule_card.dart';
 import '../widgets/home/today_visits_card.dart';
 import '../widgets/path_header.dart';
@@ -95,6 +96,11 @@ class HomeScreen extends ConsumerWidget {
                   // nothing — no spacer — when hidden, so the empty dashboard
                   // stays pixel-stable).
                   TodayVisitsCard(),
+                  // Early-warning signals for the active client (Track-2 #18)
+                  // — repeated falls, a med running out. Owns its own bottom
+                  // gap and collapses to nothing on a quiet client, so the
+                  // empty dashboard stays pixel-stable.
+                  RiskSignalsCard(),
                   // Schedule: the ACTIVE client's Today + Tomorrow, drawn
                   // from the unified patient timeline (appointments, doses,
                   // health-log entries, journal entries, care-plan routines).
