@@ -248,7 +248,7 @@ class _LovedOneSetupScreenState extends ConsumerState<LovedOneSetupScreen> {
       if (context.canPop()) {
         context.pop();
       } else {
-        context.go('/loved-ones');
+        context.go('/team/clients');
       }
       return;
     }
@@ -295,7 +295,7 @@ class _LovedOneSetupScreenState extends ConsumerState<LovedOneSetupScreen> {
     if (context.canPop()) {
       context.pop();
     } else {
-      context.go('/loved-ones');
+      context.go('/team/clients');
     }
   }
 

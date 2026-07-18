@@ -10,7 +10,7 @@ import '../../providers/my_rounds_provider.dart';
 import '../../providers/storage_provider.dart';
 import '../../theme.dart';
 import '../../widgets/path_header.dart';
-import '../settings/loved_ones_screen.dart'
+import '../../providers/clients_view_provider.dart'
     show LovedOnesView, lovedOnesViewProvider;
 
 /// "My Rounds" (Care Rounds) — the signed-in worker's shifts across EVERY

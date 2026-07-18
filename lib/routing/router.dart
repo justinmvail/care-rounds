@@ -40,7 +40,6 @@ import '../screens/medication/medication_list_screen.dart';
 import '../screens/onboarding/loved_one_setup_screen.dart';
 import '../screens/onboarding/sign_in_screen.dart';
 import '../screens/onboarding/welcome_carousel.dart';
-import '../screens/settings/loved_ones_screen.dart';
 import '../screens/settings/settings_screen.dart';
 import '../screens/team/activity_screen.dart';
 import '../screens/team/calendar_screen.dart';
@@ -71,10 +70,9 @@ class CareRoundsRoutes {
   static const String signIn = 'sign-in';
   static const String setup = 'setup';
   static const String settings = 'settings';
-  // Multi-patient "Clients" manager (Issue #6). `lovedOnes` → the
-  // switcher/manager; `lovedOnesAdd` → the setup wizard reused in add
-  // mode to append + activate another client.
-  static const String lovedOnes = 'loved-ones';
+  // Add-a-client setup wizard (Issue #6) — reused from onboarding in add
+  // mode to append + activate another client. (The separate Settings-side
+  // "Clients" manager was retired in Track-2 #33.)
   static const String lovedOnesAdd = 'loved-ones-add';
   static const String journalEntry = 'journal-entry';
   static const String journalNew = 'journal-new';
@@ -199,26 +197,19 @@ GoRouter buildRouter({
         builder: (BuildContext context, GoRouterState state) =>
             const SettingsScreen(),
       ),
-      // Multi-patient "Clients" manager (Issue #6) — reached from
-      // Settings → "Clients". The `add` child reuses the onboarding
-      // [LovedOneSetupScreen] in add mode, so a new client is appended
-      // + made active rather than gating the first-run flow. Both push
-      // onto the root navigator so they cover the tab bar like Settings.
+      // Add-a-client setup wizard (Issue #6), reused from onboarding in add
+      // mode so a new client is appended + made active rather than gating the
+      // first-run flow. Pushed from the Team → Clients roster and the
+      // persistent client-switcher bar. (Track-2 #33 retired the separate
+      // Settings-side "Clients" manager screen; the roster + switcher bar are
+      // the single client-management surface now.) Pushed onto the root
+      // navigator so it covers the tab bar like Settings.
       GoRoute(
-        path: '/loved-ones',
-        name: CareRoundsRoutes.lovedOnes,
+        path: '/loved-ones/add',
+        name: CareRoundsRoutes.lovedOnesAdd,
         parentNavigatorKey: rootNavigatorKey,
         builder: (BuildContext context, GoRouterState state) =>
-            const LovedOnesScreen(),
-        routes: <RouteBase>[
-          GoRoute(
-            path: 'add',
-            name: CareRoundsRoutes.lovedOnesAdd,
-            parentNavigatorKey: rootNavigatorKey,
-            builder: (BuildContext context, GoRouterState state) =>
-                const LovedOneSetupScreen(isAdd: true),
-          ),
-        ],
+            const LovedOneSetupScreen(isAdd: true),
       ),
       // Learn playbook detail (worker micro-training). Relocated out of the
       // removed Community tab to a top-level `/learn` path; pushed onto the

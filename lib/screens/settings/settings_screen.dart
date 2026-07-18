@@ -13,7 +13,6 @@ import '../../services/forum_api_client.dart' show forumBackendConfigured;
 import '../../theme.dart';
 import '../../widgets/carerounds_switch.dart';
 import '../../widgets/path_header.dart';
-import 'loved_ones_screen.dart' show LovedOnesScreen;
 
 /// Compact styling shared by the Settings segmented controls (Font size,
 /// Dark mode). Four equal-width segments with longer labels ("X-Large",
@@ -78,8 +77,6 @@ class SettingsScreen extends ConsumerWidget {
   static const Key dataSectionKey = Key('settings-data-section');
   static const Key backupDataButtonKey = Key('settings-backup-data');
   static const Key restoreDataButtonKey = Key('settings-restore-data');
-  static const Key lovedOnesSectionKey = Key('settings-loved-ones-section');
-  static const Key lovedOnesRowKey = Key('settings-loved-ones-row');
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -119,8 +116,6 @@ class SettingsScreen extends ConsumerWidget {
               leadingIcon: Icons.settings_outlined,
             ),
             const SizedBox(height: 20),
-            const _LovedOnesSection(),
-            const SizedBox(height: 24),
             _AudioSection(settings: settings, notifier: notifier),
             const SizedBox(height: 24),
             _FontSizeSection(settings: settings, notifier: notifier),
@@ -192,44 +187,6 @@ class _SectionCard extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
-// Clients (multi-patient, Issue #6) — entry to the switcher/manager
-// ---------------------------------------------------------------------------
-
-/// Settings card linking to the "Clients" manager (multi-patient,
-/// Issue #6). One row → [LovedOnesScreen], where the caregiver switches
-/// the active client or adds another. Kept out of the way (a plain
-/// navigation row) since most caregivers manage a single person.
-class _LovedOnesSection extends StatelessWidget {
-  const _LovedOnesSection();
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      key: SettingsScreen.lovedOnesSectionKey,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        const _SectionHeader(title: 'Clients'),
-        _SectionCard(
-          child: ListTile(
-            key: SettingsScreen.lovedOnesRowKey,
-            contentPadding: EdgeInsets.zero,
-            leading: Icon(
-              Icons.people_alt_outlined,
-              color: context.hc.primary,
-            ),
-            title: const Text('Clients'),
-            subtitle: const Text(
-              'Switch between the people you care for, or add another.',
-            ),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => context.push('/loved-ones'),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
 // ---------------------------------------------------------------------------
 // Audio section (BUILD_SPEC.md §5.10 + §11.1 + §11.2)
 // ---------------------------------------------------------------------------

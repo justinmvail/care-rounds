@@ -19,7 +19,7 @@ import 'package:carerounds/theme.dart';
 import 'package:carerounds/providers/my_rounds_provider.dart';
 import 'package:carerounds/models/care_shift.dart';
 import 'package:carerounds/models/patient.dart';
-import 'package:carerounds/screens/settings/loved_ones_screen.dart';
+import 'package:carerounds/providers/clients_view_provider.dart';
 import 'package:carerounds/widgets/tab_scaffold.dart';
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';

@@ -1,7 +1,7 @@
 import 'package:alchemist/alchemist.dart';
 import 'package:carerounds/models/care_shift.dart';
 import 'package:carerounds/providers/my_rounds_provider.dart';
-import 'package:carerounds/screens/settings/loved_ones_screen.dart';
+import 'package:carerounds/providers/clients_view_provider.dart';
 import 'package:carerounds/screens/team/my_rounds_screen.dart';
 import 'package:carerounds/theme.dart';
 import 'package:flutter/material.dart';

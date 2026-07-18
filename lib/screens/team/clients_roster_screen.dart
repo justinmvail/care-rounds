@@ -7,9 +7,9 @@ import '../../models/patient.dart';
 import '../../providers/circle_memberships_provider.dart';
 import '../../theme.dart';
 import '../../widgets/path_header.dart';
-import '../settings/loved_ones_screen.dart'
-    show LovedOnesScreen, LovedOnesView, lovedOnesViewProvider,
-        switchActivePatient;
+import '../../providers/clients_view_provider.dart'
+    show LovedOnesView, lovedOnesViewProvider, switchActivePatient,
+        lovedOnesAddRoute;
 
 /// The team's roster of clients (Care Rounds) — every client the team cares
 /// for, each with how many caregivers are assigned to them, and the active
@@ -92,7 +92,7 @@ class _Body extends ConsumerWidget {
               const SizedBox(height: 16),
               FilledButton.icon(
                 key: ClientsRosterScreen.addKey,
-                onPressed: () => context.push(LovedOnesScreen.addRoute),
+                onPressed: () => context.push(lovedOnesAddRoute),
                 icon: const Icon(Icons.add),
                 label: const Text('Add a client'),
               ),
@@ -121,7 +121,7 @@ class _Body extends ConsumerWidget {
         const SizedBox(height: 8),
         OutlinedButton.icon(
           key: ClientsRosterScreen.addKey,
-          onPressed: () => context.push(LovedOnesScreen.addRoute),
+          onPressed: () => context.push(lovedOnesAddRoute),
           icon: const Icon(Icons.add),
           label: const Text('Add a client'),
         ),

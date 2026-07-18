@@ -4,9 +4,9 @@ import 'package:go_router/go_router.dart';
 
 import '../models/patient.dart';
 import '../providers/active_patient_provider.dart';
-import '../screens/settings/loved_ones_screen.dart'
-    show LovedOnesScreen, LovedOnesView, lovedOnesViewProvider,
-        switchActivePatient;
+import '../providers/clients_view_provider.dart'
+    show LovedOnesView, lovedOnesViewProvider, switchActivePatient,
+        lovedOnesAddRoute;
 import '../theme.dart';
 
 /// The persistent "who am I working with right now" strip that sits at the
@@ -192,7 +192,7 @@ class _ClientSwitcherSheet extends ConsumerWidget {
                       ),
                       onTap: () {
                         Navigator.of(context).pop();
-                        context.push(LovedOnesScreen.addRoute);
+                        context.push(lovedOnesAddRoute);
                       },
                     ),
                   ],

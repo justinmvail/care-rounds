@@ -1,7 +1,7 @@
 import 'package:carerounds/models/care_circle_membership.dart';
 import 'package:carerounds/models/patient.dart';
 import 'package:carerounds/providers/circle_memberships_provider.dart';
-import 'package:carerounds/screens/settings/loved_ones_screen.dart';
+import 'package:carerounds/providers/clients_view_provider.dart';
 import 'package:carerounds/screens/team/clients_roster_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
