@@ -49,6 +49,16 @@ class MedicalHubScreen extends StatelessWidget {
         _CareSection(
           title: 'This visit',
           tiles: <_MedicalTileSpec>[
+            // The flagship (Track-2 #16): talk through the visit, the AI
+            // writes the note. Leads the section — it's the thing a worker
+            // does every visit.
+            _MedicalTileSpec(
+              icon: Icons.mic_none_outlined,
+              label: 'Document visit',
+              subLabel: 'talk it through — the note writes itself',
+              route: '/medical/visit-note',
+              chipColor: context.hc.accentDeep,
+            ),
             // One Schedule surface (Track-2 #32): the segmented
             // Calendar / Appointments / Routines wrapper replaces the three
             // former peer tiles.

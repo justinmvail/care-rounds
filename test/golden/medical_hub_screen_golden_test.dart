@@ -8,7 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart' show Override;
 
-/// Golden of the Care hub — the nine tiles grouped into three labelled
+/// Golden of the Care hub — the ten tiles grouped into three labelled
 /// sections ("This visit", "Client info", "Team & training"; Track-2 #31).
 /// The Team tile is always shown now, so this golden pins the full sectioned
 /// landing.
@@ -27,7 +27,7 @@ InMemoryStorageProvider _teamOffStorage() {
 void main() {
   group('MedicalHubScreen golden', () {
     goldenTest(
-      'renders the sectioned 9-tile hub landing',
+      'renders the sectioned 10-tile hub landing',
       fileName: 'medical_hub_screen',
       builder: () => GoldenTestGroup(
         columns: 1,

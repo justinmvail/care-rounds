@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
-/// The nine tiles in their display order, grouped into three sections
+/// The ten tiles in their display order, grouped into three sections
 /// (Track-2 #31): (label, icon, route). Order = section order, then tile
 /// order within each section — "This visit", then "Client info", then
 /// "Team & training".
@@ -21,6 +21,7 @@ import 'package:go_router/go_router.dart';
 /// wrapper at `/medical/schedule`, replacing the three former peer tiles.
 const List<(String, IconData, String)> _expected = <(String, IconData, String)>[
   // This visit
+  ('Document visit', Icons.mic_none_outlined, '/medical/visit-note'),
   ('Schedule', Icons.schedule_outlined, '/medical/schedule'),
   ('Health Log', Icons.monitor_heart_outlined, '/medical/health-log'),
   ('Journal', Icons.book_outlined, '/journal'),
@@ -88,19 +89,19 @@ Future<GoRouter> _pumpHub(WidgetTester tester) async {
 void main() {
   group('MedicalHubScreen', () {
     testWidgets(
-        'renders all nine tiles grouped into three sections, in order',
+        'renders all ten tiles grouped into three sections, in order',
         (WidgetTester tester) async {
       await _pumpHub(tester);
 
       final List<HubTile> tiles =
           tester.widgetList<HubTile>(find.byType(HubTile)).toList();
-      expect(tiles.length, 9);
+      expect(tiles.length, 10);
       // The three section headings render, in order (Track-2 #31).
       expect(find.text('THIS VISIT'), findsOneWidget);
       expect(find.text('CLIENT INFO'), findsOneWidget);
       expect(find.text('TEAM & TRAINING'), findsOneWidget);
-      // "Schedule" leads the first section; Emergency Card leads "Client info".
-      expect(tiles.first.label, 'Schedule');
+      // "Document visit" (the flagship) leads the first section.
+      expect(tiles.first.label, 'Document visit');
       expect(
         tiles.map((HubTile t) => t.label).toList(),
         <String>[for (final (String label, _, _) in _expected) label],
