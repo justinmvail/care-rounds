@@ -14,6 +14,7 @@ import '../screens/chat/conversation_list_screen.dart';
 import '../services/chat_service.dart';
 import '../services/voice_intake.dart';
 import '../theme.dart';
+import 'client_switcher_bar.dart';
 
 /// Bottom-tab shell for the fixed four-tab bar (IA refactor 2026-06-06):
 /// `Home · Care · Chat · Rounds`. All four tabs are ALWAYS visible.
@@ -59,7 +60,26 @@ class TabScaffold extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      body: navigationShell,
+      backgroundColor: context.hc.background,
+      // The shell owns the top safe-area inset so the persistent client bar
+      // sits just below the status bar on every tab; the child screens then
+      // render with the top inset already consumed (removePadding) so their
+      // own SafeArea doesn't pad a second time and leave a gap under the bar.
+      body: SafeArea(
+        bottom: false,
+        child: Column(
+          children: <Widget>[
+            const ClientSwitcherBar(),
+            Expanded(
+              child: MediaQuery.removePadding(
+                context: context,
+                removeTop: true,
+                child: navigationShell,
+              ),
+            ),
+          ],
+        ),
+      ),
       bottomNavigationBar: TabScaffoldBar(
         currentIndex: navigationShell.currentIndex,
         onDestinationSelected: (int index) {

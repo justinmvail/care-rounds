@@ -334,6 +334,10 @@ void main() {
         replyBuilder: (int i) => <ChatDelta>[ChatDeltaText('Reply ${i + 1}.')],
       );
       await _pumpChat(tester, backend: backend, seed: _seedEmptyThread);
+      // The persistent client-switcher bar (Track-2) claims ~48px at the top
+      // of the shell; give this ordering assertion enough headroom that all
+      // six bubbles stay in the lazy list's viewport simultaneously.
+      await tester.binding.setSurfaceSize(const Size(420, 1000));
       await _openThread(tester);
 
       for (final String q in const <String>[
