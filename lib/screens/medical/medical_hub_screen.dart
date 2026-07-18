@@ -20,6 +20,11 @@ import '../../widgets/path_header.dart';
 /// ("Care") so it renders the title row only — no breadcrumb trail and no
 /// Back control (you reach the hub by tapping the Care tab, and re-tapping
 /// it pops the branch back here). Each tile pushes its feature page.
+///
+/// The tiles are grouped into three labelled sections (Track-2 #31) rather
+/// than a flat wall of eleven — a direct-care worker scanning the tab reads
+/// "what do I do this visit / what's the client's info / team & training"
+/// instead of hunting an undifferentiated grid.
 class MedicalHubScreen extends StatelessWidget {
   const MedicalHubScreen({super.key});
 
@@ -28,103 +33,116 @@ class MedicalHubScreen extends StatelessWidget {
   /// break them.
   static Key tileKey(String route) => Key('medical-hub-tile-$route');
 
-  /// The Care hub tiles.
+  /// The Care hub, grouped into sections.
   ///
-  /// **Emergency Card leads** (UIUX_REVIEW): it's the highest-stakes,
-  /// most-glanceable surface — the one screen you hand a paramedic — so it
-  /// sits first in the grid rather than buried below the fold.
+  /// **Emergency Card leads its section** (UIUX_REVIEW): the highest-stakes,
+  /// most-glanceable surface — the one screen you show a first responder — and
+  /// it carries the hub's single amber chip (#28: one primary accent per hub).
   ///
-  /// The **Care Circle** tile is ALWAYS shown (UIUX_REVIEW): the entry point
-  /// to inviting family must be discoverable, not hidden behind a Settings
+  /// The **Team** tile is ALWAYS shown (UIUX_REVIEW): the door to the
+  /// cross-client Team hub must be discoverable, not hidden behind a Settings
   /// toggle. It routes to `/team`, which — when coordination is still off —
-  /// greets a first-time caregiver with the "Caring with others?" onboarding
-  /// CTA that flips the setting on in place. The `teamCoordinationEnabled`
-  /// setting still governs sync/behavior + which state the sub-hub shows; only
-  /// the door is now always open.
-  static List<_MedicalTileSpec> _tilesFor(BuildContext context) =>
-      <_MedicalTileSpec>[
-        _MedicalTileSpec(
-          icon: Icons.shield_outlined,
-          label: 'Emergency Card',
-          subLabel: 'info for first responders',
-          route: '/medical/cards/emergency',
-          chipColor: context.hc.cta,
+  /// greets a first-time worker with the onboarding CTA that flips the setting
+  /// on in place.
+  static List<_CareSection> _sectionsFor(BuildContext context) =>
+      <_CareSection>[
+        _CareSection(
+          title: 'This visit',
+          tiles: <_MedicalTileSpec>[
+            _MedicalTileSpec(
+              icon: Icons.schedule_outlined,
+              label: 'Schedule',
+              subLabel: 'today, tomorrow, this week',
+              route: '/team/calendar?from=medical',
+              chipColor: context.hc.link,
+            ),
+            _MedicalTileSpec(
+              icon: Icons.event_outlined,
+              label: 'Appointments',
+              subLabel: 'calendar & visits',
+              route: '/appointments',
+              chipColor: context.hc.success,
+            ),
+            _MedicalTileSpec(
+              icon: Icons.assignment_outlined,
+              label: 'Routines',
+              subLabel: 'scheduled care tasks',
+              route: '/medical/routines',
+              chipColor: context.hc.success,
+            ),
+            _MedicalTileSpec(
+              icon: Icons.monitor_heart_outlined,
+              label: 'Health Log',
+              subLabel: 'symptoms & vitals',
+              route: '/medical/health-log',
+              chipColor: context.hc.link,
+            ),
+            _MedicalTileSpec(
+              icon: Icons.book_outlined,
+              label: 'Journal',
+              subLabel: 'care notes',
+              route: '/journal',
+              chipColor: context.hc.text,
+            ),
+            _MedicalTileSpec(
+              icon: Icons.document_scanner_outlined,
+              label: 'Scan a document',
+              subLabel: 'Rx & appointment cards',
+              route: '/scan',
+              chipColor: context.hc.primary,
+            ),
+          ],
         ),
-        _MedicalTileSpec(
-          icon: Icons.medication_outlined,
-          label: 'Medications',
-          subLabel: 'doses & reminders',
-          route: '/medications',
-          chipColor: context.hc.primary,
+        _CareSection(
+          title: 'Client info',
+          tiles: <_MedicalTileSpec>[
+            _MedicalTileSpec(
+              icon: Icons.shield_outlined,
+              label: 'Emergency Card',
+              subLabel: 'info for first responders',
+              route: '/medical/cards/emergency',
+              chipColor: context.hc.cta,
+            ),
+            _MedicalTileSpec(
+              icon: Icons.medication_outlined,
+              label: 'Medications',
+              subLabel: 'doses & reminders',
+              route: '/medications',
+              chipColor: context.hc.primary,
+            ),
+            _MedicalTileSpec(
+              icon: Icons.summarize_outlined,
+              label: 'Care summary',
+              subLabel: 'share at handoff',
+              route: '/care-summary',
+              chipColor: context.hc.primary,
+            ),
+          ],
         ),
-        _MedicalTileSpec(
-          icon: Icons.document_scanner_outlined,
-          label: 'Scan a document',
-          subLabel: 'Rx & appointment cards',
-          route: '/scan',
-          chipColor: context.hc.primary,
-        ),
-        _MedicalTileSpec(
-          icon: Icons.school_outlined,
-          label: 'Learn',
-          subLabel: 'quick training',
-          route: '/learn',
-          chipColor: context.hc.link,
-        ),
-        _MedicalTileSpec(
-          icon: Icons.summarize_outlined,
-          label: 'Care summary',
-          subLabel: 'share with a clinician',
-          route: '/care-summary',
-          chipColor: context.hc.primary,
-        ),
-        _MedicalTileSpec(
-          icon: Icons.schedule_outlined,
-          label: 'Schedule',
-          subLabel: 'today, tomorrow, this week',
-          route: '/team/calendar?from=medical',
-          chipColor: context.hc.link,
-        ),
-        _MedicalTileSpec(
-          icon: Icons.event_outlined,
-          label: 'Appointments',
-          subLabel: 'calendar & visits',
-          route: '/appointments',
-          chipColor: context.hc.success,
-        ),
-        _MedicalTileSpec(
-          icon: Icons.monitor_heart_outlined,
-          label: 'Health Log',
-          subLabel: 'symptoms & vitals',
-          route: '/medical/health-log',
-          chipColor: context.hc.link,
-        ),
-        _MedicalTileSpec(
-          icon: Icons.assignment_outlined,
-          label: 'Routines',
-          subLabel: 'scheduled care tasks',
-          route: '/medical/routines',
-          chipColor: context.hc.success,
-        ),
-        _MedicalTileSpec(
-          icon: Icons.book_outlined,
-          label: 'Journal',
-          subLabel: 'care notes',
-          route: '/journal',
-          chipColor: context.hc.text,
-        ),
-        _MedicalTileSpec(
-          icon: Icons.groups_outlined,
-          label: 'Team',
-          subLabel: 'clients, caregivers & shifts',
-          route: '/team',
-          chipColor: context.hc.accentDeep,
+        _CareSection(
+          title: 'Team & training',
+          tiles: <_MedicalTileSpec>[
+            _MedicalTileSpec(
+              icon: Icons.groups_outlined,
+              label: 'Team',
+              subLabel: 'clients, caregivers & shifts',
+              route: '/team',
+              chipColor: context.hc.accentDeep,
+            ),
+            _MedicalTileSpec(
+              icon: Icons.school_outlined,
+              label: 'Learn',
+              subLabel: 'quick training',
+              route: '/learn',
+              chipColor: context.hc.link,
+            ),
+          ],
         ),
       ];
 
   @override
   Widget build(BuildContext context) {
-    final List<_MedicalTileSpec> tiles = _tilesFor(context);
+    final List<_CareSection> sections = _sectionsFor(context);
     return Scaffold(
       backgroundColor: context.hc.background,
       body: SafeArea(
@@ -145,18 +163,15 @@ class MedicalHubScreen extends StatelessWidget {
               ),
             ),
             Expanded(
-              child: HubGrid(
-                tiles: <HubTile>[
-                  for (final _MedicalTileSpec spec in tiles)
-                    HubTile(
-                      key: tileKey(spec.route),
-                      icon: spec.icon,
-                      label: spec.label,
-                      subLabel: spec.subLabel,
-                      chipColor: spec.chipColor,
-                      onTap: () => context.push(spec.route),
-                    ),
-                ],
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    for (final _CareSection section in sections)
+                      _SectionBlock(section: section),
+                  ],
+                ),
               ),
             ),
           ],
@@ -164,6 +179,73 @@ class MedicalHubScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+/// One labelled section of the Care hub: a small heading over a two-column
+/// tile grid, sharing the [HubGrid] geometry (12px gap, two equal columns)
+/// but without its own scroll view — the whole hub scrolls as one column.
+class _SectionBlock extends StatelessWidget {
+  const _SectionBlock({required this.section});
+
+  final _CareSection section;
+
+  static const double _gap = 12;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(left: 2, bottom: 10),
+            child: Text(
+              section.title.toUpperCase(),
+              style: TextStyle(
+                color: context.hc.primarySoft,
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.7,
+              ),
+            ),
+          ),
+          LayoutBuilder(
+            builder: (BuildContext context, BoxConstraints constraints) {
+              final double itemWidth = (constraints.maxWidth - _gap) / 2;
+              return Wrap(
+                spacing: _gap,
+                runSpacing: _gap,
+                children: <Widget>[
+                  for (final _MedicalTileSpec spec in section.tiles)
+                    SizedBox(
+                      width: itemWidth,
+                      child: HubTile(
+                        key: MedicalHubScreen.tileKey(spec.route),
+                        icon: spec.icon,
+                        label: spec.label,
+                        subLabel: spec.subLabel,
+                        chipColor: spec.chipColor,
+                        onTap: () => context.push(spec.route),
+                      ),
+                    ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// A titled group of Care-hub tiles (Track-2 #31).
+@immutable
+class _CareSection {
+  const _CareSection({required this.title, required this.tiles});
+
+  final String title;
+  final List<_MedicalTileSpec> tiles;
 }
 
 /// Static description of one [MedicalHubScreen] tile — the glyph, the two

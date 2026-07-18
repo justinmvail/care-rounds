@@ -5,13 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
-/// The eleven tiles in their display order: (label, icon, route).
+/// The eleven tiles in their display order, grouped into three sections
+/// (Track-2 #31): (label, icon, route). Order = section order, then tile
+/// order within each section — "This visit", then "Client info", then
+/// "Team & training".
 ///
-/// **Emergency Card leads** (UIUX_REVIEW) — the highest-stakes glanceable
-/// surface — and the **Care Circle** tile is always present (the door to
-/// inviting family stays discoverable; the `/team` sub-hub itself handles
-/// the coordination-off onboarding). Neither is gated by the Settings
-/// toggle anymore.
+/// The **Team** tile is always present (the door to the cross-client Team
+/// hub stays discoverable; the `/team` sub-hub itself handles the
+/// coordination-off onboarding).
 ///
 /// `route` is the exact string each tile `context.push`es — it doubles as
 /// the per-tile [MedicalHubScreen.tileKey] seed, so it must match the
@@ -20,17 +21,20 @@ import 'package:go_router/go_router.dart';
 /// the pushed URI but is not part of the matched route path (see
 /// [_matchedPath]).
 const List<(String, IconData, String)> _expected = <(String, IconData, String)>[
-  ('Emergency Card', Icons.shield_outlined, '/medical/cards/emergency'),
-  ('Medications', Icons.medication_outlined, '/medications'),
-  ('Scan a document', Icons.document_scanner_outlined, '/scan'),
-  ('Learn', Icons.school_outlined, '/learn'),
-  ('Care summary', Icons.summarize_outlined, '/care-summary'),
+  // This visit
   ('Schedule', Icons.schedule_outlined, '/team/calendar?from=medical'),
   ('Appointments', Icons.event_outlined, '/appointments'),
-  ('Health Log', Icons.monitor_heart_outlined, '/medical/health-log'),
   ('Routines', Icons.assignment_outlined, '/medical/routines'),
+  ('Health Log', Icons.monitor_heart_outlined, '/medical/health-log'),
   ('Journal', Icons.book_outlined, '/journal'),
+  ('Scan a document', Icons.document_scanner_outlined, '/scan'),
+  // Client info
+  ('Emergency Card', Icons.shield_outlined, '/medical/cards/emergency'),
+  ('Medications', Icons.medication_outlined, '/medications'),
+  ('Care summary', Icons.summarize_outlined, '/care-summary'),
+  // Team & training
   ('Team', Icons.groups_outlined, '/team'),
+  ('Learn', Icons.school_outlined, '/learn'),
 ];
 
 /// The route path a tile resolves to, with any `?query` stripped. A
@@ -87,15 +91,19 @@ Future<GoRouter> _pumpHub(WidgetTester tester) async {
 void main() {
   group('MedicalHubScreen', () {
     testWidgets(
-        'renders all eleven tiles in order, Emergency Card first',
+        'renders all eleven tiles grouped into three sections, in order',
         (WidgetTester tester) async {
       await _pumpHub(tester);
 
       final List<HubTile> tiles =
           tester.widgetList<HubTile>(find.byType(HubTile)).toList();
       expect(tiles.length, 11);
-      // Emergency Card leads the grid (UIUX_REVIEW).
-      expect(tiles.first.label, 'Emergency Card');
+      // The three section headings render, in order (Track-2 #31).
+      expect(find.text('THIS VISIT'), findsOneWidget);
+      expect(find.text('CLIENT INFO'), findsOneWidget);
+      expect(find.text('TEAM & TRAINING'), findsOneWidget);
+      // "Schedule" leads the first section; Emergency Card leads "Client info".
+      expect(tiles.first.label, 'Schedule');
       expect(
         tiles.map((HubTile t) => t.label).toList(),
         <String>[for (final (String label, _, _) in _expected) label],
