@@ -257,3 +257,31 @@ shifts. That's the bulk of the build.
 - **Two products, one team:** Care Rounds (Track 2) and Holdclose (Track 1)
   share DNA and a team — lean into that for the Partnerships/platform-maturity
   story; keep the entries and resources isolated (already done).
+
+---
+
+## 10. Implementation status (2026-07-18)
+
+The Track-2 thesis (§2a) is built, green, and on `main`:
+
+- **IA reframed for the workforce:** persistent client-switcher bar atop the
+  shell; the Care tab grouped into sections; the four schedule surfaces
+  consolidated into one segmented Schedule; a single client-management
+  surface (Team → Clients + the switcher, Settings manager retired); Home
+  leads with "Today's visits" across clients.
+- **Flagship — ambient visit documentation:** talk/type → the AI structures a
+  reviewable visit note → saved to the journal. Human-in-the-loop; guardrailed.
+- **Supervisor escalation channel:** a flags inbox; the visit note auto-raises
+  a flag when the AI marks a visit `needs_attention`; workers can raise one
+  directly; a supervisor resolves.
+- **Predictive early-warning:** an explainable, rule-based "Watch for" card
+  (falls trend + refill runway) — no black-box model.
+- **AI-guided care-plan checklist:** grounded task suggestions the worker
+  approves into routines.
+
+Every AI feature sits behind an interface with a deterministic fake (tests/
+demo) and routes real inference through the same gatekept transport as the
+coach. Off-thesis surfaces (consumer paywall, family expense-sharing,
+insurance-card scan) were removed. Remaining Track-2 work is **non-code
+evidence** (§8.6): worker/agency recruitment, partner letters, a Care Rounds
+FEEDBACK_LOG, and the Data Output Logs re-run for the workforce framing.
