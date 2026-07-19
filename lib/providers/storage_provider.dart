@@ -35,7 +35,8 @@ abstract class StorageProvider {
 
   /// Stream entries created within [window] of "now", newest first.
   /// Re-emits whenever the underlying store changes.
-  Stream<List<JournalEntry>> watchJournalEntries({Duration window});
+  Stream<List<JournalEntry>> watchJournalEntries(
+      {Duration window, String? patientId});
 
   /// Every journal entry on file, newest first — no time window. Backs
   /// the full-data backup (Issue #20 — `DataExporter`), which needs the
@@ -144,6 +145,7 @@ class DriftStorageProvider with SyncSinkHost implements StorageProvider {
   @override
   Stream<List<JournalEntry>> watchJournalEntries({
     Duration window = const Duration(days: 30),
+    String? patientId,
   }) {
     final int cutoffMs =
         _clock().subtract(window).millisecondsSinceEpoch;
@@ -153,6 +155,9 @@ class DriftStorageProvider with SyncSinkHost implements StorageProvider {
         (t) =>
             OrderingTerm(expression: t.createdAtMs, mode: OrderingMode.desc),
       ]);
+    if (patientId != null) {
+      query.where((t) => t.patientId.equals(patientId));
+    }
     return query.watch().map(
           (List<JournalEntriesTableData> rows) =>
               rows.map((r) => _decodeJournal(r.payload)).toList(),
@@ -177,6 +182,7 @@ class DriftStorageProvider with SyncSinkHost implements StorageProvider {
           JournalEntriesTableCompanion.insert(
             id: entry.id,
             createdAtMs: entry.createdAt.millisecondsSinceEpoch,
+            patientId: Value<String>(entry.patientId),
             payload: jsonEncode(entry.toJson()),
           ),
         );
@@ -350,6 +356,7 @@ class InMemoryStorageProvider with SyncSinkHost implements StorageProvider {
   @override
   Stream<List<JournalEntry>> watchJournalEntries({
     Duration window = const Duration(days: 30),
+    String? patientId,
   }) {
     // Manual controller (rather than `async*` + `await for`) so the
     // subscription on `_changes` is wired up synchronously inside
@@ -360,9 +367,9 @@ class InMemoryStorageProvider with SyncSinkHost implements StorageProvider {
     StreamSubscription<void>? changeSub;
     controller = StreamController<List<JournalEntry>>(
       onListen: () {
-        controller.add(_snapshot(window));
+        controller.add(_snapshot(window, patientId));
         changeSub = _changes.stream.listen((_) {
-          if (!controller.isClosed) controller.add(_snapshot(window));
+          if (!controller.isClosed) controller.add(_snapshot(window, patientId));
         });
       },
       onCancel: () async {
@@ -373,11 +380,12 @@ class InMemoryStorageProvider with SyncSinkHost implements StorageProvider {
     return controller.stream;
   }
 
-  List<JournalEntry> _snapshot(Duration window) {
+  List<JournalEntry> _snapshot(Duration window, [String? patientId]) {
     final DateTime cutoff = _clock().subtract(window);
     final List<JournalEntry> rows = _entries.values
         .where((JournalEntry e) =>
-            !e.createdAt.isBefore(cutoff))
+            !e.createdAt.isBefore(cutoff) &&
+            (patientId == null || e.patientId == patientId))
         .toList()
       ..sort((JournalEntry a, JournalEntry b) =>
           b.createdAt.compareTo(a.createdAt));

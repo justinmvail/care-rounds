@@ -201,6 +201,7 @@ class MedicationRepository with SyncSinkHost {
           MedicationsTableCompanion.insert(
             id: medication.id,
             name: medication.name,
+            patientId: Value<String>(medication.patientId),
             payload: jsonEncode(medication.toJson()),
           ),
         );
@@ -231,15 +232,19 @@ class MedicationRepository with SyncSinkHost {
   /// optional [Medication.endsAt] has passed — caregivers asked for
   /// short-course meds (antibiotics, taper plans) to disappear on
   /// their own once the prescription runs out.
-  Future<List<Medication>> listMedications() async {
+  /// Live medications, alphabetical. When [patientId] is given, scopes to
+  /// that client (Care Rounds multi-client); null lists every client's meds
+  /// (used by cross-client/export paths).
+  Future<List<Medication>> listMedications({String? patientId}) async {
     final DateTime now = _clock();
-    final List<MedicationsTableData> rows =
-        await (_db.select(_db.medicationsTable)
-              ..orderBy(<OrderClauseGenerator<$MedicationsTableTable>>[
-                (t) =>
-                    OrderingTerm(expression: t.name, mode: OrderingMode.asc),
-              ]))
-            .get();
+    final select = _db.select(_db.medicationsTable)
+      ..orderBy(<OrderClauseGenerator<$MedicationsTableTable>>[
+        (t) => OrderingTerm(expression: t.name, mode: OrderingMode.asc),
+      ]);
+    if (patientId != null) {
+      select.where((t) => t.patientId.equals(patientId));
+    }
+    final List<MedicationsTableData> rows = await select.get();
     return rows
         .map((MedicationsTableData r) =>
             Medication.fromJson(jsonDecode(r.payload) as Map<String, dynamic>))

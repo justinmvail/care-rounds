@@ -124,8 +124,8 @@ void main() {
       expect(await db.select(db.identificationDocsTable).get(), isEmpty);
     });
 
-    test('schemaVersion is 22 (v22: supervisor_flags table)', () {
-      expect(db.schemaVersion, 22);
+    test('schemaVersion is 23 (v23: clinical patient_id columns)', () {
+      expect(db.schemaVersion, 23);
     });
   });
 }

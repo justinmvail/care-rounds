@@ -153,9 +153,12 @@ class _VisitNoteScreenState extends ConsumerState<VisitNoteScreen> {
             : '⚠ Flag for supervisor: $concern')
         : concern;
 
+    // The visit note is filed under the active client (Care Rounds).
+    final String patientId = await ref.read(activePatientIdProvider.future);
     final JournalEntry entry = JournalEntry.wizard(
       id: 'journal-visit-${now.microsecondsSinceEpoch}',
       createdAt: now,
+      patientId: patientId,
       occurredAt: now,
       situationText: situation.isEmpty ? null : situation,
       attemptsText: tasks.isEmpty ? null : tasks.join('\n'),
@@ -167,7 +170,6 @@ class _VisitNoteScreenState extends ConsumerState<VisitNoteScreen> {
     // raise a supervisor flag carrying the concern so it lands in the Team
     // Flags inbox — the note documents, the flag escalates.
     if (_needsAttention) {
-      final String patientId = await ref.read(activePatientIdProvider.future);
       final String self =
           await ref.read(selfCaregiverIdProvider.future) ?? '';
       await raiseSupervisorFlag(

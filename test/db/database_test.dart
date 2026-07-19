@@ -16,7 +16,7 @@ void main() {
 
     test('opens at the current schema version', () async {
       // The Dart-side constant the migration runs against.
-      expect(db.schemaVersion, 22);
+      expect(db.schemaVersion, 23);
 
       // And the in-memory file itself is stamped to that version once it's
       // actually opened. `user_version` is written by drift after the

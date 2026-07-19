@@ -4,6 +4,7 @@ import 'package:alchemist/alchemist.dart';
 import 'package:carerounds/db/database.dart';
 import 'package:carerounds/models/appointment.dart' as model;
 import 'package:carerounds/screens/appointment/appointment_list_screen.dart';
+import 'package:carerounds/providers/active_patient_provider.dart';
 import 'package:carerounds/services/appointment_repository.dart';
 import 'package:carerounds/theme.dart';
 import 'package:drift/native.dart';
@@ -96,6 +97,7 @@ void main() {
                 appointmentRepositoryBackendProvider
                     .overrideWithValue(_emptyRepo()),
                 appointmentListClockProvider.overrideWithValue(_fixedNow),
+                activePatientIdProvider.overrideWith((ref) async => 'demo-patient-mary'),
               ],
               child: SizedBox(
                 width: 420,
@@ -134,6 +136,7 @@ void main() {
                     appointmentRepositoryBackendProvider
                         .overrideWithValue(snapshot.data!),
                     appointmentListClockProvider.overrideWithValue(_fixedNow),
+                    activePatientIdProvider.overrideWith((ref) async => 'demo-patient-mary'),
                   ],
                   child: SizedBox(
                     width: 420,

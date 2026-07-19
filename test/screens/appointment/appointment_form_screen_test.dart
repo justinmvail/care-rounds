@@ -5,6 +5,7 @@ import 'package:carerounds/models/appointment.dart' as model;
 import 'package:carerounds/models/appointment_draft.dart';
 import 'package:carerounds/screens/appointment/appointment_form_screen.dart';
 import 'package:carerounds/screens/appointment/appointment_list_screen.dart';
+import 'package:carerounds/providers/active_patient_provider.dart';
 import 'package:carerounds/services/appointment_repository.dart';
 import 'package:carerounds/services/provider_repository.dart';
 import 'package:carerounds/widgets/path_header.dart';
@@ -141,6 +142,7 @@ Future<({
       key: UniqueKey(),
       overrides: <Override>[
         appointmentRepositoryBackendProvider.overrideWithValue(apptRepo),
+        activePatientIdProvider.overrideWith((ref) async => 'demo-patient-mary'),
         providerRepositoryBackendProvider.overrideWithValue(providerRepo),
         appointmentFormClockProvider.overrideWithValue(_fixedNow),
         appointmentFormIdFactoryProvider
@@ -857,6 +859,7 @@ void main() {
         ProviderScope(
           overrides: <Override>[
             appointmentRepositoryBackendProvider.overrideWithValue(apptRepo),
+            activePatientIdProvider.overrideWith((ref) async => 'demo-patient-mary'),
             providerRepositoryBackendProvider
                 .overrideWithValue(providerRepo),
             appointmentFormClockProvider.overrideWithValue(_fixedNow),

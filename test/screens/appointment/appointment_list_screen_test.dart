@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:carerounds/db/database.dart';
 import 'package:carerounds/models/appointment.dart' as model;
 import 'package:carerounds/screens/appointment/appointment_list_screen.dart';
+import 'package:carerounds/providers/active_patient_provider.dart';
 import 'package:carerounds/services/appointment_repository.dart';
 import 'package:carerounds/widgets/path_header.dart';
 import 'package:drift/native.dart';
@@ -113,6 +114,7 @@ Future<({
       key: UniqueKey(),
       overrides: <Override>[
         appointmentRepositoryBackendProvider.overrideWithValue(repo),
+        activePatientIdProvider.overrideWith((ref) async => 'demo-patient-mary'),
         appointmentListClockProvider.overrideWithValue(_fixedNow),
       ],
       child: MaterialApp.router(routerConfig: router),
@@ -479,6 +481,7 @@ void main() {
         ProviderScope(
           overrides: <Override>[
             appointmentRepositoryBackendProvider.overrideWithValue(repo),
+            activePatientIdProvider.overrideWith((ref) async => 'demo-patient-mary'),
             appointmentListClockProvider.overrideWithValue(_fixedNow),
           ],
           child: MaterialApp.router(routerConfig: router),

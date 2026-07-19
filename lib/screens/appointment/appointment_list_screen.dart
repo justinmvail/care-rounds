@@ -10,6 +10,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../models/appointment.dart';
 import '../../models/appointment_draft.dart';
+import '../../providers/active_patient_provider.dart';
 import '../../providers/appointment_scanner_provider.dart';
 import '../../services/appointment_repository.dart';
 import '../../services/appointment_scanner.dart';
@@ -98,8 +99,9 @@ class AppointmentListData {
 Future<AppointmentListData> appointmentList(Ref ref) async {
   final AppointmentRepository repo =
       ref.watch(appointmentRepositoryBackendProvider);
-  final List<Appointment> upcoming = await repo.upcoming();
-  final List<Appointment> past = await repo.past();
+  final String patientId = await ref.watch(activePatientIdProvider.future);
+  final List<Appointment> upcoming = await repo.upcoming(patientId: patientId);
+  final List<Appointment> past = await repo.past(patientId: patientId);
   final List<Provider> providers = await repo.listProviders();
   final Map<String, Provider> byId = <String, Provider>{
     for (final Provider p in providers) p.id: p,

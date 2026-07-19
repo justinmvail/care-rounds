@@ -53,6 +53,7 @@ class AppointmentRepository with SyncSinkHost {
             id: appointment.id,
             providerId: appointment.providerId,
             startsAtMs: appointment.startsAt.millisecondsSinceEpoch,
+            patientId: Value<String>(appointment.patientId),
             payload: jsonEncode(appointment.toJson()),
           ),
         );
@@ -81,14 +82,17 @@ class AppointmentRepository with SyncSinkHost {
 
   /// Every appointment, chronological by `startsAt`. Surface for the
   /// doctor-visit PDF (Phase 12.8) which wants the full history.
-  Future<List<Appointment>> listAppointments() async {
-    final List<AppointmentsTableData> rows =
-        await (_db.select(_db.appointmentsTable)
-              ..orderBy(<OrderClauseGenerator<$AppointmentsTableTable>>[
-                (t) => OrderingTerm(
-                    expression: t.startsAtMs, mode: OrderingMode.asc),
-              ]))
-            .get();
+  /// Appointments, earliest first. When [patientId] is given, scopes to that
+  /// client (Care Rounds multi-client); null lists every client's.
+  Future<List<Appointment>> listAppointments({String? patientId}) async {
+    final select = _db.select(_db.appointmentsTable)
+      ..orderBy(<OrderClauseGenerator<$AppointmentsTableTable>>[
+        (t) => OrderingTerm(expression: t.startsAtMs, mode: OrderingMode.asc),
+      ]);
+    if (patientId != null) {
+      select.where((t) => t.patientId.equals(patientId));
+    }
+    final List<AppointmentsTableData> rows = await select.get();
     return rows
         .map((AppointmentsTableData r) => Appointment.fromJson(
             jsonDecode(r.payload) as Map<String, dynamic>))
@@ -131,17 +135,18 @@ class AppointmentRepository with SyncSinkHost {
   /// `startsAt >= clock()`. Ordered ascending so the next visit is the
   /// first row. The list screen (Phase 12.6) renders this under its
   /// "Upcoming" header.
-  Future<List<Appointment>> upcoming() async {
+  Future<List<Appointment>> upcoming({String? patientId}) async {
     final DateTime now = _clock();
     final int nowMs = now.millisecondsSinceEpoch;
-    final List<AppointmentsTableData> rows =
-        await (_db.select(_db.appointmentsTable)
-              ..where((t) => t.startsAtMs.isBiggerOrEqualValue(nowMs))
-              ..orderBy(<OrderClauseGenerator<$AppointmentsTableTable>>[
-                (t) => OrderingTerm(
-                    expression: t.startsAtMs, mode: OrderingMode.asc),
-              ]))
-            .get();
+    final select = _db.select(_db.appointmentsTable)
+      ..where((t) => t.startsAtMs.isBiggerOrEqualValue(nowMs))
+      ..orderBy(<OrderClauseGenerator<$AppointmentsTableTable>>[
+        (t) => OrderingTerm(expression: t.startsAtMs, mode: OrderingMode.asc),
+      ]);
+    if (patientId != null) {
+      select.where((t) => t.patientId.equals(patientId));
+    }
+    final List<AppointmentsTableData> rows = await select.get();
     return rows
         .map((AppointmentsTableData r) => Appointment.fromJson(
             jsonDecode(r.payload) as Map<String, dynamic>))
@@ -154,16 +159,17 @@ class AppointmentRepository with SyncSinkHost {
   /// past (the caregiver never marked it completed but the day passed).
   /// Ordered most-recent-first so the list-screen "Past" section reads
   /// as a recency timeline.
-  Future<List<Appointment>> past() async {
+  Future<List<Appointment>> past({String? patientId}) async {
     final DateTime now = _clock();
     final int nowMs = now.millisecondsSinceEpoch;
-    final List<AppointmentsTableData> rows =
-        await (_db.select(_db.appointmentsTable)
-              ..orderBy(<OrderClauseGenerator<$AppointmentsTableTable>>[
-                (t) => OrderingTerm(
-                    expression: t.startsAtMs, mode: OrderingMode.desc),
-              ]))
-            .get();
+    final select = _db.select(_db.appointmentsTable)
+      ..orderBy(<OrderClauseGenerator<$AppointmentsTableTable>>[
+        (t) => OrderingTerm(expression: t.startsAtMs, mode: OrderingMode.desc),
+      ]);
+    if (patientId != null) {
+      select.where((t) => t.patientId.equals(patientId));
+    }
+    final List<AppointmentsTableData> rows = await select.get();
     return rows
         .map((AppointmentsTableData r) => Appointment.fromJson(
             jsonDecode(r.payload) as Map<String, dynamic>))

@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../models/journal_entry.dart';
+import '../../providers/active_patient_provider.dart';
 import '../../providers/storage_provider.dart';
 import '../../theme.dart';
 import '../../widgets/form/id_factory.dart';
@@ -246,9 +247,11 @@ class _JournalWizardScreenState extends ConsumerState<JournalWizardScreen> {
 
     final StorageProvider storage = ref.read(storageProvider);
     final DateTime now = DateTime.now();
+    final String patientId = await ref.read(activePatientIdProvider.future);
     final JournalEntry entry = JournalEntry.wizard(
       id: mintId('journal', clock: () => now),
       createdAt: now,
+      patientId: patientId,
       occurredAt: _resolveOccurredAt(),
       situationText: _situationController.text.trim(),
       attemptsText: _attemptsController.text.trim(),

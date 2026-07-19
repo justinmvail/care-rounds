@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../models/medication.dart';
 import '../../models/medication_draft.dart';
+import '../../providers/active_patient_provider.dart';
 import '../../providers/patient_timeline_provider.dart'
     show invalidatePatientTimeline;
 import '../../services/medication_repository.dart';
@@ -160,9 +161,11 @@ class _MedicationImportReviewScreenState
     final MedicationRepository repo =
         ref.read(medicationRepositoryBackendProvider);
     final String Function() mint = ref.read(medicationFormIdFactoryProvider);
+    final String patientId = await ref.read(activePatientIdProvider.future);
 
     final Medication medication = Medication(
       id: 'med-${mint()}',
+      patientId: patientId,
       name: _name.text.trim(),
       dosage: _dosage.text.trim(),
       route: _route,

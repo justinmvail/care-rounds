@@ -48,7 +48,7 @@ Future<List<MedicationListItem>> medicationList(Ref ref) async {
   final MedicationRepository repo =
       ref.watch(medicationRepositoryBackendProvider);
   final String patientId = await ref.watch(activePatientIdProvider.future);
-  final List<Medication> meds = await repo.listMedications();
+  final List<Medication> meds = await repo.listMedications(patientId: patientId);
   final List<DoseWindow> allWindows =
       await repo.windowsForPatient(patientId);
   final Map<String, DoseWindow> windowsById = <String, DoseWindow>{

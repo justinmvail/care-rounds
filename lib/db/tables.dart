@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 
+
 /// One auto-logged decoder run, mirroring [JournalEntry] (BUILD_SPEC.md
 /// §6.2 + §7.5). Stored as an opaque JSON [payload] keyed by [id], with
 /// [createdAtMs] lifted to its own column so the watch query can filter
@@ -19,6 +20,11 @@ class JournalEntriesTable extends Table {
 
   TextColumn get id => text()();
   IntColumn get createdAtMs => integer()();
+  // Care Rounds multi-client owner (lifted from the payload). Defaults to the
+  // historical single-install patient so the backfill migration + legacy rows
+  // land on the demo client.
+  TextColumn get patientId =>
+      text().withDefault(const Constant('demo-patient-mary'))();
   TextColumn get payload => text()();
 
   @override
@@ -149,6 +155,10 @@ class MedicationsTable extends Table {
 
   TextColumn get id => text()();
   TextColumn get name => text()();
+  // Care Rounds multi-client owner (lifted). Defaults to the historical
+  // single-install patient for the backfill migration + legacy rows.
+  TextColumn get patientId =>
+      text().withDefault(const Constant('demo-patient-mary'))();
   TextColumn get payload => text()();
 
   @override
@@ -294,6 +304,10 @@ class AppointmentsTable extends Table {
         onDelete: KeyAction.cascade,
       )();
   IntColumn get startsAtMs => integer()();
+  // Care Rounds multi-client owner (lifted). Defaults to the historical
+  // single-install patient for the backfill migration + legacy rows.
+  TextColumn get patientId =>
+      text().withDefault(const Constant('demo-patient-mary'))();
   TextColumn get payload => text()();
 
   @override

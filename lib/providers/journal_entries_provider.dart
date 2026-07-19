@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../models/journal_entry.dart';
+import 'active_patient_provider.dart';
 import 'storage_provider.dart';
 
 part 'journal_entries_provider.g.dart';
@@ -23,7 +24,12 @@ const Duration journalWindow = Duration(days: 30);
 @Riverpod(keepAlive: false)
 Stream<List<JournalEntry>> journalEntries(Ref ref) {
   final StorageProvider storage = ref.watch(storageProvider);
-  return storage.watchJournalEntries(window: journalWindow);
+  // Scope to the active client (Care Rounds multi-client). `.value` is null
+  // for the first frame while the id resolves — unfiltered then, re-runs
+  // scoped once it lands.
+  final String? patientId = ref.watch(activePatientIdProvider).value;
+  return storage.watchJournalEntries(
+      window: journalWindow, patientId: patientId);
 }
 
 /// Wall clock the journal screen uses to derive "Today / Yesterday /
@@ -43,7 +49,9 @@ DateTime Function() journalScreenClock(Ref ref) => DateTime.now;
 final journalHistoryProvider =
     StreamProvider.autoDispose<List<JournalEntry>>((Ref ref) {
   final StorageProvider storage = ref.watch(storageProvider);
-  return storage.watchJournalEntries(window: const Duration(days: 36500));
+  final String? patientId = ref.watch(activePatientIdProvider).value;
+  return storage.watchJournalEntries(
+      window: const Duration(days: 36500), patientId: patientId);
 });
 
 /// One entry from the full journal history, filtered by id (BUILD_SPEC.md

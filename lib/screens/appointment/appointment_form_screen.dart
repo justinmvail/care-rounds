@@ -8,6 +8,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../models/appointment.dart';
 import '../../models/appointment_draft.dart';
+import '../../providers/active_patient_provider.dart';
 import '../../providers/notifications_provider.dart';
 import '../../providers/patient_timeline_provider.dart' show invalidatePatientTimeline;
 import '../../services/appointment_repository.dart';
@@ -532,9 +533,11 @@ class _AppointmentFormScreenState
         int.tryParse(_duration.text.trim()) ?? 30;
     final String notes = _notes.text.trim();
 
+    final String patientId = await ref.read(activePatientIdProvider.future);
     final Appointment appt = Appointment(
       id: id,
       providerId: _selectedProviderId!,
+      patientId: patientId,
       startsAt: _startsAt,
       durationMinutes: durationMinutes,
       location: _location.text.trim(),

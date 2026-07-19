@@ -117,7 +117,7 @@ class CareRoundsDatabase extends _$CareRoundsDatabase {
 
   /// The schema version, as a const so [open] can hand it to the file-level
   /// repair before any drift machinery exists.
-  static const int _schemaVersion = 22;
+  static const int _schemaVersion = 23;
 
   /// The memoisation behind [open], with an injectable [executor] so the
   /// singleton + no-op-close behaviour is testable without the platform
@@ -432,6 +432,21 @@ class CareRoundsDatabase extends _$CareRoundsDatabase {
             // because drift doesn't run migrations in a transaction and
             // re-runs an interrupted one from the same version. No backfill.
             await m.createTable(supervisorFlagsTable);
+          }
+          if (from < 23) {
+            // Care Rounds multi-client: lift a `patient_id` column onto the
+            // clinical tables so meds / appointments / journal follow the
+            // active client. Each column carries a DEFAULT of the demo
+            // patient, so adding it backfills every existing (single-patient)
+            // row onto the demo client. `_addColumnIfMissing` guards the ALTER
+            // against "duplicate column name" so the step is safe to run twice
+            // (drift re-runs an interrupted migration from the same version).
+            await _addColumnIfMissing(
+                m, medicationsTable, medicationsTable.patientId);
+            await _addColumnIfMissing(
+                m, appointmentsTable, appointmentsTable.patientId);
+            await _addColumnIfMissing(
+                m, journalEntriesTable, journalEntriesTable.patientId);
           }
         },
         beforeOpen: (OpeningDetails details) async {

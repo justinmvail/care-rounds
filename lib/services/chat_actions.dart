@@ -12,6 +12,7 @@ import '../models/care_task.dart';
 import '../models/health_log_entry.dart';
 import '../models/journal_entry.dart';
 import '../models/medication.dart';
+import '../providers/active_patient_provider.dart';
 import '../providers/care_plan_provider.dart' show carePlanProvider;
 import '../providers/care_tasks_provider.dart'
     show careTasksProvider, careTasksRepositoryProvider;
@@ -252,9 +253,11 @@ Future<ChatActionOutcome?> _logJournal(
   final String attempts = _clean(args['attempts']) ?? 'none yet';
   final DateTime occurredAt =
       resolveOccurredAt(args['occurred_at'], clock());
+  final String patientId = await ref.read(activePatientIdProvider.future);
   final entry = JournalEntry.wizard(
     id: _mintId('journal', clock),
     createdAt: clock(),
+    patientId: patientId,
     occurredAt: occurredAt,
     situationText: situation,
     attemptsText: attempts,
@@ -289,8 +292,10 @@ Future<ChatActionOutcome?> _addMedication(
         'I couldn\'t add $name yet — what dose is it? (For example, "200 mg".)');
   }
   final MedicationRepository repo = ref.read(medicationRepositoryProvider);
+  final String patientId = await ref.read(activePatientIdProvider.future);
   final med = Medication(
     id: _mintId('med', clock),
+    patientId: patientId,
     name: name,
     dosage: dosage,
     route: _parseRoute(args['route']),
@@ -728,9 +733,11 @@ Future<ChatActionOutcome?> _addAppointment(
         "I couldn't schedule that — what day and time is it?");
   }
   final String providerId = await _resolveProviderId(ref, providerName, clock);
+  final String patientId = await ref.read(activePatientIdProvider.future);
   final appt = Appointment(
     id: _mintId('appt', clock),
     providerId: providerId,
+    patientId: patientId,
     startsAt: startsAt,
     durationMinutes: int.tryParse(args['duration_minutes'] ?? '') ?? 60,
     location: _clean(args['location']) ?? '',

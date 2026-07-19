@@ -1,5 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import 'patient_ref.dart';
+
 part 'appointment.freezed.dart';
 part 'appointment.g.dart';
 
@@ -87,6 +89,10 @@ abstract class Appointment with _$Appointment {
   const factory Appointment({
     required String id,
     required String providerId,
+    /// The client this appointment belongs to (Care Rounds multi-client).
+    /// Defaults to the historical single-install patient; new multi-client
+    /// writes set it from the active client.
+    @Default(demoFallbackPatientId) String patientId,
     required DateTime startsAt,
     required int durationMinutes,
     required String location,

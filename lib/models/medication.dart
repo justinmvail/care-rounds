@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import 'patient_ref.dart';
+
 part 'medication.freezed.dart';
 part 'medication.g.dart';
 
@@ -110,6 +112,12 @@ abstract class Medication with _$Medication {
   const factory Medication({
     required String id,
     required String name,
+
+    /// The client this medication belongs to (Care Rounds multi-client).
+    /// Defaults to the historical single-install patient so every existing
+    /// caller + row lands on the demo client; new multi-client writes set it
+    /// from the active client.
+    @Default(demoFallbackPatientId) String patientId,
 
     /// Free-text dosage as the caregiver wrote it on the bottle —
     /// "10 mg", "1 tablet", "5 mL". Stored verbatim so transcription

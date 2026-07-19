@@ -385,8 +385,14 @@ class _MedicationFormScreenState extends ConsumerState<MedicationFormScreen> {
       return t.isEmpty ? null : t;
     }
 
+    // Stamp the med with the active client so it stays on that caseload
+    // (Care Rounds multi-client). Editing happens while that client is
+    // active, so this holds for both new + edit.
+    final String patientId = await ref.read(activePatientIdProvider.future);
+
     final Medication medication = Medication(
       id: medicationId,
+      patientId: patientId,
       name: _name.text.trim(),
       // Compose "<amount> <unit>" so the persisted free-text dosage
       // string stays human-readable ("10 mg", "1 tablet") and the

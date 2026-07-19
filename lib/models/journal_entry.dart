@@ -1,5 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import 'patient_ref.dart';
+
 part 'journal_entry.freezed.dart';
 part 'journal_entry.g.dart';
 
@@ -22,6 +24,10 @@ abstract class JournalEntry with _$JournalEntry {
   const factory JournalEntry({
     required String id,
     required DateTime createdAt,
+    /// The client this entry belongs to (Care Rounds multi-client). Defaults
+    /// to the historical single-install patient; new multi-client writes set
+    /// it from the active client.
+    @Default(demoFallbackPatientId) String patientId,
     DateTime? occurredAt,
     String? situationText,
     String? attemptsText,
@@ -40,6 +46,7 @@ abstract class JournalEntry with _$JournalEntry {
   static JournalEntry wizard({
     required String id,
     required DateTime createdAt,
+    String patientId = demoFallbackPatientId,
     DateTime? occurredAt,
     String? situationText,
     String? attemptsText,
@@ -48,6 +55,7 @@ abstract class JournalEntry with _$JournalEntry {
       JournalEntry(
         id: id,
         createdAt: createdAt,
+        patientId: patientId,
         occurredAt: occurredAt,
         situationText: situationText,
         attemptsText: attemptsText,

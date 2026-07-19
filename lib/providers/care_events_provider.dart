@@ -260,8 +260,9 @@ Future<List<CareEvent>> calendarShiftEvents(Ref ref) async =>
 Future<List<CareEvent>> careEvents(Ref ref) async {
   final AppointmentRepository appointmentRepo =
       ref.watch(appointmentRepositoryProvider);
+  final String patientId = await ref.watch(activePatientIdProvider.future);
   final List<Appointment> appointments =
-      await appointmentRepo.listAppointments();
+      await appointmentRepo.listAppointments(patientId: patientId);
 
   // Resolve provider names in one batch so each projected block carries a
   // readable title without a query per appointment. The loop var stays
@@ -284,7 +285,6 @@ Future<List<CareEvent>> careEvents(Ref ref) async {
   // appointment / task / shift sources are scoped at their own seams (the
   // appointment projection FKs onto a provider, not a patient, so it isn't
   // filtered here).
-  final String patientId = await ref.watch(activePatientIdProvider.future);
   final CareEventsRepository notesRepo =
       ref.watch(careEventsRepositoryProvider);
   events.addAll(await notesRepo.listEventsForPatient(patientId));

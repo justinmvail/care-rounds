@@ -352,8 +352,9 @@ Future<List<CareEvent>> patientTimelineEvents(Ref ref) async {
   // the appointment block looks identical in both audiences.
   final AppointmentRepository appointmentRepo =
       ref.watch(appointmentRepositoryProvider);
+  final String patientId = await ref.watch(activePatientIdProvider.future);
   final List<Appointment> appointments =
-      await appointmentRepo.listAppointments();
+      await appointmentRepo.listAppointments(patientId: patientId);
   final Map<String, String> providerNames = <String, String>{};
   for (final provider in await appointmentRepo.listProviders()) {
     providerNames[provider.id] = provider.name;
