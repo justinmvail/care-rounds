@@ -39,6 +39,10 @@ import '../providers/expenses_provider.dart'
 import '../providers/health_log_provider.dart'
     show HealthLogRepository, healthLogRepositoryProvider;
 import '../providers/storage_provider.dart' show StorageProvider, storageProvider;
+import '../providers/supervisor_flags_provider.dart'
+    show SupervisorFlagsRepository, supervisorFlagsRepositoryProvider;
+import '../models/supervisor_flag.dart';
+import '../models/patient.dart';
 import '../services/appointment_repository.dart'
     show AppointmentRepository, appointmentRepositoryProvider;
 import '../services/chat_repository.dart'
@@ -90,6 +94,7 @@ class DemoDatasetSeeder {
     required this.careEvents,
     required this.documents,
     required this.chat,
+    required this.supervisorFlags,
     String? currentCaregiverId,
     DateTime Function()? clock,
   })  : currentCaregiverId = currentCaregiverId ?? 'demo-caregiver-me',
@@ -109,6 +114,7 @@ class DemoDatasetSeeder {
   final CareEventsRepository careEvents;
   final DocumentsRepository documents;
   final ChatRepository chat;
+  final SupervisorFlagsRepository supervisorFlags;
 
   /// Id of the signed-in caregiver — used as the owner of the circle and the
   /// claimer/payer on a slice of the team data so "you" resolves on screen.
@@ -163,6 +169,10 @@ class DemoDatasetSeeder {
     await _run('care-notes', _seedCareNotes);
     await _run('documents', _seedDocuments);
     await _run('chat', _seedChat);
+    // Care Rounds multi-client layer: a whole caseload (extra clients with
+    // their own meds/appointments/routines/journal), the signed-in worker,
+    // cross-client shifts for TODAY, and a couple of open escalations.
+    await _run('rounds-extras', _seedRoundsExtras);
     final int ms = _clock().difference(t0).inMilliseconds;
     debugPrint('DemoDatasetSeeder: seeded full dataset in ${ms}ms');
   }
@@ -850,6 +860,286 @@ class DemoDatasetSeeder {
   List<String> get _allCaregiverIds =>
       <String>[currentCaregiverId, _cgSarah, _cgDavid, _cgRosa];
 
+  // ---- Care Rounds multi-client extras -----------------------------------
+
+  static const String _clientFrank = 'seed-client-frank';
+  static const String _clientEvelyn = 'seed-client-evelyn';
+
+  /// A whole caseload on top of the primary demo client: two more clients
+  /// with their own clinical data, the signed-in worker, cross-client shifts
+  /// for TODAY, and a couple of open escalations — so every Care Rounds
+  /// workforce surface (client switcher, Today's visits + Start visit, My
+  /// Rounds, Team, Flags, the per-client Watch-for card) has real data.
+  Future<void> _seedRoundsExtras() async {
+    // The signed-in worker: "You" (the circle owner) is this device's user,
+    // so My Rounds + Today's visits resolve to their shifts.
+    await storage.setSelfCaregiverId(currentCaregiverId);
+
+    await storage.upsertPatient(_client(
+      id: _clientFrank,
+      name: 'Frank Albright',
+      age: 82,
+      diagnosis: "Parkinson's disease; osteoarthritis",
+    ));
+    await storage.upsertPatient(_client(
+      id: _clientEvelyn,
+      name: 'Evelyn Cho',
+      age: 74,
+      diagnosis: 'Type 2 diabetes; early-stage dementia',
+    ));
+    // The app opens on the fully-populated primary client (Mary), not
+    // whichever name sorts first.
+    await storage.setActivePatientId(demoPatientId);
+
+    await _seedClientClinical(
+      _clientFrank,
+      prescriber: 'Dr. James Park',
+      med1: 'Carbidopa-Levodopa',
+      dose1: '25-100 mg',
+      med2: 'Ropinirole',
+      dose2: '2 mg',
+      routine: 'Range-of-motion exercises',
+      apptReason: 'Neurology follow-up',
+      withFalls: true,
+    );
+    await _seedClientClinical(
+      _clientEvelyn,
+      prescriber: 'Dr. James Park',
+      med1: 'Metformin',
+      dose1: '500 mg',
+      med2: 'Glipizide',
+      dose2: '5 mg',
+      routine: 'Blood-sugar check + log',
+      apptReason: 'Diabetes review',
+      withFalls: false,
+    );
+
+    // Assignments: the worker covers all three clients; Rosa also covers Frank.
+    final DateTime t = _daysAgo(30);
+    for (final String pid in <String>[_clientFrank, _clientEvelyn]) {
+      await careCircle.upsertMembership(CareCircleMembership(
+        id: 'seed-mem-me-$pid',
+        caregiverId: currentCaregiverId,
+        patientId: pid,
+        permissionLevel: PermissionLevel.editor,
+        invitedAt: t,
+        acceptedAt: t,
+      ));
+    }
+    await careCircle.upsertMembership(CareCircleMembership(
+      id: 'seed-mem-rosa-frank',
+      caregiverId: _cgRosa,
+      patientId: _clientFrank,
+      permissionLevel: PermissionLevel.editor,
+      invitedAt: t,
+      acceptedAt: t,
+    ));
+
+    await _seedTodayRounds();
+
+    // Two open escalations for the Flags inbox.
+    await supervisorFlags.raise(SupervisorFlag(
+      id: 'seed-flag-frank',
+      patientId: _clientFrank,
+      raisedByCaregiverId: _cgRosa,
+      message: 'Frank had a near-fall getting out of bed this morning — '
+          'worth a physical-therapy review.',
+      createdAt: _now.subtract(const Duration(hours: 3)),
+    ));
+    await supervisorFlags.raise(SupervisorFlag(
+      id: 'seed-flag-evelyn',
+      patientId: _clientEvelyn,
+      raisedByCaregiverId: currentCaregiverId,
+      message: 'Evelyn refused her morning medications two days running.',
+      createdAt: _now.subtract(const Duration(minutes: 40)),
+    ));
+  }
+
+  /// The worker's visits for TODAY across clients: one in progress right now,
+  /// the rest still ahead — so Home leads with them and "Start visit" lights
+  /// up on the current one.
+  Future<void> _seedTodayRounds() async {
+    final DateTime now = _now;
+    await careShifts.upsertShift(CareShift(
+      id: 'seed-round-now',
+      caregiverId: currentCaregiverId,
+      patientId: demoPatientId,
+      start: now.subtract(const Duration(minutes: 30)),
+      end: now.add(const Duration(minutes: 30)),
+      notes: 'Morning care + medications',
+    ));
+    await careShifts.upsertShift(CareShift(
+      id: 'seed-round-next',
+      caregiverId: currentCaregiverId,
+      patientId: _clientFrank,
+      start: now.add(const Duration(hours: 2)),
+      end: now.add(const Duration(hours: 3)),
+      notes: 'Mobility + lunch',
+    ));
+    await careShifts.upsertShift(CareShift(
+      id: 'seed-round-later',
+      caregiverId: currentCaregiverId,
+      patientId: _clientEvelyn,
+      start: now.add(const Duration(hours: 5)),
+      end: now.add(const Duration(hours: 6)),
+      notes: 'Blood-sugar check + dinner prep',
+    ));
+    // Tomorrow, so the week view isn't a single day.
+    await careShifts.upsertShift(CareShift(
+      id: 'seed-round-tomorrow',
+      caregiverId: currentCaregiverId,
+      patientId: _clientFrank,
+      start: _at(_daysAhead(1), 9, 0),
+      end: _at(_daysAhead(1), 10, 0),
+    ));
+  }
+
+  /// Per-client clinical data: a morning dose window, two meds (one running
+  /// low, one out of refills — so the Watch-for card fires when this client
+  /// is active), a routine, an upcoming appointment, and journal entries
+  /// (three falls in the last week for [withFalls], enough to trip the
+  /// fall-pattern detector).
+  Future<void> _seedClientClinical(
+    String clientId, {
+    required String prescriber,
+    required String med1,
+    required String dose1,
+    required String med2,
+    required String dose2,
+    required String routine,
+    required String apptReason,
+    required bool withFalls,
+  }) async {
+    final String winId = 'seed-win-morning-$clientId';
+    await medications.upsertWindow(DoseWindow(
+      id: winId,
+      patientId: clientId,
+      label: 'Morning',
+      anchorTime: const TimeOfDay(hour: 8, minute: 0),
+      sortOrder: 0,
+    ));
+
+    final String m1 = 'seed-med-$clientId-1';
+    await medications.upsertMedication(Medication(
+      id: m1,
+      patientId: clientId,
+      name: med1,
+      dosage: dose1,
+      route: MedicationRoute.oral,
+      prescriber: prescriber,
+      quantity: '30',
+      refills: '2',
+      dateFilled: _usDate(_daysAgo(26)),
+      pharmacyName: 'Bayside Pharmacy',
+      pharmacyPhone: '(415) 555-0199',
+    ));
+    await medications.upsertEntry(MedicationWindowEntry(
+      id: 'seed-mwe-$m1',
+      medicationId: m1,
+      windowId: winId,
+      daysOfWeek: const <int>{},
+      startsOn: _daysAgo(60),
+    ));
+
+    final String m2 = 'seed-med-$clientId-2';
+    await medications.upsertMedication(Medication(
+      id: m2,
+      patientId: clientId,
+      name: med2,
+      dosage: dose2,
+      route: MedicationRoute.oral,
+      prescriber: prescriber,
+      quantity: '30',
+      refills: '0',
+      dateFilled: _usDate(_daysAgo(20)),
+      pharmacyName: 'Bayside Pharmacy',
+      pharmacyPhone: '(415) 555-0199',
+    ));
+    await medications.upsertEntry(MedicationWindowEntry(
+      id: 'seed-mwe-$m2',
+      medicationId: m2,
+      windowId: winId,
+      daysOfWeek: const <int>{},
+      startsOn: _daysAgo(60),
+    ));
+
+    await carePlan.upsert(CarePlanRoutine(
+      id: 'seed-routine-$clientId',
+      patientId: clientId,
+      title: routine,
+      body: '',
+      scheduledTime: const TimeOfDay(hour: 9, minute: 0),
+      frequencyKind: FrequencyKind.daily,
+      daysOfWeek: const <int>{},
+      startsOn: _daysAgo(30),
+      subtasks: const <String>[],
+    ));
+
+    await appointments.upsertAppointment(Appointment(
+      id: 'seed-appt-$clientId',
+      providerId: _provPcp,
+      patientId: clientId,
+      startsAt: _at(_daysAhead(3), 14, 30),
+      durationMinutes: 30,
+      location: 'Primary care clinic',
+      agenda: <String>[apptReason],
+      status: AppointmentStatus.upcoming,
+    ));
+
+    if (withFalls) {
+      for (int i = 0; i < 3; i++) {
+        await storage.insertJournalEntry(JournalEntry.wizard(
+          id: 'seed-journal-$clientId-fall-$i',
+          patientId: clientId,
+          createdAt: _daysAgo(i + 1),
+          occurredAt: _daysAgo(i + 1),
+          situationText:
+              'Frank had a fall — slipped near the bathroom, no injury.',
+          attemptsText:
+              'Helped him up, checked for injury, and notified the family.',
+        ));
+      }
+    } else {
+      await storage.insertJournalEntry(JournalEntry.wizard(
+        id: 'seed-journal-$clientId-0',
+        patientId: clientId,
+        createdAt: _daysAgo(1),
+        occurredAt: _daysAgo(1),
+        situationText: 'Good visit — ate well and walked the hallway twice.',
+        attemptsText: 'Prepared lunch and tidied the kitchen.',
+      ));
+    }
+  }
+
+  /// A lighter client profile for the extra caseload members (the crisis-card
+  /// fields the emergency card needs, left mostly empty).
+  Patient _client({
+    required String id,
+    required String name,
+    required int age,
+    required String diagnosis,
+  }) =>
+      Patient(
+        id: id,
+        name: name,
+        age: age,
+        diagnosis: diagnosis,
+        diagnosedAt: DateTime.utc(2023, 1, 1),
+        medications: const <CrisisMedication>[],
+        allergies: const <String>[],
+        calms: const <String>[],
+        escalates: const <String>[],
+        primaryCaregiver:
+            const Contact(name: 'Care agency', phone: '(415) 555-0100'),
+        healthcarePOA:
+            const Contact(name: 'Care agency', phone: '(415) 555-0100'),
+        advanceDirective:
+            const AdvanceDirectiveStatus(onFileAt: 'Not on file', dnr: false),
+      );
+
+  /// US label date ("M/d/yyyy") the refill-runway estimate parses.
+  String _usDate(DateTime d) => '${d.month}/${d.day}/${d.year}';
+
   // ---- Tasks -------------------------------------------------------------
 
   Future<void> _seedTasks() async {
@@ -1150,6 +1440,7 @@ Future<void> seedDemoDataset(
     careEvents: container.read(careEventsRepositoryProvider),
     documents: container.read(documentsRepositoryProvider),
     chat: container.read(chatRepositoryProvider),
+    supervisorFlags: container.read(supervisorFlagsRepositoryProvider),
     currentCaregiverId: container.read(currentCaregiverIdProvider),
     clock: clock,
   );

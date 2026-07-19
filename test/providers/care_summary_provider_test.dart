@@ -18,6 +18,7 @@ import 'package:carerounds/providers/health_log_provider.dart';
 import 'package:carerounds/providers/storage_provider.dart';
 import 'package:carerounds/seed/demo_dataset.dart';
 import 'package:carerounds/services/appointment_repository.dart';
+import 'package:carerounds/providers/supervisor_flags_provider.dart';
 import 'package:carerounds/services/chat_repository.dart';
 import 'package:carerounds/services/medication_repository.dart';
 import 'package:carerounds/services/provider_repository.dart';
@@ -70,6 +71,7 @@ void main() {
       careEvents: CareEventsRepository(db),
       documents: documents,
       chat: ChatRepository(db),
+      supervisorFlags: SupervisorFlagsRepository(db),
       currentCaregiverId: 'me-test',
       clock: clock,
     );

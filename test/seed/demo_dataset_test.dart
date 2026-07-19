@@ -16,6 +16,7 @@ import 'package:carerounds/providers/health_log_provider.dart';
 import 'package:carerounds/providers/storage_provider.dart';
 import 'package:carerounds/seed/demo_dataset.dart';
 import 'package:carerounds/services/appointment_repository.dart';
+import 'package:carerounds/providers/supervisor_flags_provider.dart';
 import 'package:carerounds/services/chat_repository.dart';
 import 'package:carerounds/services/medication_repository.dart';
 import 'package:carerounds/services/provider_repository.dart';
@@ -74,6 +75,7 @@ void main() {
       careEvents: careEvents,
       documents: documents,
       chat: chat,
+      supervisorFlags: SupervisorFlagsRepository(db),
       currentCaregiverId: 'me-test',
       clock: clock,
     );
@@ -133,7 +135,7 @@ void main() {
   });
 
   test('seeds care-plan routines (daily + weekly)', () async {
-    expect(await carePlan.listAll(), hasLength(5));
+    expect(await carePlan.listAll(), hasLength(7)); // +2 extra-client routines
   });
 
   test('seeds a journal with a recent cluster + a spread of free-text entries',
@@ -159,7 +161,7 @@ void main() {
       () async {
     expect(await careCircle.listCaregivers(), hasLength(5));
     final List<CareCircleMembership> mems = await careCircle.listMemberships();
-    expect(mems, hasLength(5));
+    expect(mems, hasLength(8)); // +3 cross-client assignments
     expect(mems.any((CareCircleMembership m) => m.acceptedAt == null), isTrue,
         reason: 'one invite should still be pending');
     expect(
