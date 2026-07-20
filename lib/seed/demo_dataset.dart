@@ -955,40 +955,45 @@ class DemoDatasetSeeder {
     ));
   }
 
-  /// The worker's visits for TODAY across clients: one in progress right now,
-  /// the rest still ahead — so Home leads with them and "Start visit" lights
-  /// up on the current one.
+  /// The worker's day as a real aide runs it — a ROUTE of several short
+  /// visits across clients, two of them seen twice (a morning care/meds call
+  /// and an evening meds/dinner call), which is how home-care aides actually
+  /// work. Anchored around "now" (offsets at ~2h spacing) so there's always
+  /// a visit in progress + earlier-done + still-ahead, wherever the demo is
+  /// opened during the day, so Home leads with today's visits and "Start
+  /// visit" lights up on the current one.
   Future<void> _seedTodayRounds() async {
     final DateTime now = _now;
-    await careShifts.upsertShift(CareShift(
-      id: 'seed-round-now',
-      caregiverId: currentCaregiverId,
-      patientId: demoPatientId,
-      start: now.subtract(const Duration(minutes: 30)),
-      end: now.add(const Duration(minutes: 30)),
-      notes: 'Morning care + medications',
-    ));
-    await careShifts.upsertShift(CareShift(
-      id: 'seed-round-next',
-      caregiverId: currentCaregiverId,
-      patientId: _clientFrank,
-      start: now.add(const Duration(hours: 2)),
-      end: now.add(const Duration(hours: 3)),
-      notes: 'Mobility + lunch',
-    ));
-    await careShifts.upsertShift(CareShift(
-      id: 'seed-round-later',
-      caregiverId: currentCaregiverId,
-      patientId: _clientEvelyn,
-      start: now.add(const Duration(hours: 5)),
-      end: now.add(const Duration(hours: 6)),
-      notes: 'Blood-sugar check + dinner prep',
-    ));
-    // Tomorrow, so the week view isn't a single day.
+    Duration h(double hours) => Duration(minutes: (hours * 60).round());
+    // (id, client, startOffsetHours, lengthHours, note)
+    final List<({String id, String pid, double at, double len, String note})>
+        route = <({String id, String pid, double at, double len, String note})>[
+      (id: 'now-1', pid: demoPatientId, at: -4, len: 1,
+          note: 'Morning care + 8am medications'),
+      (id: 'now-2', pid: _clientFrank, at: -2, len: 1,
+          note: 'Mobility exercises + light breakfast'),
+      (id: 'now-3', pid: _clientEvelyn, at: -0.4, len: 1,
+          note: 'Blood-sugar check + lunch'),
+      (id: 'now-4', pid: demoPatientId, at: 2, len: 0.75,
+          note: 'Afternoon check-in + evening medications'),
+      (id: 'now-5', pid: _clientFrank, at: 4, len: 1,
+          note: 'Dinner prep + evening routine'),
+    ];
+    for (final r in route) {
+      await careShifts.upsertShift(CareShift(
+        id: 'seed-round-${r.id}',
+        caregiverId: currentCaregiverId,
+        patientId: r.pid,
+        start: now.add(h(r.at)),
+        end: now.add(h(r.at + r.len)),
+        notes: r.note,
+      ));
+    }
+    // Tomorrow morning, so the week view isn't a single day.
     await careShifts.upsertShift(CareShift(
       id: 'seed-round-tomorrow',
       caregiverId: currentCaregiverId,
-      patientId: _clientFrank,
+      patientId: _clientEvelyn,
       start: _at(_daysAhead(1), 9, 0),
       end: _at(_daysAhead(1), 10, 0),
     ));
