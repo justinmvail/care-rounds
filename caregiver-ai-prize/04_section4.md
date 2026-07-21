@@ -1,93 +1,79 @@
 # Section 4 — Alignment with the Caregiver AI Principles
 
-> Maps 1:1 to ACL's seven official principles (exact order + wording). Each →
-> a concrete CareRounds feature, not an aspiration. `[BRACKETS]` = verify.
+> Maps 1:1 to ACL's seven official principles (exact order + wording). Each → a
+> concrete, built Care Rounds feature, not an aspiration. `[FOUNDER: …]` = verify.
 
-CareRounds was designed around ACL's seven Caregiver AI Principles. Each is met by
-a real, shipped feature:
+Care Rounds was designed around ACL's seven Caregiver AI Principles. Each is met
+by a real, working feature:
 
-**1. Protect privacy, dignity, and choice.** Care data is **local-first** —
-stored on the caregiver's device by default. Sharing is opt-in via single-use,
-explicitly confirmed invites. **Data portability** is inherent (the caregiver
-owns and can export their record); we do **not** sell caregiver or care-recipient
-data; consent is explicit and revocable. The app refers to the care recipient as
-"your loved one," never "the patient" — dignity by design. All network traffic is
-encrypted **in transit (TLS)**; the on-device care database is **encrypted at
-rest with SQLCipher** (the encryption key is held in the device
-keychain/keystore), layered on top of the phone's **OS device encryption**,
-with OS cloud backups disabled so the local record is not swept into iCloud or
-Google Drive (Android `allowBackup=false`; iOS files excluded from backup).
-Server-synced care-circle data resides on Cloudflare D1
-and R2. Critically, **the AI itself runs on Cloudflare Workers AI** — an
-open-weight model on our own cloud infrastructure — so the loved one's care data
-used to ground the coach **never goes to a separate AI vendor**. There is no
-third-party model provider in the data path to trust; the privacy boundary is
-ours to hold.
+**1. Protect privacy, dignity, and choice.** Client care data is **per-client and
+portable** — the worker's device holds the record, and the shared care-circle
+layer is gated so **assignments govern who can see which client**. All network
+traffic is encrypted **in transit (TLS)**; the on-device database sits on the
+phone's **OS device encryption**, with OS cloud backups disabled so the record is
+not swept into iCloud or Google Drive. Server-synced team data resides on
+**Cloudflare D1 and R2**. Critically, **the AI runs on Cloudflare Workers AI** —
+an open-weight model on our own cloud — so the client data used to ground the
+coach **never goes to a separate AI vendor**. We do not sell care data. Dignity is
+built into the language: the person receiving care is **"your client,"** and the
+worker is a professional whose time and judgment the product respects.
 
-**2. Support human-in-the-loop accountability.** CareRounds **augments, never
-replaces, the caregiver's judgment.** Every AI action that changes existing care
-data — in chat *or* voice — routes through an explicit **confirmation card**
-before it applies; the coach's guidance is **grounded in and cites the loved
-one's own data**, so the caregiver sees the reasoning; and when the model is
-uncertain or the data is thin, it **flags that weak-data result and escalates to
-professional help** rather than asserting. The scan-to-import extractors likewise
-flag low-confidence fields for the caregiver to check, and a code-side (non-LLM)
-crisis watchdog on chat and voice catches concerning messages even if the model
-fails.
+**2. Support human-in-the-loop accountability.** Care Rounds **augments, never
+replaces, the worker's judgment.** The ambient visit note is **reviewed and
+edited before it saves**; the AI-suggested care-plan checklist is **approved
+task-by-task**; every AI action that changes care data — in chat *or* voice —
+routes through an explicit **confirmation**; and the coach's guidance is
+**grounded in the client's own data** so the worker sees the reasoning. When the
+data is thin or the model is unsure, it **flags that and escalates to a
+supervisor** rather than asserting. The **supervisor-flag inbox** is the human
+hand-off made explicit — a flag is a task *for a person* and stays open until a
+human resolves it, never auto-closed.
 
-**3. Support caregivers' well-being and reduce burden.** This is CareRounds's
-purpose — **the assistant that makes a relentless, full-time job easier.**
-Hands-free voice logging removes friction when hands are full; the coach reduces
-the "I don't know what to do" stress of the hard moments; tracking and the
-Emergency Card cut cognitive load and crisis risk — assisting with the work *and*
-the emotional weight.
+**3. Support caregivers' well-being and reduce burden.** This is Care Rounds'
+entire purpose — **return caregiving time to a strained, high-turnover
+workforce.** Ambient documentation turns the day's heaviest task from minutes of
+end-of-shift typing into a few spoken sentences; the client-grounded coach cuts
+the "I don't know what to do / who to call" stress of the hard moments;
+early-warning flags reduce the crises that make the job frightening; and the
+rounds view removes the friction of tracking a multi-client day. Less paperwork,
+less scheduling chaos, guidance in the moment — directly aimed at burnout and
+retention.
 
-**4. Supplement, not replace, human connection.** The **Care Circle** spreads
-caregiving across the family instead of isolating one person, and the caregiver
-**community** connects people who are otherwise alone. The AI is a tool; the
-humans do the caring — CareRounds strengthens the caregiver↔loved-one and
-caregiver↔family relationships rather than substituting for them.
+**4. Supplement, not replace, human connection.** By automating the **admin and
+the watching**, Care Rounds gives the worker **more** time *with* the client, not
+less — the automation targets the paperwork, never the caregiving. The **Team**
+layer and the supervisor channel connect an otherwise-isolated frontline worker
+to their supervisor and teammates. The AI is a tool; the humans do the caring,
+and the escalation path deliberately routes concerns **to people**.
 
-**5. Allow personalized and flexible care.** Guidance is **grounded in the
-specific loved one's situation** (their meds, history, journal), and CareRounds
-works for **any** care situation — aging parents, disability, recovery, dementia
-— customizable to individual needs, preferences, and lifestyle, not a single
-diagnosis or a one-size template.
+**5. Allow personalized and flexible care.** Guidance and suggestions are
+**grounded in the specific client's situation** (their conditions, medications,
+recent visit notes), and the app fits **each worker's actual caseload and route**
+— a persistent client switcher and a per-client view mean the whole app
+re-centers on whoever the worker is with. It is not a single-diagnosis or
+one-size template; it adapts per client and per worker.
 
-**6. Promote safety, reliability, and transparency.** The coach's behavior is
-**transparent** (educational, not diagnostic; grounded and cited; uncertainty
-flagged) and **designed to avoid bias**: a code-side (non-LLM) **crisis-keyword
-watchdog** on chat, voice, and the community routes concerning content to human
-help even if the model fails, human-in-the-loop confirmation gates every care-data
-change, and the **model-agnostic** architecture lets us replace a model that
-underperforms for any caregiver group. We **red-teamed** the coach against
-unsafe-advice scenarios and published the results as our Data Output Logs
-(`DATA_OUTPUT_LOGS.md`): 41 cycles through the real chat stack — 32 standard, 4
-stress, 5 boundary/safety plus a refusal probe — in which every guardrail held
-(41/41), including refusals of a dose-change request, a diagnosis request, a
-prompt-injection embedded in shared family notes, and an unknown-protocol probe,
-and a code-side crisis referral that fires independent of the model. This
-reflects current evidence and best practices, with safeguards against adverse
-impacts, and the harness re-runs as the product evolves.
+**6. Promote safety, reliability, and transparency.** The coach is **transparent**
+(educational, not diagnostic; grounded and reason-showing; uncertainty flagged)
+and its guardrails are **structural and model-independent**: a code-side (non-LLM)
+**crisis watchdog**, human-in-the-loop confirmation on every care-data change, and
+a **model-agnostic** architecture that lets us swap a model that underperforms for
+any group. The predictive early-warning flags are **explainable rule-based
+signals**, each stating the plain reason it fired — deliberately **not** a
+black-box risk score. Care Rounds shares Holdclose's **Data Output Logs** (41
+cycles, 41/41 guardrails held — dose-change, diagnosis, prompt-injection, and
+unknown-protocol probes all correctly refused, crisis referral fires independent
+of the model); those guardrails are identical here. [FOUNDER: optionally re-run
+the harness against the Care Rounds coach for a Track-2-specific log.]
 
-**7. Ensure affordability and access.** The Challenge's own judging partner
-measured exactly what keeps caregivers off of helpful technology. In the Caregiver
-Action Network 2026 Caregiver Tech Insights Survey (n = 272), the top three
-adoption barriers are **cost (43%)**, **not knowing which products to trust
-(42%)**, and **privacy and security concerns (40%)**. CareRounds's core design
-choices answer each one directly:
-
-- **Cost (43%).** CareRounds is designed to be **affordable** [FOUNDER: state the
-  pricing commitment — e.g. "a free core tier plus an optional low-cost
-  subscription; transparent, reasonable pricing"] and runs on the phone caregivers
-  already carry, so there is no new hardware to buy.
-- **Don't-know-which-to-trust (42%).** The coach is **non-diagnostic and
-  transparent** — its guidance is grounded in and cites the loved one's own data,
-  it flags uncertainty, and human-in-the-loop confirmation gates every care-data
-  change (Principles 2 and 6), so a caregiver can see *why* it says what it says.
-- **Privacy and security (40%).** CareRounds is **local-first**, and the AI runs on
-  **Cloudflare Workers AI** (an open-weight model on our own cloud infrastructure),
-  so the loved one's data **never goes to a separate AI vendor** (Principle 1).
-
-Its **local-first** design also works even with limited connectivity, meeting
-caregivers where they are — the heart of ACL's home- and community-based mission.
+**7. Ensure affordability and access.** The workforce and the agencies that employ
+it operate on **thin margins**, so affordability is not a nicety — it is the whole
+adoption question. Care Rounds runs on the **phone the worker already carries**
+(no new hardware), and the **open-weight, self-hosted model keeps inference cost
+low** enough to price for thin-margin agencies. Its **local-first** design keeps
+working with limited connectivity in the field, and every real inference call is
+metered behind per-user quotas and a global spend cap so cost stays bounded.
+[FOUNDER: state the intended pricing commitment — e.g. "priced per-agency at a
+transparent, low per-seat rate; no cost to the individual worker."] This meets the
+direct-care workforce where it is — the heart of ACL's home- and community-based
+mission.

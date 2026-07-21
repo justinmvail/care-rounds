@@ -1,19 +1,19 @@
-# Cover Page & Abstract
+# Cover Page & Abstract — Track 2 (Care Rounds)
 
 > Page 1 of the submission (≤1 page). Uses the exact cover elements required by
 > the ACL application outline. `[FOUNDER: ...]` = fill with the founder's real
 > detail before submission. The Abstract below is drafted in full from known
-> facts and is **248 words** (limit: 250) — recount after any edit.
+> facts and is **~245 words** (limit: 250) — recount after any edit.
 
 ---
 
 ## Cover Page
 
-**Solution name:** CareRounds
+**Solution name:** Care Rounds
 
 **Team / organization:** JCSV One LLC, doing business as **Juno Code Studio**
 
-**Track:** **Track 1 — AI Tools to Support Family Caregivers**
+**Track:** **Track 2 — AI Tools for Extending the Caregiver Workforce**
 
 **Primary contact:**
 - Name: [FOUNDER: full legal name]
@@ -24,36 +24,38 @@
 **Alternate contact (optional):** [FOUNDER: name/email/phone, or "N/A — solo entrant"]
 
 **Team members & affiliations:** Solo entrant — [FOUNDER: name], Founder &
-Developer, JCSV One LLC (Juno Code Studio). Planned Phase 2 caregiver and
-clinical advisors to be secured through partnerships (see letters of support,
-Appendix).
+Developer, JCSV One LLC (Juno Code Studio). Planned Phase 2 direct-care-worker
+and home-care-agency advisors to be secured through partnerships (see letters of
+support, Appendix).
 
-**Meritorious prize focus area (optional):** Caregivers supporting individuals
-with Alzheimer's disease and related dementias (see Section 5).
+**Meritorious prize focus area (optional):** [FOUNDER: confirm whether a Track-2
+meritorious focus area applies — see Section 5; drop if none is claimed.]
 
 ---
 
 ## Abstract (≤250 words)
 
-Family caregiving is not one hard moment — it is a relentless, often full-time
-job made of thousands of them. An estimated 63 million Americans care for an
-aging or ill loved one, most without training, while juggling work and their own
-families. They track medications and narrow dose windows, watch shifting
-symptoms, coordinate appointments and relatives, and carry the emotional weight —
-usually with no one guiding them and no time to look anything up.
+The paid direct-care workforce — home health aides, personal care aides, and
+direct support professionals — is the fastest-growing occupation in the country
+and one of the most strained. Roughly 4.8 million workers earn near-minimum
+wages, turn over at rates commonly reported between 40% and 65% a year, and spend
+a large share of every shift on documentation, scheduling churn, and coordination
+instead of care. Agencies cannot hire their way out; the only leverage is
+efficiency and well-being *per worker*.
 
-**CareRounds is the assistant to the caregiver:** a built and tested mobile app
-(iOS + Android) that makes the whole experience easier. At its core is an AI
-coach grounded in the loved one's real care data — medications, dose windows,
-appointments, journal history, and the family care circle — so its guidance fits
-*your* person instead of a blank chatbox. Around the coach sits a full caregiving
-suite: effortless tracking, hands-free voice logging, a shared care circle, a
-health log, an emergency card, and AI scan-to-import and doctor-visit prep, each
-kept safe by human-in-the-loop confirmation before any care-data change.
+**Care Rounds is an AI care-operations app for direct-care teams.** Its flagship
+is **ambient visit documentation** — the aide talks through a visit and the AI
+writes a structured, reviewable note, turning the day's heaviest paperwork into a
+few spoken sentences. Around it sits a **client-grounded AI coach** for the
+specific person in front of the worker, with a code-side **escalation path to a
+supervisor**; **explainable early-warning flags** (repeated falls, a medication
+running low) surfaced from the data the worker already enters; and an
+**AI-guided care-plan checklist**. A persistent client switcher, a cross-client
+"today's visits" view, and a supervisor-flag inbox organize a real caseload — a
+route of several clients a day, the way aides actually work.
 
-CareRounds was built by a U.S. Air Force veteran who spent a decade inside VA
-benefits systems and has repeatedly cared for his father, a 100%-disabled
-veteran. The AI is model-agnostic and responsible: it augments the caregiver's
-judgment rather than replacing it, educates rather than diagnoses, flags
-uncertainty, and escalates to human help. It is a working product today — not a
-concept — ready to validate with caregivers in Phase 2.
+Care Rounds shares its architecture and safety design with Holdclose (our Track 1
+entry): human-in-the-loop confirmation on every change, a non-diagnostic coach
+that flags uncertainty, and an open-weight model on our own cloud so care data
+never reaches a separate AI vendor. It is a working, tested application today —
+built to return caregiving time to the workforce.

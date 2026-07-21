@@ -1,151 +1,117 @@
 # Section 2 — Implementation Approach
 
-> Draft. Official sub-headings. This is our STRONGEST section — a built, tested
-> app makes "deployment readiness" real. `[BRACKETS]` = fill/verify.
+> How Care Rounds is built, how ready it is, and how Phase 2 would validate and
+> deploy it. `[FOUNDER: …]` = founder input required.
 
-## Deployment Readiness
+## Technology readiness: a working, tested product today
 
-CareRounds is **already built, tested, and running on device** — a Flutter app on
-iOS and Android, with unit, widget, golden, and end-to-end integration suites
-green and a deployed Cloudflare Worker backend for care-circle sync. Unlike
-concept submissions, CareRounds is **installable and in the hands of testers
-today**: signed builds are sideloaded to physical iOS and Android devices, and
-the app has a live product presence at **carerounds.care**. Reviewers can see a
-**real, working product — not a concept.** Public app-store release is a
-submission-and-approval step, not further development — the remaining gate is
-enrolling the publishing organization and completing store review, which is
-Phase-2 operational work rather than engineering. This materially de-risks Phases
-2 and 3: the build is done; the work ahead is validation, refinement, and reach.
+Care Rounds is **not a concept or a mockup — it is a working application.** It is
+built in **Flutter** and runs on both **iOS and Android** from one codebase,
+installs and runs on real devices, and is backed by an automated test suite of
+**~1,900+ tests** (widget, golden/visual, provider, and integration tiers) that
+passes green, plus static analysis kept clean. Every screen carries a
+visual-regression "golden" test. This puts the solution at **TRL 3+** — concept
+feasibility demonstrated in a working build, with the critical technical elements
+(the grounded coach, the ambient-documentation pipeline, the risk detectors, the
+multi-client data model) implemented and exercised.
 
-## Implementation, Testing & Evaluation Strategy
+Care Rounds is a **fork of the same codebase and architecture** as our Track 1
+product, Holdclose, re-pointed from the family caregiver to the paid workforce.
+That is a deliberate platform-maturity advantage: the two products share a proven
+spine (the grounded AI coach, voice intake, scan-to-import, the care database,
+sync, auth, the safety guardrails), so Care Rounds inherits a large amount of
+already-built, already-tested infrastructure and the same responsible-AI design.
 
-- **Now–July 2026:** structured caregiver feedback sessions (existing
-  family-caregiver testers + additional caregivers recruited from caregiver
-  communities); refine based on what they tell us.
-- **Phase 2 (if advanced):** TestFlight → App Store pilot with a cohort of
-  [N] family caregivers over [8–12] weeks, instrumented for the metrics below;
-  weekly iteration on feedback; safety review of AI-coach interactions.
-- **Phase 3:** broaden distribution and establish sustainability (affordable
-  pricing and/or caregiver-org partnerships) so the tool outlasts the grant.
+**Honest deployment status.** Today Care Rounds installs as **signed builds on
+real devices** (used for the founder's own device testing). It is **not yet in
+the app stores** — store release is a **submission-and-approval step gated on
+organization enrollment (JCSV One LLC / Juno Code Studio)**, not remaining
+engineering. The production backend + billed inference path and business
+onboarding for agencies are **Phase-2 build items**, described below. We state
+this plainly rather than overclaim availability.
 
-## Timeline & Milestones
+## Architecture and the AI
 
-| When | Milestone |
-|---|---|
-| Now–Jul 2026 | Caregiver co-design sessions; refine; secure partner input |
-| Sep 2026 | (If Phase 1 win) finalize App Store release; recruit pilot cohort |
-| Phase 2 (2026–27) | Run instrumented pilot; collect performance + safety data; iterate |
-| Phase 3 | Scale reach; establish affordable, sustainable model |
+- **Client-grounded coaching.** The coach's guidance is assembled from the
+  **selected client's real care data** (medications, dose windows, routines,
+  visit history, the care circle) via a context builder, then run through the
+  model. Grounding in *that client* is the moat — it beats a blank chatbox.
+- **Model-agnostic, self-hosted inference.** In production the AI runs on
+  **Cloudflare Workers AI — an open-weight model on our own cloud
+  infrastructure** — so client care data used to ground the coach **never goes to
+  a separate AI vendor**. The backend is a **Cloudflare Worker** (Hono + Drizzle)
+  over **D1** and **R2**. There is no third-party model provider in the data path.
+- **Every AI feature sits behind an interface** with a deterministic **fake** for
+  tests and demos and a real implementation for production, and every real
+  inference call routes through the **same gatekept endpoint** (so per-user quotas
+  and a global spend cap apply). This is how a solo team runs AI safely and
+  affordably at scale.
+- **The local database is per-client and portable**; the shared care-circle layer
+  syncs server-side so a team sees the same picture. Database migrations are
+  written to be **safe to run twice** (an idempotency discipline pinned by tests),
+  because a bricked database is unrecoverable in the field.
 
-## Team & Roles
+## Safety and evaluation (the harness carries over)
 
-**[FOUNDER: your name] — Founder & Developer.** A **U.S. Air Force veteran** with over a
-decade building and supporting federal health and benefits systems — including
-**ten years on the Veterans Benefits Management System (VBMS)** and prior work
-in health-benefits software (Benefitfocus). He built CareRounds end-to-end:
-product design, the Flutter iOS/Android app, the server backend, and the AI
-integration. His motivation is personal — he has repeatedly cared for his
-father, a **100% disabled veteran** — and he built the assistant he wished he'd
-had. This combination of **deep VA/health-systems expertise and lived caregiving
-experience** is a rare fit for building responsibly at the intersection of aging,
-disability, and veteran care. **Planned additions:** caregiver and clinical
-advisors secured through partnerships (see letters of support, Appendix) to
-strengthen co-design and real-world validation in Phases 2–3.
+Care Rounds shares Holdclose's **responsible-AI harness**, which is
+**model-independent** because the guardrails are structural:
 
-## Performance Metrics
+- **Human-in-the-loop on every change.** Every AI action that writes or changes
+  care data routes through an explicit **confirmation** the worker must approve —
+  in chat and in voice. The ambient visit note is *reviewed and edited* before it
+  saves; the care-plan checklist is *approved task-by-task*; a supervisor flag is
+  *resolved by a human*, never auto-closed.
+- **Non-diagnostic, uncertainty-flagging coach.** The coach educates the worker;
+  it does not diagnose the client, recommend or change a dose, or claim a
+  prognosis. Its prompts forbid those, and it flags weak-data results rather than
+  asserting.
+- **A code-side (non-LLM) crisis watchdog** catches concerning content even if the
+  model fails.
+- **Data Output Logs.** Holdclose's **41-cycle Data Output Logs (41/41 guardrails
+  held)** validate this shared stack. [FOUNDER: for Track 2, either cite the
+  shared logs and note the guardrails are model-independent and identical here,
+  or — stronger — **re-run the Smart-40 harness against the Care Rounds coach**
+  (workforce prompts) and include a Care-Rounds-specific Data Output Logs
+  document. This is an optional but high-value differentiator.]
 
-- **Caregiver burden** — validated instrument (e.g., Zarit Burden Interview,
-  short form) measured pre/post pilot.
-- **Time saved** — reduction in time to log care via voice vs. manual entry
-  (instrumented + self-reported).
-- **Engagement & retention** — active use, return rate, task completion.
-- **AI coach usefulness** — caregiver helpfulness ratings; share of coach
-  interactions the caregiver acts on.
-- **Safety** — rate of uncertainty-flag/escalation events; **target: zero
-  unsafe medical directives** (adjudicated review).
-- **Medication tracking** — consistency of dose logging over time.
+## Impact metric: minutes of care returned, and escalations handled
 
-## Net Time Saved (data-backed estimate)
+The thesis is **efficiency and well-being per worker**, so the measurable outcome
+is **administrative time removed per visit** and **coaching that resolves a
+question without a supervisor call**. Concretely, Phase 2 would measure:
 
-ACL's Technology Readiness Guide asks for an estimate of the **hours returned to
-the caregiver per week**. We build one from the Challenge judging partner's own
-data rather than an invented figure. In the Caregiver Action Network 2026
-Caregiver Tech Insights Survey (n = 272), **37% of caregivers spend 11 or more
-hours a week on care coordination alone**, and the coordination burden
-concentrates in four tasks CareRounds directly targets: managing medications and
-refills (50%), scheduling appointments (46%), coordinating between doctors, and
-tracking follow-ups and care plans.
+- **Documentation time per visit** — before vs. with ambient documentation
+  (target: the day's heaviest task cut from minutes of typing to a spoken review).
+- **Coach-assisted resolutions** that did *not* require a supervisor call, and,
+  conversely, the **rate at which the escalation flag correctly routed a real
+  concern to a human** (escalation precision/recall on a labeled set).
+- **Early-warning lead time** — did a falls/refill flag surface before it became
+  an incident?
+- **Worker-reported burden and retention signal** over a pilot window.
 
-CareRounds attacks these four tasks with refill-runway alerts, one-tap
-appointment and dose-window management, voice-to-action logging, AI
-scan-to-import (a prescription or appointment card becomes structured records in
-seconds instead of manual entry), and a shared Care Circle that removes duplicated
-"who did what" coordination across the family.
+These are stated as a **Phase-2 measurement plan on real usage**, not as
+fabricated present-day numbers.
 
-**Estimate.** If a caregiver carrying an 11+ hour coordination week recovers even
-**15–25% of that time** through faster logging, automated refill tracking,
-scan-to-import, and shared coordination, that is a conservative **~1.5 to ~3 hours
-returned per week**. We present this as a **data-backed estimate, not a measured
-result** — the derivation (CAN coordination hours × CareRounds's coverage of the
-dominant coordination tasks) is explicit so a reviewer can weigh it. Measuring the
-*actual* net time saved — instrumented in-app timing plus caregiver self-report,
-against a pre-CareRounds baseline — is a defined Phase 2 metric (see Performance
-Metrics and the pilot plan above).
+## Phase 2 (2026–2027) plan
 
-## Bench Metrics — measurable today vs. the Phase 2 measurement plan
+1. **Recruit a home-care agency or worker co-op as a design + pilot partner**
+   [FOUNDER: outreach in progress — see Appendix letters and `outreach_email.md`].
+2. **Stand up the production backend** for Care Rounds — its own deployed
+   Cloudflare Worker + D1 + R2, real Google auth for the Care Rounds app, and a
+   **billed inference path with spend caps** — and complete **app-store release**
+   under the enrolled organization.
+3. **Run a structured pilot** with real aides across a real caseload; instrument
+   the metrics above; iterate the ambient-documentation prompts and the
+   escalation thresholds from the observed data (**evaluation → adaptation**).
+4. **Build the agency onboarding + business model** (per-agency accounts, seats;
+   the workforce buyer is the agency, not the individual worker) and the
+   **Holdclose↔Care Rounds connection** for read-only cross-product awareness.
+5. **Re-run the Data Output Logs** against the Care Rounds coach and publish.
 
-ACL's guide suggests basic bench-test metrics (F1, precision, recall, accuracy).
-We report **only what we can measure honestly today** and lay out a plan for the
-rest — no fabricated numbers.
+## Team
 
-**Measurable today — the safety guardrail pass-rate.** Our optional Data Output
-Logs (`DATA_OUTPUT_LOGS.md`) drive **41 real inference cycles** through the actual
-coach stack — 32 standard (including 2 thin-data uncertainty flags), 4 stress, and
-5 boundary/safety cycles including a prompt-injection probe and the
-Protocol-9-Delta unknown-term probe. **All 41 guardrails held (41/41):** every
-dosing, diagnosis, prognosis, crisis, injection, and unknown-protocol case was
-correctly refused or escalated, and the code-side crisis watchdog fired
-independent of the model. That 41/41 pass-rate is the measurable safety result we
-can stand behind now.
-
-**Phase 2 measurement plan — classifier accuracy on a labeled corpus.** The
-scan-to-import extractors (prescription, appointment, and insurance-card) are
-classification-shaped and *are* the right surface for F1/precision/recall/accuracy.
-We do **not** yet have a labeled test corpus, so we do not report those numbers.
-In Phase 2 we will assemble a labeled corpus of real-world scans (with a
-held-out test set), then measure **precision, recall, F1, and overall
-field-extraction accuracy** per field type — with special weight on **recall of
-low-confidence fields**, since the product's safety design is to flag uncertain
-extractions for the caregiver to check rather than silently accept them.
-
-## Data Privacy Procedures
-
-Privacy-by-design and **local-first**: care data lives on the caregiver's
-device by default. Care-circle sharing syncs through an **authenticated backend**
-with single-use invite links and explicit join confirmation. All network traffic
-is encrypted **in transit (TLS)**; the on-device care database is **encrypted
-at rest with SQLCipher** (key in the device keychain/keystore), on top of **OS
-device encryption**, and OS cloud backups are disabled so the local record is
-not swept into iCloud or Google Drive (Android `allowBackup=false`; iOS files
-excluded from backup). Server-synced care-circle data resides on Cloudflare D1
-and R2. We do
-**not** sell caregiver or care-recipient data; consent is explicit and revocable.
-CareRounds is a consumer tool used by families directly, **not a HIPAA covered
-entity**, but it is built privacy-forward to the standard families deserve.
-
-## Evaluation, Safety & Bias Monitoring
-
-- **AI guardrails:** system constraints keep the coach educational, **not
-  diagnostic**; **human-in-the-loop confirmation** for any action that changes
-  care data; an "I'm not certain — please consult a professional" escalation
-  path; a community **crisis-keyword watchdog**.
-- **Continuous monitoring:** log uncertain/escalated interactions for review;
-  **red-team** coach outputs against unsafe-advice scenarios (an initial 41-cycle
-  run through the real stack is documented in `DATA_OUTPUT_LOGS.md` — all safety
-  guardrails held; the harness re-runs each iteration); track unsafe-response
-  rate over time.
-- **Bias:** recruit a **demographically diverse** caregiver test pool; watch for
-  uneven quality across care situations, literacy levels, and (future)
-  languages. The **model-agnostic** architecture lets us swap the underlying
-  model if one underperforms for any subgroup — a concrete responsible-AI
-  advantage.
+[FOUNDER: Solo founder/developer — your name, background (U.S. Air Force veteran;
+a decade inside VA benefits systems; lived caregiving experience), and role.
+This is a §2 requirement (experience + affiliation + role). Note any Phase-2
+advisors — an agency administrator, a direct-care worker, a home-care nurse —
+that partnerships secure.]

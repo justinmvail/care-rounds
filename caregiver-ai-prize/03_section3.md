@@ -1,76 +1,92 @@
 # Section 3 — Usability and Integration
 
-> Draft. Official sub-headings. `[BRACKETS]` = fill/verify.
+> Error-prevention by design, transparency, empowerment, realistic-conditions
+> testing, integration into the workday, and interoperability. `[FOUNDER: …]` =
+> founder input required.
 
-## Error Prevention & Supporting Human Judgment
+## Designed for the real conditions of the job
 
-CareRounds is designed so the AI **supports the caregiver's judgment, never
-overrides it.** Any AI action that changes existing care data — adding, editing,
-or deleting a medication, dose, appointment, or journal entry, and every
-destructive delete/cancel — routes through an explicit **in-thread confirmation
-card** before it is applied. This gating applies to **voice mode as well as
-chat**, so a mistranscribed or hallucinated change (for example a dosage edit)
-cannot be written silently; the caregiver sees and confirms it first. The coach
-is scoped to be **educational, not diagnostic**, and defers to professionals on
-medical decisions.
+A direct-care worker uses a phone **one-handed, between tasks, in someone's home,
+often at the end of a long shift.** Care Rounds is built for exactly that:
 
-**Actionable workflow — Input → AI Analysis → Caregiver Action.** The
-scan-to-import flow shows the pattern concretely. The caregiver is always the
-last step before any care-data change:
+- **Voice-first where it matters most.** The single heaviest task — the visit
+  note — is done by **talking**, not typing. A center microphone is present on
+  every screen for hands-free capture. This is the difference between a note that
+  gets written and one that gets skipped.
+- **A caseload you never lose track of.** A **persistent client bar** at the top
+  of every screen names the client the app is centered on and switches with one
+  tap — so "whose 8am medications are these?" is never ambiguous, which is a
+  *safety* property, not just convenience.
+- **The day leads with what's next.** Home opens on **today's visits** across
+  clients, with the current visit highlighted and a one-tap **Start visit** that
+  re-centers the app on that client. The tool matches the shape of the workday
+  (a route), so it fits the work instead of fighting it.
+- **Large targets, calm layout, plain language.** Generous hit areas, a warm
+  high-contrast palette, and sections grouped by what the worker is doing
+  ("This visit," "Client info," "Team & training").
 
-```
-  ┌──────────────┐    ┌────────────────────┐    ┌─────────────────────┐    ┌──────────────────┐
-  │  1. INPUT    │    │  2. AI ANALYSIS    │    │ 3. CAREGIVER ACTION │    │  4. RESULT       │
-  │              │──▶ │                    │──▶ │  (human-in-the-loop)│──▶ │                  │
-  │ Photograph a │    │ Model extracts     │    │ Review screen shows │    │ Medication +     │
-  │ prescription │    │ drug, dose,        │    │ each field; low-    │    │ dose windows are │
-  │ label with   │    │ frequency, refills │    │ confidence fields   │    │ created in the   │
-  │ the camera   │    │ into structured    │    │ are flagged amber   │    │ care record only │
-  │              │    │ fields; flags any  │    │ ("check this").     │    │ after the        │
-  │              │    │ uncertain field    │    │ Caregiver edits +   │    │ caregiver taps   │
-  │              │    │ instead of         │    │ approves — or       │    │ Approve.         │
-  │              │    │ guessing.          │    │ discards.           │    │                  │
-  └──────────────┘    └────────────────────┘    └─────────────────────┘    └──────────────────┘
-```
+## Error prevention *by design*, not by warnings
 
-Nothing is written to the care record until the caregiver approves it. The same
-Input → AI → **caregiver-confirms** → Result shape governs the chat/voice coach
-(any data-changing action parks behind an in-thread confirmation card) and the
-appointment-card and insurance-card scanners — one consistent, human-in-the-loop
-pattern across every AI surface.
+Per the ACL emphasis on preventing mistakes through design rather than
+after-the-fact warnings:
 
-## Transparency & Explainability
+- **Nothing changes care data without a deliberate confirmation.** The ambient
+  visit note is **reviewed and edited before it saves**; the AI-suggested
+  care-plan tasks are **approved one at a time**; destructive actions require an
+  explicit in-thread confirm. There is no silent write.
+- **The AI proposes; the worker disposes.** Scan-to-import and the visit note
+  **pre-fill** and the worker **approves** — the human is always the last step.
+- **Weak data is flagged, not guessed.** When the model is unsure or the input is
+  thin, it surfaces that rather than inventing detail.
 
-The coach is clearly an **AI assistant, not a clinician.** Its guidance is
-**grounded in the loved one's actual care data** (meds, dose windows,
-appointments, journal), so the caregiver can see *why* it responds as it does.
-When the model is uncertain, it says so and points to human help rather than
-guessing. The caregiver can see and edit everything the coach draws on — no
-hidden data use.
+## Transparency and empowerment, not replacement
 
-## Usability
+- **The coach shows its work** — its guidance is grounded in, and refers to, the
+  client's own data, so the worker can see *why* it says what it says.
+- **It augments the worker's judgment; it never replaces the human.** The AI
+  automates the *paperwork and the watching* so the worker spends **more** time
+  in care and human contact, not less — and the **supervisor-flag channel keeps a
+  human in the loop** for anything that matters. The vendor/model is never named
+  in the interface; the *capability* is presented plainly, the *judgment* stays
+  with the worker.
+- **The escalation path is a human hand-off by design** — a flag is a task *for a
+  person*, never an automated decision about someone's care.
 
-CareRounds is built for the real caregiver: exhausted, time-poor, often with
-their hands full. The interface prioritizes **speed and low friction** —
-voice-first logging, minimal taps, a chat-root home screen. Accessibility is a
-first-class concern for an older-adult-adjacent audience: an in-app text-size
-control layered on the OS's own Dynamic Type / font-scale setting, simple linear
-flows, and a warm, high-contrast palette — with contrast and touch-target
-conformance being brought fully to WCAG AA as part of ongoing hardening. UI
-consistency is enforced by **golden tests on every screen**. Usability has
-already been checked with family-caregiver testers and will be validated further
-in structured July 2026 sessions with additional caregivers.
+## Realistic-conditions testing
 
-## Integration & Interoperability
+Care Rounds is exercised the way it will be used: an automated suite of
+**~1,900+ tests** including **integration flows** (a full multi-screen path
+through the shell), **visual "golden" tests on every screen**, and deterministic
+fakes for the AI so behavior is validated without a live model in the loop. A
+**rich, realistic demo dataset** — a full caseload of multiple clients, a signed-in
+worker, a day of cross-client visits, per-client medications with real refill
+runways, and open supervisor flags — lets the whole product be driven against
+lifelike volume. [FOUNDER: Phase-2 adds **testing with real direct-care workers**
+in real homes, the strongest form of realistic-conditions validation — secure
+this through the agency pilot partnership.]
 
-- **Emergency Card** — a paramedic/ER handoff sheet that surfaces the essentials
-  in a crisis, bridging the home-to-hospital gap.
-- **Care Circle** — server-backed sync shares the care picture across a family
-  or care team on multiple devices (calendar, tasks, shifts, expenses).
-- **Cards & Docs scanning** — capture insurance cards and key documents.
-- **Provider-shareable care summary** — a care-summary PDF export and NPI-based
-  "Find a provider" search already ship today, bridging the caregiver to the
-  clinical side.
-- **Roadmap (planned, not current):** direct interoperability with health
-  records / EMRs and assistive/home devices — described honestly as future work,
-  not a present capability.
+## Integration into the agency day, and interoperability
+
+- **It fits the existing workflow, not a parallel one.** Care Rounds slots into
+  the aide's actual day (rounds → visit → note → flag) rather than adding a
+  separate compliance chore. Deliberately **out of scope** are the incumbent
+  systems (EVV, billing, scheduling optimization) — we integrate *around* them
+  rather than trying to replace them.
+- **Two products, one care circle.** Care Rounds and Holdclose share a care-data
+  spine, which is the basis for a planned **cross-product connection** so that,
+  e.g., a **family-scheduled appointment (Holdclose) surfaces read-only to the
+  assigned worker (Care Rounds)** — the interoperability that matches each role.
+- **Portable, standard-friendly outputs.** The care record is exportable, and a
+  shareable **care-summary handoff** (a one-page picture for the next caregiver,
+  the supervisor, or a clinician) already exists — the seed of EHR/agency-system
+  interoperability, which is a Phase-2 roadmap item rather than an overclaim
+  today.
+
+## Accessibility
+
+Care Rounds inherits Holdclose's accessibility posture: OS **Dynamic Type**
+support with an in-app text-size control, simple linear flows, a warm
+high-contrast palette, and semantic labeling for screen readers on interactive
+controls, with **WCAG-AA hardening in progress**. The audience — a workforce that
+is time-pressed, often multilingual, and running on little sleep — makes calm,
+low-friction, low-reading-load design a core requirement, not a polish item.

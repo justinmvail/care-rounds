@@ -1,199 +1,149 @@
 # Section 1 — Understanding of Need and Solution Design
 
-> Draft. Uses the official sub-headings. `[BRACKETS]` = fill with real detail
-> before submission. Written in the "assistant to the caregiver" framing.
+> Track 2 — AI Tools for Extending the Caregiver Workforce.
+> `[FOUNDER: …]` = founder input required. `[VERIFY: …]` = confirm the figure
+> against the cited source (the ANCOR/PHI direct-care-workforce material in this
+> packet) before final submission — do not ship an unverified number.
 
-## Understanding of Need
+## The need: a workforce in crisis, drowning in administrative time
 
-Family caregiving is not a single hard moment — it is a relentless, often
-full-time job made of thousands of them. An estimated **63 million** Americans
-care for an aging or ill family member — on average **51 years old** and giving
-about **27 hours a week** to roughly **$600 billion** in unpaid care each year
-(Caregiver Action Network, 2026 Caregiver Tech Insights Survey, n = 272). Most do
-it without training, many while holding other jobs and raising their own children.
-They manage medications and narrow dose windows, track shifting symptoms,
-coordinate appointments and other family members, and carry the emotional weight
-of watching someone they love decline — usually with no one guiding them and no
-time to stop and look anything up.
+Most families who need help at home rely on a **paid direct-care worker** — a
+home health aide (HHA), personal care aide (PCA), or direct support professional
+(DSP). This is the workforce that lets an aging or disabled person stay in their
+own home instead of an institution, and it is in a slow-motion collapse.
 
-The coordination alone is a second job. In the CAN survey, **37% of caregivers
-spend 11 or more hours a week on care coordination**, and nearly **one in three**
-describe their loved one's care as *fragmented* across too many systems and
-providers. The most time-consuming coordination burdens are exactly the ones
-CareRounds was built to absorb: **managing medications and refills (50%)** and
-**scheduling appointments (46%)**.
+- It is **enormous and growing fastest of all.** There are roughly **4.8 million
+  direct-care workers** in the U.S. today [VERIFY: PHI]. The U.S. Bureau of Labor
+  Statistics projects **home health and personal care aides to add more new jobs
+  than any other occupation this decade**, with **hundreds of thousands of
+  openings every year** — the large majority just to *replace workers who leave*.
+- It is **underpaid and unstable.** Median pay sits near **$16/hour** (BLS), and
+  annual caregiver **turnover is commonly reported between roughly 40% and 65%**,
+  higher at some agencies [VERIFY: PHI / Home Care Pulse benchmarking]. Agencies
+  spend enormous effort recruiting and re-training instead of delivering care.
+- The demand behind it is the same demand Track 1 addresses: an estimated
+  **63 million** Americans are caring for an aging or ill loved one, and many of
+  those families lean on paid workers to survive it.
 
-Existing help does not fit the reality. Generic resources — websites,
-hotlines, pamphlets — do not know the specific loved one, and professional
-support is expensive and rationed. The unmet need is not more information; it is
-**an assistant**: something that lightens the daily operational and emotional
-load of caregiving, lives in the caregiver's pocket, and works at the moment of
-need — often when the caregiver's hands are literally full. Left unmet, the
-consequences are the ones ACL's mission exists to prevent: caregiver burnout,
-medication errors, family conflict, and premature, costly institutionalization.
+Agencies **cannot hire their way out of this.** The math does not work: the labor
+pool is finite, wages are constrained by thin reimbursement, and the population
+needing care is climbing. The only durable levers are (1) **efficiency per
+worker** — returning hours now lost to paperwork and coordination back to care —
+and (2) **worker well-being and retention** — making the job less isolating and
+less frustrating so people stay.
 
-This need is not abstract to us. CareRounds was built by a **U.S. Air Force
-veteran** who spent a decade working inside VA benefits systems (the Veterans
-Benefits Management System) and who has repeatedly helped care for his own
-father — a **100% disabled veteran**. It was shaped further with friends who are
-themselves family caregivers of aging and dementia-affected parents. We have not
-guessed at this problem; we have lived it — including at the exact intersection
-this Challenge and its VA partner serve: the estimated **5.5 million Americans
-caring for a veteran**, a population served by the VA Caregiver Support Program
-yet still stretched thin. CareRounds serves *any* care situation, but its roots
-are in caring for those who served.
+### Where the hours actually go
 
-## Solution Design
+A direct-care worker's day is not one client; it is a **route of several short
+visits** across different homes — the industry's own "rounds." Across that day,
+a large share of the worker's time is **not care**. It is:
 
-**CareRounds is the assistant to the caregiver** — not a cure, not a replacement
-for human care, but a mobile app (iOS + Android) that makes a hard, full-time
-job easier across the whole experience. Its components:
+- **Documentation.** Every visit must be written up — what happened, how the
+  person was, what was done. This is the single heaviest, most-hated recurring
+  task, and it is usually done from memory at the end of a shift.
+- **Coordination and communication.** Knowing which client is next, what changed
+  since the last visit, and when to pull in a nurse or supervisor.
+- **Watching for early warning signs** — a person declining, falling more, or
+  running out of a medication — with no tooling to surface it, so problems become
+  crises before anyone notices.
 
-- **An AI coach for the hard moments** — a multi-turn companion *grounded in the
-  loved one's real care data* (medications, dose windows, appointments, journal
-  history, the family care circle). Because it knows *your person*, its guidance
-  is personalized, not generic — that grounding is the point.
-- **Effortless tracking** of symptoms and medications — health log, care-plan
-  routines, medications with dose windows and a dose log, appointments, and an
-  **Emergency Card** that hands off to paramedics/ER in a crisis.
-- **Voice-to-action logging** — hands-free voice intent ("log that she didn't
-  sleep") records meds, doses, appointments, and journal entries for the
-  caregiver, for the constant reality that their hands are full. Every AI action
-  that changes existing care data — in chat *or* voice — routes through an
-  explicit confirmation card before it is applied.
-- **A Journal with pattern detection** that surfaces early warnings
-  ("3+ falls this week").
-- **A Care Circle** that shares caregiving across a family or care team
-  (calendar, tasks, shifts, expenses) — supporting, never replacing, human
-  connection.
-- **A caregiver community** with a crisis-keyword safety watchdog.
+Reducing that administrative and cognitive load — *without* adding another
+compliance chore — is the highest-leverage thing software can do for this
+workforce. That is the entire design premise of Care Rounds.
 
-The AI is integrated responsibly and is **model-agnostic**: the AI runs on
-**Cloudflare Workers AI** — an open-weight model on our own cloud infrastructure —
-so the loved one's data never goes to a separate AI vendor, and the architecture
-can swap the underlying model without touching the
-product. It supports the caregiver's judgment rather than replacing it, educates
-rather than diagnoses, flags uncertainty when data is thin, and escalates to
-human help. Data is local-first and private, and the product is designed to be
-**affordable** — because it exists to help families, not to extract from them.
+## The solution: an AI care-operations app for the direct-care team
 
-## AI Current Stage of Development (TRL 3+)
+**Care Rounds is a mobile app (iOS + Android) for the paid direct-care team.**
+Where our Track 1 product, Holdclose, serves the *family* caregiver of one loved
+one, Care Rounds serves the *paid worker and their agency* across a **caseload of
+many clients** — same product DNA and safety design, pointed at the workforce.
 
-CareRounds is a **complete, functioning, tested application — not a concept.**
-It is a Flutter app running on physical iOS and Android devices, with unit,
-widget, golden, and end-to-end integration suites green and a deployed Cloudflare
-Worker backend providing care-circle sync. This exceeds TRL-3
-(experimental proof-of-concept): the technology is built and demonstrated in a
-realistic environment. The AI coach calls a large language model via a
-quota-enforcing backend, behind guardrails — system constraints that keep
-responses supportive and non-diagnostic, an uncertainty clause that has the coach
-say when it is unsure and point to human help, weak-data flagging in the
-scan-to-import extractors, a code-side (non-LLM) crisis watchdog on chat and
-voice, and human-in-the-loop confirmation before any AI action changes existing
-care data. The architecture is **model-agnostic** — the AI runs on **Cloudflare
-Workers AI** (an open-weight model on our own cloud infrastructure), so the loved
-one's data never goes to a separate AI vendor and CareRounds is not dependent on
-any single AI provider.
+The AI does four things, each aimed squarely at the hours identified above. All
+four are **built and working today**, not concepts:
 
-**Readiness self-assessment.** TRL-3 is the eligibility floor; **CareRounds
-clears it and stands above it — a working, tested system demonstrated in a
-realistic environment, not a proof-of-concept.** We map our evidence to ACL's
-five readiness elements:
+**1. Ambient visit documentation — the flagship ("the note that writes itself").**
+The worker taps *Document visit*, then simply **talks** (or types) a quick,
+messy account of how the visit went. The AI turns it into a **structured,
+reviewable visit note** — a summary, observations, the care tasks completed, and
+anything to flag — with **zero typing**. Nothing is saved until the worker
+reviews it. This attacks the day's heaviest task directly: the note writes
+itself from a few spoken sentences. (ACL Track-2 use case #2, *Documentation*.)
 
-- **Concept feasibility** — The approach combines *existing* foundation models
-  with a *custom* data-grounding pipeline; feasibility is established by the
-  running system, not by simulation alone.
-- **Experimental validation** — A full prototype is built and exercised: unit,
-  widget, golden, and end-to-end integration suites run green, and the app runs
-  on physical iOS and Android devices.
-- **Testing in a relevant environment** — The coach operates against real,
-  sanitized care data (medications, dose windows, appointments, journal) on the
-  actual phones caregivers use — the true environment of use, not a lab bench.
-- **Critical technical elements identified and tested** — The load-bearing
-  elements — the `chat_context_builder` grounding layer, the human-in-the-loop
-  confirmation flow, and the safety/uncertainty guardrails — are each built and
-  verified, not aspirational.
-- **Traceable documentation** — Architecture, tests, and safety guardrails are
-  version-controlled and documented, so every claim above traces to code.
+**2. A client-grounded AI coach, with a path to a human.** For the specific
+person in front of the worker, a **coach grounded in that client's real care
+data** answers in-the-moment questions ("what changed since the last visit,"
+"how do I help with this"), and a **code-side (non-LLM) watchdog escalates to a
+supervisor** when something concerning appears — real-time coaching *with* a
+built-in human hand-off. (Use cases #4 *Real-time coaching* and #7 *Data
+aggregation*.)
 
-In short, CareRounds sits well beyond TRL-3 (a functioning system demonstrated in
-a realistic setting), while remaining honest that operational proof *at scale* —
-outcome data from a caregiver cohort — is precisely the work of Phases 2 and 3.
+**3. Explainable early-warning ("predictive care-need") flags.** Care Rounds
+surfaces **rule-based, explainable risk signals** from the data the worker
+already enters — a **repeated-falls trend** from visit notes, a **medication
+running low or out of refills** from its own refill-runway estimate — on a
+"Watch for" card, each stating the plain reason it fired. This catches rising
+need early **without** a black-box model or new hardware. (Use case #5,
+*Predictive analytics.*)
 
-**Existing vs. new AI methods.** CareRounds does *not* train a new model — it
-builds on **existing large language models** (model-agnostic; the AI runs on
-**Cloudflare Workers AI**, an open-weight model on our own cloud infrastructure,
-so the loved one's data never goes to a separate AI vendor). Its distinct
-contribution is the **data-grounding layer**
-(`chat_context_builder`): the loved one's real, *sanitized* care data — meds, dose
-windows, appointments, journal — is assembled into the model's context at
-inference, so a general-purpose LLM becomes a coach that knows *your specific
-person*. That combination — proven foundation models + a novel, privacy-guarded
-context-assembly pipeline with human-in-the-loop guardrails — is the technology.
+**4. AI-guided care-plan checklist.** Grounded in the client's profile and
+medications, the AI **proposes a checklist of concrete visit tasks**; the worker
+reviews, unchecks what doesn't fit, and approves the rest into the client's
+routine. Human-in-the-loop, always. (Use cases #4 / #9.)
 
-## End-User Input
+Organizing all of this is a **workforce-shaped information architecture**: a
+**persistent client switcher** so the worker always knows — and can one-tap
+change — which client the whole app is centered on; a **"Today's visits"** view
+that leads the home screen with the worker's **route across every client** (one
+in progress *now*, with a *Start visit* action, the rest ahead); a **My Rounds**
+tab for the full cross-client day; a **Team** hub with the client roster,
+caregivers, shifts, and assignments; and a **supervisor-flag inbox** where the
+ambient note's escalations and the worker's own flags land for a human to
+resolve.
 
-CareRounds's design has been shaped by family caregivers from the start.
-[N] early testers — friends who are themselves caregivers of aging parents,
-including one who cared for a parent with dementia — used the app and gave
-feedback that **directly changed the product**. Most notably, an early
-structured "behavior decoder" flow was removed after testers consistently
-preferred the open, data-grounded chat coach. [Add 1–2 more concrete changes.]
+### Scope discipline: what Care Rounds is *not*
 
-To broaden input beyond our immediate circle, we are running **structured
-feedback sessions in July 2026** with additional family caregivers recruited
-from online caregiver communities, and we will continue caregiver co-design
-through Phases 2 and 3.
+A workforce app can drift into competing on feature checklists with the big
+incumbent agency platforms (EVV, billing, scheduling optimization). We
+**deliberately do not**, because that is commodity, non-AI, regulation-owned
+territory that does nothing for the worker's day. Care Rounds is **not** an EVV
+product (its lightweight check-in/out is framed as *time-saved*, never
+compliance), **not** billing/claims/payroll, **not** a scheduling-optimization
+engine, **not** an applicant-tracking/hiring system, and **not** remote hardware
+monitoring. Every feature is measured against one test: *does it reduce a
+worker's burden through AI, or just match an incumbent's checklist?* We build the
+first and decline the second.
 
-## Supporting Research
+### A note on appointment scheduling — a clear role boundary
 
-The need CareRounds addresses — and the specific features we built — are
-corroborated by the Challenge's **own non-federal judging partner**, the
-**Caregiver Action Network (CAN)**, whose **2026 Caregiver Tech Insights Survey**
-(n = 272 family caregivers) was presented at ACL's May 28, 2026 Challenge webinar.
-Because CAN is the organization judging this very Track, its data reflects the
-exact population and priorities the Challenge is asking us to serve — and its
-findings map almost one-to-one onto the features CareRounds already ships.
+Consistent with how the industry actually works, **the frontline aide does not
+schedule medical appointments** — that is a care-coordinator or family function;
+the aide's role is to *know about* a visit, prep for it, arrange transport, and
+take notes at it. Care Rounds therefore does **not** put appointment *management*
+in the aide's hands. The natural home for appointment *creation* is the family
+side — our Track 1 product, Holdclose — and a planned **cross-product connection**
+would let a family-created appointment surface **read-only** to the assigned
+worker in Care Rounds. Two products, one shared care circle, each matched to its
+real-world role.
 
-**Caregivers are already reaching for AI — and want it grounded and
-trustworthy.** In the CAN survey, **59% have used or tried AI** for caregiving.
-The leading uses line up directly with CareRounds's capabilities:
+## End-user input and how it shaped the design
 
-| CAN caregiver AI use case | Share | The CareRounds feature that does it |
-|---|---|---|
-| Understanding a diagnosis or condition | **44%** | the data-grounded coach |
-| Preparing questions for doctor visits | **32%** | AI doctor-visit prep |
-| Organizing medical information | **27%** | the care suite (meds, appts, health log) |
-| Receiving emotional support | **24%** | the coach |
-| Writing insurance appeals | **22%** | AI insurance-appeal drafting |
-| Admin / care-coordination assistance | **21%** | the Care Circle + scan-to-import |
+[FOUNDER: This is the User-Centered evidence — the criterion that scores near
+zero without real, traceable input. Fill from your field feedback. For each
+concrete example, state: (a) *who* (a direct-care worker or an agency
+owner/administrator, by role — named only with consent), (b) *what they said*,
+and (c) *what Care Rounds changed because of it.* A few specific "input → change"
+links is all the criterion needs. Two examples already true of the build you can
+frame here:
 
-Every one of these is a feature CareRounds ships today. The difference is that
-CareRounds's coach is **grounded in the loved one's real record** — meds, dose
-windows, appointments, journal — rather than a blank chatbox, so its help fits
-*your* person.
+- A day of visits was originally modeled as thin/single-client; after grounding
+  it against how aides actually work — **a route of multiple clients a day,
+  often seeing a client twice (a morning and an evening call)** — the demo and
+  the "Today's visits" design were rebuilt to that pattern.
+- Appointment *management* was reconsidered and removed from the aide-facing app
+  after confirming, against the industry norm, that **booking is a coordinator's
+  job, not the aide's** — reframed to read-only awareness fed from the family
+  side.
 
-**What caregivers most want to delegate is exactly what CareRounds automates.**
-Asked which tasks they would most like to hand off, caregivers named **tracking
-follow-ups and care plans (43%)**, **finding providers (43%)**, **managing
-prescription refills (43%)**, **coordinating between doctors (41%)**, and
-**scheduling appointments (40%)** (CAN 2026). CareRounds targets this list head-on:
-refill-runway alerts, NPI-based "Find a provider" search, appointment management,
-and a shared Care Circle for coordination. The wish list *is* the feature list.
-
-**The adoption barriers validate our core design choices.** The top barriers to
-caregiver technology adoption are **cost (43%)**, **not knowing which products to
-trust (42%)**, and **privacy and security concerns (40%)** (CAN 2026). CareRounds
-answers each directly, and Section 4 (Principle 7) shows how: an **affordable**
-model; a **trustworthy, non-diagnostic** coach whose reasoning is visible and
-grounded; and a **local-first, vendor-invisible** privacy architecture in which
-the loved one's data never goes to a separate AI vendor.
-
-**Primary source.** Caregiver Action Network, *2026 Caregiver Tech Insights
-Survey* (n = 272 family caregivers), presented at ACL, *Smart Innovation for
-Better Care — The Caregiver Experience* (Caregiver AI Prize Challenge
-informational webinar), May 28, 2026.
-
-[Optional, if page budget allows: AARP/NAC *Caregiving in the U.S. 2025*; AARP
-*Valuing the Invaluable 2023* ($600B unpaid-care valuation); peer-reviewed
-literature on caregiver burden → premature institutionalization.]
+Replace/expand with your own documented sessions, and secure consent-to-cite for
+anyone named. Recruit 1–3 more direct-care workers or an agency contact for a
+short July session and document it here.]

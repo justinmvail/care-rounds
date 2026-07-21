@@ -1,36 +1,44 @@
 # Section 5 — Meritorious Prize Eligibility (Optional)
 
-> Claims the dementia priority focus area (+$50K). Honest — CareRounds has genuine
-> dementia roots. `[BRACKETS]` = verify.
+> **Optional** section. Include only if a Track-2 meritorious focus area genuinely
+> fits and can be evidence-backed; otherwise **drop it and reclaim the page
+> budget** — a thin optional claim reads as opportunistic and can undercut the
+> whole packet. `[FOUNDER: …]` = decision + verify.
 
-CareRounds is submitted for meritorious prize consideration under the priority
-focus area: **"Caregivers supporting individuals with Alzheimer's disease and
-related dementias."**
+## Decision needed
 
-CareRounds is exceptionally well-suited to dementia caregiving — it **began as a
-dementia-focused tool** and retains deep capability for this population even as
-it generalized to any care situation:
+[FOUNDER: **Confirm the Track-2 meritorious focus areas** against the current ACL
+challenge site (the meritorious categories are listed per track and were not fully
+captured in this packet's scrape). Then keep the strongest of the candidates
+below **only if** you can back it with real evidence — a matching pilot partner or
+a matching user in your documented feedback — mirroring the honest standard we
+held on the Track-1 dementia claim. If none is a real fit and evidenced, delete
+Section 5.]
 
-- **A data-grounded coach for dementia's hardest moments.** Dementia caregivers
-  face confusing, distressing behaviors — agitation, wandering, repetition,
-  sundowning — they are unequipped to interpret. CareRounds's coach, grounded in
-  the specific loved one's history, medications, and journal, helps caregivers
-  understand and respond, and escalates to professional help when appropriate.
-- **Symptom and behavior tracking** with a pattern detector that surfaces
-  decline signals over time — critical in a progressive condition.
-- **Care Circle** coordination across the family, essential as dementia care
-  intensifies into a multi-person, round-the-clock responsibility.
-- **Emergency Card** for the crises and hospitalizations common in advanced
-  dementia.
+## Candidate framings (pick at most one, only if evidenced)
 
-This focus is personal: the founder's own grandfather lived with dementia, and
-CareRounds's earliest design was shaped by that experience and by dementia-
-caregiver feedback.
+**A. Rural / underserved-area workforce.** The direct-care shortage is most acute
+outside metropolitan areas, where agencies cannot staff visits and families have
+the fewest options. Care Rounds' **local-first design keeps working with limited
+connectivity**, runs on the phone a worker already carries (no new hardware), and
+its **low, self-hosted inference cost** is priceable for the thin-margin agencies
+that serve rural communities — so the productivity and coaching benefits reach the
+workers who are hardest to support. [FOUNDER: strengthen with a rural agency in
+the pilot/partnership, or a rural direct-care worker in the documented feedback.]
 
-**Secondary consideration (interoperability focus areas #3–#4):** CareRounds
-already ships one concrete provider-interoperability artifact — the
-one-tap, provider-shareable **care-summary PDF** (crisis info + medications +
-appointments) a caregiver can hand to a new doctor or ER. Deeper
-interoperability with health records/EMRs and assistive/home devices is
-described honestly as *planned* work in Sections 2–3 — a directional fit, not
-a current claim.
+**B. The direct-support-professional (DSP) workforce serving people with
+intellectual and developmental disabilities.** Care Rounds is **diagnosis-
+agnostic** by design — it centers on the *worker's tasks and the client's real
+data*, not a single condition — so it serves DSPs supporting people with IDD as
+naturally as it serves aides for older adults. The ambient documentation,
+grounded coaching, escalation channel, and care-plan checklist map directly onto
+DSP daily-support work. [FOUNDER: strengthen with a DSP or an IDD-serving provider
+(e.g. an ANCOR-member agency) in the pilot/partnership or documented feedback.]
+
+## Guardrail (keep this true if Section 5 stays)
+
+Any meritorious framing must stay within Care Rounds' non-diagnostic, human-in-the-
+loop boundaries: the product **coaches and supports the worker** and documents the
+visit — it never diagnoses, interprets, or makes a care decision about the client.
+Keep the language on the right side of that line, exactly as the rest of the
+packet does.
