@@ -1,38 +1,41 @@
-# Caregiver feedback recruiting kit
+# Workforce feedback recruiting kit — Track 2 (Care Rounds)
 
-Goal: broaden the friend-tester feedback with 3–5 family caregivers you don't
-know, via structured sessions — so User-Centered Design reads as rigorous, not
-a friends-and-family echo chamber.
+Goal: get real input from **direct-care workers and the agencies that employ
+them**, so the User-Centered and Partnerships criteria read as rigorous, not
+guessed. For Track 2 the **agency is the highest-leverage contact** — one agency
+gives you worker feedback *and* the named letter/pilot commitment at once
+(see `outreach_email.md`).
 
-## Rules first (or you'll get removed)
-Caregiver subs (r/CaregiverSupport, r/AgingParents, r/dementia, r/caregivers,
-r/eldercare) mostly **ban self-promotion / app plugs / recruiting**. Before
-posting: read each sub's rules, and **DM the mods** to ask permission — frame it
-as a *free* tool + genuine input, not a launch. Many mods say yes to that.
+## Channel 1 (primary): through an agency
+The cleanest path. Ask a local, owner-operated home-care agency for a short
+conversation with the owner/administrator and, if they'll allow it, one or two of
+their aides. This is both your feedback source and your partnership. Use
+`outreach_email.md`.
 
-## Rules-safe post (help-seeking framing, no app plug)
-> **Caregivers — what would actually make the day-to-day easier?**
+## Channel 2: direct-care workers directly
+Aides also gather in online communities and local groups. **Read each community's
+rules and DM the moderators first** — frame it as *building a free tool with the
+workforce and asking for honest input*, never a launch or a plug.
+
+**Rules-safe, help-seeking post (no app plug):**
+> **Home-care aides / CNAs / DSPs — what would actually make your shift easier?**
 >
-> I'm building a small, free tool to help family caregivers with the daily
-> grind — tracking meds and symptoms, quick voice notes when your hands are
-> full, and a coach for the hard moments. I've cared about this personally
-> (dementia in my own family), and I want to build it *with* caregivers, not
-> guess.
+> I'm building a small, free tool to take some of the *paperwork* off aides — the
+> idea is you just talk through a visit and it writes the note for you, instead of
+> typing it from memory at the end of the day. I want to build it *with* the people
+> who'd use it, not guess.
 >
-> If you've cared for an aging parent or loved one: **what's the one thing an
-> app could do that would genuinely help?** And if a few of you are open to a
-> 15-minute chat or trying an early version and telling me what's wrong with
-> it, I'd be grateful — DM me. Not selling anything.
+> If you do this work: **what's the most annoying part of the day that isn't the
+> care itself?** And if a few of you are open to a 15-minute chat or trying an
+> early version and telling me what's wrong with it, I'd be grateful — DM me. Not
+> selling anything.
 
-## 5-question feedback form (for testers / DMs)
-1. Who do/did you care for, and what makes the day-to-day hardest?
-2. How do you currently track meds, symptoms, and appointments — and what
-   breaks down?
-3. [After trying it] What felt genuinely useful? What got in the way?
-4. When would you actually reach for the AI coach — and when would you NOT
-   trust it?
-5. What's missing that would make this a daily-use tool for you?
+## Capture (for the packet)
+For each conversation, write down one or two concrete **"you said X → I changed /
+will change Y"** links for Section 1, and **ask permission to reference it** (by
+role — "a home health aide with 6 years' experience" — is fine). An agency that
+gives feedback *and* signs a letter covers both people-dependent criteria at once.
 
-## Capture (this is the evidence)
-For each person: care situation → what they said → **what you changed because
-of it.** That log is your User-Centered Design appendix material.
+## Do not
+Fabricate a quote, a metric, or a letter. Everything must trace to a real person
+who consented — the submission is attested and FOIA-able.
