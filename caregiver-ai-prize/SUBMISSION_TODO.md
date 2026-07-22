@@ -59,16 +59,18 @@ Legend: 👤 = **[FOUNDER-only]** (private input, real people, sending/signing) 
       material (and cite BLS for the growth/wage figures, which are solid).
 
 ## Optional, high-value
-- [ ] **Care-Rounds-specific Data Output Logs** — re-run the Smart-40 / guardrail
-      harness against the **Care Rounds coach** (workforce prompts) and include it.
-      The current `DATA_OUTPUT_LOGS.*` in this dir is the **Holdclose** run; the
-      guardrails are model-independent and identical, so citing it is defensible,
-      but a Track-2-specific log is a stronger differentiator.
+- [x] **Care-Rounds-specific Data Output Logs** — DONE (2026-07-22). `DATA_OUTPUT_LOGS.md`
+      + `.pdf` are now a real Care Rounds run: 8 verbatim live cycles driven through the
+      **Care Rounds coach system prompt** (the safety-critical Smart-40 subset — dosing,
+      diagnosis, prompt-injection, Protocol-9-Delta, crisis, standard + uncertainty), all
+      8 held, plus the structural (model-independent) guardrail evidence from the automated
+      suite. A full 40-cycle production run is noted as Phase 2. The superseded
+      `DATA_OUTPUT_LOGS_TRACK2.*` preview is folded into this file.
 - [ ] Adapt the shared reference docs in this dir that are still **Holdclose-worded**
-      (`README.md`, `DATA_OUTPUT_LOGS.md`, `NARRATIVE.md`, `GAP_ANALYSIS.md`,
-      `DEEP_DIVE_AUDIT.md`, `recruiting_kit.md`, `acl_clarification_email.md`) — they
-      were copied from the Track-1 packet at fork time. Only `00`–`05` +
-      `outreach_email.md` + this file have been rewritten for Track 2 so far.
+      (`README.md`, `GAP_ANALYSIS.md`, `DEEP_DIVE_AUDIT.md`, `acl_clarification_email.md`)
+      — they were copied from the Track-1 packet at fork time. `00`–`05` +
+      `outreach_email.md` + `NARRATIVE.md` + `DATA_OUTPUT_LOGS.md` + `DEMO_SCRIPT.md` +
+      `recruiting_kit.md` + this file have been rewritten for Track 2.
 
 ## Assembly (last steps)
 - [ ] **Consolidate** `00`–`05` into one Track-2 `NARRATIVE.md` in official order

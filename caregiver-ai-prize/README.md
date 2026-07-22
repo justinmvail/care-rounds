@@ -29,12 +29,13 @@ Holdclose, re-pointed from the family to the workforce.
 ## Status
 - **Product:** built + tested (Flutter iOS/Android, ~1,900+ tests green,
   Cloudflare Worker backend, open-weight model on Cloudflare Workers AI). TRL-3+.
-- **Packet:** `00`–`05` + `outreach_email.md` + `SUBMISSION_TODO.md` are rewritten
-  for **Track 2**. The remaining reference docs in this dir (`NARRATIVE.md`,
-  `DATA_OUTPUT_LOGS.*`, `GAP_ANALYSIS.md`, `DEEP_DIVE_AUDIT.md`, `REQUIREMENTS.md`,
-  `CONTEST_MASTER_REFERENCE.md`, `recruiting_kit.md`, `acl_clarification_email.md`)
-  were **copied from the Track-1 (Holdclose) packet at fork time** and still read
-  Holdclose — treat them as reference, not final Track-2 content.
+- **Packet:** `00`–`05` + `NARRATIVE.md` + `DATA_OUTPUT_LOGS.*` + `DEMO_SCRIPT.md` +
+  `outreach_email.md` + `recruiting_kit.md` + `SUBMISSION_TODO.md` are rewritten for
+  **Track 2** (`DATA_OUTPUT_LOGS.*` is now a real Care Rounds coach run). The remaining
+  reference docs (`GAP_ANALYSIS.md`, `DEEP_DIVE_AUDIT.md`, `REQUIREMENTS.md`,
+  `CONTEST_MASTER_REFERENCE.md`, `acl_clarification_email.md`) were **copied from the
+  Track-1 (Holdclose) packet at fork time** and still read Holdclose — treat them as
+  reference, not final Track-2 content.
 - **Design source of truth:** `../docs/PRODUCT_DESIGN.md` (§1 thesis, §2 the nine
   ACL use cases, §2a strategy + anti-goals, §6 six criteria, §7 seven principles,
   §10 implementation status).
