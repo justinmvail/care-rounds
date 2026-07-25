@@ -455,11 +455,11 @@ class _TermsLine extends ConsumerWidget {
 
   final TextTheme textTheme;
 
-  // Both pages are served by the Cloudflare Worker at /terms + /privacy
-  // (backend/src/routes/legal.ts); carerounds.care routing to the Worker
+  // Canonical Terms + Privacy live on the Juno Code Studio site
+  // (backend/src/routes/legal.ts); the canonical Terms/Privacy pages on junocode.studio/carerounds
   // goes live with deploy.
-  static final Uri _termsUrl = Uri.parse('https://carerounds.care/terms');
-  static final Uri _privacyUrl = Uri.parse('https://carerounds.care/privacy');
+  static final Uri _termsUrl = Uri.parse('https://junocode.studio/carerounds/terms');
+  static final Uri _privacyUrl = Uri.parse('https://junocode.studio/carerounds/privacy');
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

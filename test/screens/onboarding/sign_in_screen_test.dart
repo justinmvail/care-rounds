@@ -207,7 +207,7 @@ void main() {
   });
 
   group('SignInScreen — Terms / Privacy links (store-review requirement)', () {
-    testWidgets('tapping Terms launches https://carerounds.care/terms',
+    testWidgets('tapping Terms launches https://junocode.studio/carerounds/terms',
         (WidgetTester tester) async {
       final RecordingLinkLauncher launcher = RecordingLinkLauncher();
       await _pumpSignIn(tester, linkLauncher: launcher);
@@ -216,11 +216,11 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(launcher.launched, <Uri>[
-        Uri.parse('https://carerounds.care/terms'),
+        Uri.parse('https://junocode.studio/carerounds/terms'),
       ]);
     });
 
-    testWidgets('tapping Privacy Policy launches https://carerounds.care/privacy',
+    testWidgets('tapping Privacy Policy launches https://junocode.studio/carerounds/privacy',
         (WidgetTester tester) async {
       final RecordingLinkLauncher launcher = RecordingLinkLauncher();
       await _pumpSignIn(tester, linkLauncher: launcher);
@@ -229,7 +229,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(launcher.launched, <Uri>[
-        Uri.parse('https://carerounds.care/privacy'),
+        Uri.parse('https://junocode.studio/carerounds/privacy'),
       ]);
     });
 
@@ -247,8 +247,8 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(launcher.launched, <Uri>[
-        Uri.parse('https://carerounds.care/terms'),
-        Uri.parse('https://carerounds.care/privacy'),
+        Uri.parse('https://junocode.studio/carerounds/terms'),
+        Uri.parse('https://junocode.studio/carerounds/privacy'),
       ]);
     });
   });
