@@ -17,7 +17,18 @@ way out of the shortage. Care Rounds gives that time back **per worker**.
 > coaching, supervisor escalation, and early-warning flags are built for aides
 > supporting clients with dementia and other complex, high-acuity needs.
 
-<!-- Screenshots: add 3–4 device captures here (Today's visits, Ambient visit note, Client coach, Supervisor flags). -->
+## Screenshots
+
+<p align="center">
+  <img src="screenshots/01_home.png" width="230" alt="Home — today's visit route across clients" />
+  <img src="screenshots/06_rounds.png" width="230" alt="My Rounds — visits across all clients" />
+  <img src="screenshots/05_chat.png" width="230" alt="Client-grounded coach" />
+</p>
+<p align="center">
+  <img src="screenshots/02_care_hub.png" width="230" alt="Care hub" />
+  <img src="screenshots/03_medications.png" width="230" alt="Medications & dose windows" />
+  <img src="screenshots/04_emergency_card.png" width="230" alt="Emergency Card — handoff sheet" />
+</p>
 
 ## The flagship: ambient visit documentation
 
