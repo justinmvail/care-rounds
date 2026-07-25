@@ -94,6 +94,19 @@ Care Rounds is an entry in the **ACL / HHS Caregiver AI Prize Challenge**
 Quality is enforced by a large automated suite — **~1,900+ unit, widget, and
 golden tests** plus a backend suite — run on every change.
 
+## Serverless on Cloudflare — built to stay affordable
+
+The entire backend is **serverless on Cloudflare**: Workers for edge compute,
+D1 (SQLite) for data, R2 for files, and **Workers AI** for the coach and ambient
+visit notes — an **open-weight model running on Cloudflare's serverless GPU
+platform**. Serverless means there are no idle servers to pay for (compute
+scales to zero when unused), and the AI is billed **per request** rather than as
+a dedicated GPU or a per-seat model-vendor contract. That keeps the cost **per
+worker extremely low** — essential for a tool aimed at agencies operating on thin
+margins and a near-minimum-wage workforce, where affordability is the difference
+between adoption and a nice idea. It also keeps the AI on **our own cloud**, so
+client care data never reaches a separate AI vendor.
+
 ## Development
 
 ```bash
