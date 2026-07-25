@@ -10,6 +10,13 @@ way out of the shortage. Care Rounds gives that time back **per worker**.
 
 📱 iOS + Android · built by **Juno Code Studio** (JCSV One LLC)
 
+> **Entry in the ACL / HHS Caregiver AI Prize Challenge — Track 2 (AI tools for
+> extending the caregiver workforce).** **Dementia care is central to this
+> workforce's day:** many home-care and direct-support clients live with
+> dementia, and Care Rounds' ambient visit documentation, client-grounded
+> coaching, supervisor escalation, and early-warning flags are built for aides
+> supporting clients with dementia and other complex, high-acuity needs.
+
 <!-- Screenshots: add 3–4 device captures here (Today's visits, Ambient visit note, Client coach, Supervisor flags). -->
 
 ## The flagship: ambient visit documentation
