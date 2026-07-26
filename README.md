@@ -55,6 +55,16 @@ way they actually work:
   already enters — not a black-box score.
 - **AI-guided care-plan checklist** — the plan for a visit, approved task by task.
 
+## You never have to type
+
+The whole point is that the worker **talks** — and the app does the writing. The
+flagship visit note is spoken, not typed; and every other core action — log a
+dose, record a symptom, flag a client for a supervisor, note a task, add a
+medication — can be done **by voice or by snapping a photo**, with a review step
+before anything saves. An aide moving between visits, gloved-up, or not confident
+typing on a phone can still keep documentation complete and on time — no forms, no
+end-of-shift catch-up. **You just talk.**
+
 ## Responsible AI, by design
 
 The guardrails are structural — they don't depend on which model is running:
