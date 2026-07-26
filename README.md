@@ -94,17 +94,26 @@ Care Rounds is an entry in the **ACL / HHS Caregiver AI Prize Challenge**
 Quality is enforced by a large automated suite — **~1,900+ unit, widget, and
 golden tests** plus a backend suite — run on every change.
 
-## Serverless on Cloudflare — built to stay affordable
+## Serverless on Cloudflare — scales far, costs little
 
 The entire backend is **serverless on Cloudflare**: Workers for edge compute,
 D1 (SQLite) for data, R2 for files, and **Workers AI** for the coach and ambient
-visit notes — an **open-weight model running on Cloudflare's serverless GPU
-platform**. Serverless means there are no idle servers to pay for (compute
-scales to zero when unused), and the AI is billed **per request** rather than as
-a dedicated GPU or a per-seat model-vendor contract. That keeps the cost **per
-worker extremely low** — essential for a tool aimed at agencies operating on thin
-margins and a near-minimum-wage workforce, where affordability is the difference
-between adoption and a nice idea. It also keeps the AI on **our own cloud**, so
+visit notes — an **open-weight model on Cloudflare's serverless GPU platform**.
+
+**Scales without bottlenecks.** Compute and AI inference scale automatically
+across Cloudflare's global network — **no servers or GPUs to provision, no cold
+starts** — and fall to zero cost when idle. Adding agencies and workers doesn't
+create a bottleneck or a step-change in cost; the one part that needs deliberate
+scaling at very high volume is the database (D1 read replicas), standard for any
+architecture.
+
+**Costs a fraction of the usual stack.** Pay-per-request with scale-to-zero means
+**no idle burn** — unlike an always-on AWS deployment (EC2/RDS billed around the
+clock, S3 charging egress on every file served); R2 has **zero egress fees**. And
+running an **open-weight model on serverless GPUs costs roughly an order of
+magnitude less per token** than a frontier hosted API (a GPT‑4‑ or Claude‑class
+model). That's what keeps the price low enough for **thin-margin agencies and a
+near-minimum-wage workforce** — and it keeps the AI on **our own cloud**, so
 client care data never reaches a separate AI vendor.
 
 ## Development
