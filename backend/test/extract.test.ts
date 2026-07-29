@@ -105,8 +105,37 @@ describe('POST /api/v1/extract', () => {
     expect(row?.feature).toBe('extract');
   });
 
-  it('rejects a request with no image (400, no inference call)', async () => {
-    const res = await extract('scanner-user', { user: 'no image here' });
+  // This route has TWO callers. The scanners send a photo; the object-prompt
+  // features — the ambient visit note (the flagship) and the care-plan
+  // suggestions — send prompt text with no image at all. The route used to
+  // 400 the text-only shape, and the app's transport catches that and returns
+  // null, so both features silently produced nothing against the deployed
+  // Worker while every hermetic test here stayed green. Keep both shapes
+  // working.
+  it('answers a TEXT-ONLY prompt (no image) on the text model', async () => {
+    mockExtractAI('{"summary":"Routine visit, no concerns."}');
+    const res = await extract('prompt-user', {
+      system: 'you structure visit notes',
+      user: 'quick visit all fine meds given',
+    });
+    expect(res.status).toBe(200);
+    const json = (await res.json()) as { text: string };
+    expect(json.text).toContain('Routine visit');
+
+    let row: { model: string } | null = null;
+    for (let i = 0; i < 40 && !row; i++) {
+      row = await env.FORUM_DB.prepare(
+        'SELECT model FROM llm_usage WHERE user_id = ?',
+      )
+        .bind('prompt-user')
+        .first<{ model: string }>();
+      if (!row) await new Promise((r) => setTimeout(r, 25));
+    }
+    expect(row?.model).toBe(env.CHAT_MODEL);
+  });
+
+  it('rejects a request with neither image nor prompt (400)', async () => {
+    const res = await extract('scanner-user', {});
     expect(res.status).toBe(400);
   });
 });
