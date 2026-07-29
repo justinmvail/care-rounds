@@ -53,9 +53,18 @@ final Provider<Map<String, ChatActionExecutor>> _actionsProvider =
 
 /// The CURRENT DATA snapshot production sends with every turn — reached through
 /// a Ref exactly as `chatServiceProvider` does.
-final Provider<Future<String> Function()> _snapshotProvider =
-    Provider<Future<String> Function()>(
-  (Ref ref) => () async => formatChatContext(await gatherChatContext(ref)),
+/// ONE gather per turn producing both the `<current_data>` block and the
+/// grounding labels, exactly as `chatServiceProvider` does — so this suite
+/// keeps exercising what the app actually sends.
+final Provider<Future<ChatContextSnapshot> Function()> _snapshotProvider =
+    Provider<Future<ChatContextSnapshot> Function()>(
+  (Ref ref) => () async {
+    final ChatContextData data = await gatherChatContext(ref);
+    return (
+      text: formatChatContext(data),
+      groundedIn: chatGroundingLabels(data),
+    );
+  },
 );
 
 void main() {

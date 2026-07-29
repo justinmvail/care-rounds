@@ -60,6 +60,15 @@ const DEFAULTS = {
   model: '@cf/meta/llama-3.3-70b-instruct-fp8-fast',
   maxInputChars: 48_000, // ~12K tokens of prompt; blocks payload-stuffing
   maxOutputTokens: 1024, // one call can't generate forever
+  // Explicit, modest sampling. Left unset until 2026-07-29, when a 40-cycle
+  // live run showed 4 of 40 replies collapsing into token soup (repeated
+  // fragments, mixed scripts) — the failure mode unset/high-temperature
+  // sampling produces on an fp8-quantised model. A care coach also has no use
+  // for high-variance prose: the same question should get the same steady
+  // answer. NOTE: the effect on that rate is UNVERIFIED until this is
+  // deployed and the run repeated; `chatBodyIsDegenerate` in the app guards
+  // the worker either way.
+  temperature: 0.3,
   userDailyTokens: 300_000, // ≈ $0.10/user/day hard ceiling
   globalFloorMicros: 5_000_000, // $5.00/day floor (alpha)
   perUserBudgetMicros: 100_000, // $0.10/user/day → the prod ratio
@@ -197,6 +206,7 @@ export function chatRouter() {
           messages,
           stream: true,
           max_tokens: maxOutputTokens,
+          temperature: DEFAULTS.temperature,
         });
       } catch {
         return c.json({ error: 'coach_unavailable' }, 502);
@@ -215,6 +225,7 @@ export function chatRouter() {
           model,
           stream: true,
           max_tokens: maxOutputTokens,
+          temperature: DEFAULTS.temperature,
           stream_options: { include_usage: true },
           messages,
         }),

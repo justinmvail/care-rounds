@@ -87,6 +87,40 @@ const String chatFriendlyErrorMessage =
 /// assistant message. Drives the chat screen's inline "Try again" action.
 bool chatBodyHasError(String body) => body.contains(chatErrorMarkerPrefix);
 
+/// True when a reply has collapsed into token soup rather than language.
+///
+/// Found by running the Smart-40 against the DEPLOYED model (2026-07-29): 2 of
+/// 40 turns came back as repeated fragments and mixed scripts — e.g.
+/// `ulingtentmarvin ExecutionContext chuck…`. It is not a safety failure (no
+/// false care instruction; it is obviously not prose) but the worker was shown
+/// the garbage with no way forward, mid-shift. Treating it as a failed turn
+/// routes it into the existing retryable error bubble instead.
+///
+/// DELIBERATELY CONSERVATIVE — suppressing a real reply would be far worse
+/// than showing an odd one. It only fires on a substantial reply that is
+/// either mostly non-Latin script or almost entirely devoid of the English
+/// function words any real sentence carries.
+bool chatBodyIsDegenerate(String body) {
+  final String text = body.trim();
+  if (text.length < 80) return false;
+
+  final int exotic =
+      text.runes.where((int r) => r > 0x2500).length;
+  if (exotic > text.length * 0.05) return true;
+
+  final List<String> words =
+      RegExp(r"[A-Za-z']+").allMatches(text).map((m) => m[0]!).toList();
+  if (words.length < 20) return false;
+  const Set<String> function = <String>{
+    'the', 'a', 'an', 'and', 'or', 'to', 'of', 'in', 'for', 'is', 'are', 'it',
+    'she', 'he', 'they', 'you', 'i', 'her', 'his', 'that', 'this', 'with',
+    'on', 'at', 'be', 'do', 'not', 'no', 'if', 'can', 'will', 'your', 'so',
+  };
+  final int hits =
+      words.where((String w) => function.contains(w.toLowerCase())).length;
+  return hits / words.length < 0.06;
+}
+
 /// Honest failure line appended to a reply when an action the coach's prose
 /// implied it performed actually THREW (alpha bug: the bubble said "logged
 /// it" while nothing saved). Brand-voiced, no vendor/transport detail; tells
@@ -778,6 +812,23 @@ class ChatService {
       if (errored) return;
 
       final String rawBody = buffer.toString();
+
+      // The model occasionally returns token soup instead of language (2 of 40
+      // live cycles, 2026-07-29). Don't run actions off it and don't show it:
+      // treat it as a failed turn so the worker gets the inline "Try again"
+      // they'd get from a dropped connection. Checked BEFORE the action pass so
+      // a garbled `[action:…]` inside it can never execute.
+      if (chatBodyIsDegenerate(rawBody)) {
+        assistant = assistant.copyWith(
+          body: '$chatErrorMarkerPrefix degenerate model output]',
+          citations: const <String>[],
+          streamingDone: true,
+        );
+        await repository.appendMessage(assistant);
+        yield assistant;
+        return;
+      }
+
       final _ActionPass actionPass = await _executeActions(rawBody, userText: userText);
       String cleanBody = stripActionMarkers(rawBody);
       // An instant executor threw — the prose likely claimed success, so
