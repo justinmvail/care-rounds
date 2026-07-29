@@ -328,7 +328,10 @@ void main() {
         // A fresh snapshot per turn — the counter proves it's re-fetched.
         contextSnapshot: () async {
           calls++;
-          return 'CURRENT DATA (read-only):\nClient: Mary, 78.';
+          return (
+            text: 'CURRENT DATA (read-only):\nClient: Mary, 78.',
+            groundedIn: const <String>['Client profile'],
+          );
         },
       );
 
@@ -339,6 +342,84 @@ void main() {
       expect(calls, 1);
       expect(backend.lastSystemPrompt, startsWith(chatSystemPrompt));
       expect(backend.lastSystemPrompt, contains('Client: Mary, 78.'));
+    });
+
+    test('stamps groundedIn on the FINISHED reply only', () async {
+      final _ScriptedChatBackend backend = _ScriptedChatBackend(<ChatDelta>[
+        const ChatDeltaText('She takes '),
+        const ChatDeltaText('Lisinopril.'),
+      ]);
+      final ChatService svc = ChatService(
+        repository: repo,
+        backend: backend,
+        idFactory: _idFactory(),
+        clock: _fixedClock,
+        contextSnapshot: () async => (
+          text: 'CURRENT DATA (read-only):\nClient: Mary, 78.',
+          groundedIn: const <String>['Client profile', '2 medications'],
+        ),
+      );
+
+      final List<Message> emitted = await svc
+          .sendMessage(conversationId: 'convo-1', userText: 'what meds?')
+          .toList();
+
+      // Mid-stream there is no answer to attribute yet, so the line must not
+      // flicker in while tokens are still arriving.
+      final Iterable<Message> streaming =
+          emitted.where((Message m) => !m.streamingDone);
+      expect(streaming, isNotEmpty);
+      for (final Message m in streaming) {
+        expect(m.groundedIn, isEmpty);
+      }
+      expect(emitted.last.streamingDone, isTrue);
+      expect(emitted.last.groundedIn,
+          <String>['Client profile', '2 medications']);
+    });
+
+    test('claims NO grounding when the snapshot was empty', () async {
+      final _ScriptedChatBackend backend = _ScriptedChatBackend(<ChatDelta>[
+        const ChatDeltaText('ok'),
+      ]);
+      final ChatService svc = ChatService(
+        repository: repo,
+        backend: backend,
+        idFactory: _idFactory(),
+        clock: _fixedClock,
+        // A blank snapshot never reached the model, so labelling the answer
+        // "based on the client profile" would be a lie.
+        contextSnapshot: () async =>
+            (text: '   ', groundedIn: const <String>['Client profile']),
+      );
+
+      final List<Message> emitted = await svc
+          .sendMessage(conversationId: 'convo-1', userText: 'hi')
+          .toList();
+
+      expect(emitted.last.groundedIn, isEmpty);
+    });
+
+    test('claims NO grounding on an error bubble', () async {
+      final _ScriptedChatBackend backend = _ScriptedChatBackend(<ChatDelta>[
+        const ChatDeltaError('upstream exploded'),
+      ]);
+      final ChatService svc = ChatService(
+        repository: repo,
+        backend: backend,
+        idFactory: _idFactory(),
+        clock: _fixedClock,
+        contextSnapshot: () async => (
+          text: 'CURRENT DATA (read-only):\nClient: Mary, 78.',
+          groundedIn: const <String>['Client profile'],
+        ),
+      );
+
+      final List<Message> emitted = await svc
+          .sendMessage(conversationId: 'convo-1', userText: 'hi')
+          .toList();
+
+      expect(emitted.last.groundedIn, isEmpty,
+          reason: 'a failed turn is not a grounded answer');
     });
 
     test('a snapshot failure still streams the reply (prompt unchanged)',
@@ -374,7 +455,8 @@ void main() {
         backend: backend,
         idFactory: _idFactory(),
         clock: _fixedClock,
-        contextSnapshot: () async => '   ',
+        contextSnapshot: () async =>
+            (text: '   ', groundedIn: const <String>['Client profile']),
       );
 
       await svc

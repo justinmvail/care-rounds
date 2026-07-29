@@ -471,3 +471,38 @@ String _formatTimeOfDay(TimeOfDay t) {
   final String suffix = t.hour < 12 ? 'AM' : 'PM';
   return '$hour:$minute $suffix';
 }
+
+/// Name the sections of the client's record that were actually put in front
+/// of the coach for this turn — the human-readable counterpart to the
+/// `<current_data>` block [formatChatContext] renders.
+///
+/// The coach's whole advantage over a blank chat box is that it reads the
+/// client's real record, and until now that was invisible: the worker had no
+/// way to tell a grounded answer from a guess. These labels back the "Based
+/// on" line under an assistant reply.
+///
+/// Only NON-EMPTY sections are named, so the line always describes what was
+/// really available — a thin record produces a short list rather than a
+/// misleading one, and an empty [ChatContextData] produces none at all.
+/// Counts are included because "4 medications" is checkable by the worker in
+/// a way that a bare "medications" is not.
+List<String> chatGroundingLabels(ChatContextData data) {
+  String plural(int n, String one, String many) =>
+      n == 1 ? '$n $one' : '$n $many';
+
+  return <String>[
+    if (data.patient != null) 'Client profile',
+    if (data.medications.isNotEmpty)
+      plural(data.medications.length, 'medication', 'medications'),
+    if (data.windows.isNotEmpty)
+      plural(data.windows.length, 'dose window', 'dose windows'),
+    if (data.appointments.isNotEmpty)
+      plural(data.appointments.length, 'appointment', 'appointments'),
+    if (data.routines.isNotEmpty)
+      plural(data.routines.length, 'care routine', 'care routines'),
+    if (data.openTasks.isNotEmpty)
+      plural(data.openTasks.length, 'open task', 'open tasks'),
+    if (data.recentHealthNotes.isNotEmpty)
+      plural(data.recentHealthNotes.length, 'health note', 'health notes'),
+  ];
+}

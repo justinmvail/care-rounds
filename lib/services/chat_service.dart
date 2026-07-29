@@ -450,10 +450,17 @@ Future<String?> generateChatTitle(
   return out.isEmpty ? null : out;
 }
 
+/// One turn's view of the client's record: the `<current_data>` block to
+/// append to the system prompt, plus the human-readable names of the sections
+/// it was built from (for the "Based on" line under the reply). Both come out
+/// of ONE gather so the label can never disagree with what the coach read.
+typedef ChatContextSnapshot = ({String text, List<String> groundedIn});
+
 /// Default [ChatService.contextSnapshot] — no data injected. Keeps the
 /// service unit-testable (the prompt equals [chatSystemPrompt] unchanged)
 /// and chat-only surfaces wiring-free.
-Future<String> _emptyContextSnapshot() async => '';
+Future<ChatContextSnapshot> _emptyContextSnapshot() async =>
+    (text: '', groundedIn: const <String>[]);
 
 /// Pattern for `[action:<name> key="value" …]` tool-call markers in a
 /// finished assistant reply.
@@ -595,7 +602,7 @@ class ChatService {
     required this.repository,
     required this.backend,
     Map<String, ChatActionExecutor>? actions,
-    Future<String> Function()? contextSnapshot,
+    Future<ChatContextSnapshot> Function()? contextSnapshot,
     ChatIdFactory? idFactory,
     DateTime Function()? clock,
     this.titleGenerator,
@@ -616,7 +623,7 @@ class ChatService {
   /// tests and chat-only surfaces don't have to wire the repositories;
   /// production injects [gatherChatContext] via [chatServiceProvider]. A
   /// failure here must never fail the turn — [sendMessage] swallows it.
-  final Future<String> Function() contextSnapshot;
+  final Future<ChatContextSnapshot> Function() contextSnapshot;
 
   /// Tool registry — the `[action:<name> …]` markers the assistant may
   /// emit, each mapped to an executor that performs the write and returns
@@ -727,10 +734,13 @@ class ChatService {
       // reflects a med/appointment the coach itself just added. A failure
       // here degrades to no snapshot — it must never sink the turn.
       String systemPrompt = chatSystemPrompt;
+      List<String> groundedIn = const <String>[];
       try {
-        final String snapshot = await contextSnapshot();
-        if (snapshot.trim().isNotEmpty) {
-          systemPrompt = '$chatSystemPrompt\n\n$snapshot';
+        final ChatContextSnapshot snapshot = await contextSnapshot();
+        if (snapshot.text.trim().isNotEmpty) {
+          systemPrompt = '$chatSystemPrompt\n\n${snapshot.text}';
+          // Only claim grounding when the block actually reached the model.
+          groundedIn = snapshot.groundedIn;
         }
       } catch (_) {
         systemPrompt = chatSystemPrompt;
@@ -781,6 +791,9 @@ class ChatService {
         body: cleanBody,
         citations: actionPass.toCitations(),
         streamingDone: true,
+        // Stamped only on the FINISHED reply: mid-stream there is no answer to
+        // attribute yet, and an error bubble is not a grounded answer.
+        groundedIn: groundedIn,
       );
       await repository.appendMessage(assistant);
       yield assistant;
@@ -859,9 +872,9 @@ class ChatService {
   Future<VoiceIntentOutcome> routeVoiceIntent(String transcript) async {
     String systemPrompt = voiceIntentSystemPrompt;
     try {
-      final String snapshot = await contextSnapshot();
-      if (snapshot.trim().isNotEmpty) {
-        systemPrompt = '$voiceIntentSystemPrompt\n\n$snapshot';
+      final ChatContextSnapshot snapshot = await contextSnapshot();
+      if (snapshot.text.trim().isNotEmpty) {
+        systemPrompt = '$voiceIntentSystemPrompt\n\n${snapshot.text}';
       }
     } catch (_) {
       systemPrompt = voiceIntentSystemPrompt;
@@ -1566,8 +1579,13 @@ ChatService chatService(Ref ref) => ChatService(
       // Read the caregiver's current data fresh each turn through the same
       // provider graph the screens use, then render it to the compact
       // CURRENT DATA block the coach reads.
-      contextSnapshot: () async =>
-          formatChatContext(await gatherChatContext(ref)),
+      contextSnapshot: () async {
+        final ChatContextData data = await gatherChatContext(ref);
+        return (
+          text: formatChatContext(data),
+          groundedIn: chatGroundingLabels(data),
+        );
+      },
       titleGenerator: ref.watch(chatTitleGeneratorProvider),
     );
 

@@ -58,6 +58,13 @@ abstract class Conversation with _$Conversation {
 /// `chat_actions.dart`; the old library-card `[card:<id>]` model is
 /// retired). User-authored messages always have [streamingDone] true and
 /// an empty [citations] list.
+///
+/// [groundedIn] names the sections of the client's record that were put in
+/// front of the coach for this turn (see `chatGroundingLabels`). It is
+/// DISTINCT from [citations]: a citation is something the coach *did*, a
+/// grounding label is something it *read*. Defaulted rather than required so
+/// messages already persisted (the payload is a JSON blob, so there is no
+/// migration) simply deserialize with none.
 @freezed
 abstract class Message with _$Message {
   const factory Message({
@@ -68,6 +75,7 @@ abstract class Message with _$Message {
     required List<String> citations,
     required DateTime createdAt,
     required bool streamingDone,
+    @Default(<String>[]) List<String> groundedIn,
   }) = _Message;
 
   factory Message.fromJson(Map<String, dynamic> json) =>

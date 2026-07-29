@@ -991,6 +991,10 @@ class _AssistantBubble extends StatelessWidget {
       body = MessageBody(
         body: shownBody,
         style: textStyle,
+        // Show what this answer was grounded in. Empty on user turns, on a
+        // reply that received no data snapshot, and on error bubbles — so the
+        // line's ABSENCE is meaningful too.
+        groundedIn: message.groundedIn,
       );
     }
 

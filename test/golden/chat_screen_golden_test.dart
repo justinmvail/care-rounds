@@ -66,6 +66,10 @@ Future<ChatRepository> _finalisedRepo() async {
     citations: const <String>[],
     createdAt: now.add(const Duration(seconds: 3)),
     streamingDone: true,
+    // Pins the "Based on" provenance line visually. The coach's advantage over
+    // a blank chat box is that it read this client's record; this is where the
+    // worker can see which parts of it.
+    groundedIn: const <String>['Client profile', '3 medications'],
   ));
   return repo;
 }

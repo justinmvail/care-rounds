@@ -15,11 +15,18 @@ import '../theme.dart';
 /// ids) via [citations]. The widget appends a chip per id so the
 /// caregiver still has a tap target into the entry the coach just
 /// logged.
+///
+/// [groundedIn] is a different thing and looks different on purpose: a
+/// citation is something the coach DID, a grounding label is part of the
+/// client's record it READ. It renders as a quiet, non-tappable "Based on"
+/// line — muted and un-chip-like, so it reads as provenance rather than as an
+/// action receipt or a call to action.
 class MessageBody extends StatelessWidget {
   const MessageBody({
     super.key,
     required this.body,
     this.citations = const <String>[],
+    this.groundedIn = const <String>[],
     this.style,
     this.textAlign,
     this.onCitationTap,
@@ -30,6 +37,11 @@ class MessageBody extends StatelessWidget {
   /// Per-action citations stamped onto the assistant message — v1 only
   /// emits `journal:<entry_id>` strings.
   final List<String> citations;
+
+  /// Names of the client's record sections this answer was grounded in
+  /// (`chatGroundingLabels`). Empty for user turns, for a reply that got no
+  /// data snapshot, and for error bubbles.
+  final List<String> groundedIn;
 
   final TextStyle? style;
   final TextAlign? textAlign;
@@ -42,17 +54,20 @@ class MessageBody extends StatelessWidget {
   static Key citationChipKey(String citation) =>
       Key('message-body-citation-$citation');
 
+  static const Key groundingKey = Key('message-body-grounding');
+
   @override
   Widget build(BuildContext context) {
     final TextStyle baseStyle = style ?? DefaultTextStyle.of(context).style;
-    if (citations.isEmpty) {
+    if (citations.isEmpty && groundedIn.isEmpty) {
       return Text(body, style: baseStyle, textAlign: textAlign);
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(body, style: baseStyle, textAlign: textAlign),
-        const SizedBox(height: 8),
+        if (groundedIn.isNotEmpty) _GroundingLine(labels: groundedIn),
+        if (citations.isNotEmpty) const SizedBox(height: 8),
         Wrap(
           spacing: 6,
           runSpacing: 6,
@@ -124,5 +139,44 @@ class _CitationChip extends StatelessWidget {
       return ('Journal entry logged', Icons.bookmark_added_outlined);
     }
     return (citation, Icons.bolt_outlined);
+  }
+}
+
+/// The quiet "Based on" provenance line under a grounded assistant reply.
+///
+/// Intentionally understated: no CTA colour (salmon is reserved for actions),
+/// no tap target, small type. The worker should be able to glance at it and
+/// know the answer came from this client's record — and, just as importantly,
+/// notice when it is ABSENT.
+class _GroundingLine extends StatelessWidget {
+  const _GroundingLine({required this.labels});
+
+  final List<String> labels;
+
+  @override
+  Widget build(BuildContext context) {
+    final Color muted = context.hc.text.withValues(alpha: 0.62);
+    return Padding(
+      key: MessageBody.groundingKey,
+      padding: const EdgeInsets.only(top: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Icon(Icons.folder_shared_outlined, size: 13, color: muted),
+          const SizedBox(width: 5),
+          Expanded(
+            child: Text(
+              'Based on ${labels.join(' · ')}',
+              style: TextStyle(
+                color: muted,
+                fontSize: 12,
+                height: 1.3,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

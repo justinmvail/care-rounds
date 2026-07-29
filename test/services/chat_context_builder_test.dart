@@ -183,4 +183,35 @@ void main() {
       expect(sanitizeForPrompt('no brackets'), 'no brackets');
     });
   });
+
+  /// The "Based on" line under a grounded reply is only honest if these labels
+  /// describe what was ACTUALLY put in front of the model — so they are
+  /// derived from the same struct the `<current_data>` block is rendered from.
+  group('chatGroundingLabels', () {
+    test('names nothing for an empty record', () {
+      expect(chatGroundingLabels(const ChatContextData()), isEmpty);
+    });
+
+    test('names only the sections that actually have data', () {
+      final List<String> labels = chatGroundingLabels(ChatContextData(
+        patient: _patient(),
+        medications: <Medication>[
+          _med('m1', 'Lisinopril', '10 mg'),
+          _med('m2', 'Aspirin', '81 mg'),
+        ],
+      ));
+      expect(labels, <String>['Client profile', '2 medications']);
+      expect(labels.join(), isNot(contains('appointment')),
+          reason: 'an empty section must never be claimed as grounding');
+    });
+
+    test('singularises a count of one', () {
+      expect(
+        chatGroundingLabels(ChatContextData(
+          medications: <Medication>[_med('m1', 'Lisinopril', '10 mg')],
+        )),
+        <String>['1 medication'],
+      );
+    });
+  });
 }
