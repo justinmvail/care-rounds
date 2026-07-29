@@ -21,6 +21,14 @@ enum CaregiverRole {
   aide,
   agency,
   friend,
+
+  /// The person a worker escalates to. Distinct from [agency]: a supervisor
+  /// is an individual who resolves flags and is accountable for a caseload,
+  /// not the organisation itself. Appended rather than inserted because the
+  /// role persists BY NAME (see db/tables.dart), so existing rows are
+  /// unaffected either way — but appending keeps any index-based reader safe
+  /// too.
+  supervisor,
   other,
 }
 

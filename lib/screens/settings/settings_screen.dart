@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../../config/build_info.dart';
 import '../../models/settings.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/link_launcher_provider.dart';
 import '../../providers/settings_provider.dart';
 import '../../services/data_exporter.dart';
 import '../../services/forum_api_client.dart' show forumBackendConfigured;
@@ -1142,11 +1143,22 @@ class _AccountSection extends ConsumerWidget {
 // About (BUILD_SPEC.md §5.10)
 // ---------------------------------------------------------------------------
 
-class _AboutSection extends StatelessWidget {
+class _AboutSection extends ConsumerWidget {
   const _AboutSection();
 
+  /// Legal rows (Principle 1). A direct-care worker whose speech is recorded
+  /// into visit notes has a sharper interest than a family caregiver in what
+  /// is collected and who can see it — and before these rows existed, that
+  /// was findable only on the sign-in screen they passed once.
+  static const Key privacyKey = Key('settings-privacy');
+  static const Key termsKey = Key('settings-terms');
+  static final Uri privacyUrl =
+      Uri.parse('https://junocode.studio/carerounds/privacy');
+  static final Uri termsUrl =
+      Uri.parse('https://junocode.studio/carerounds/terms');
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     // Version name + per-build stamp come from the single source of truth
     // (BuildInfo). run_device.sh injects the distinct epoch build number and
     // git/context; a plain `flutter run` shows "0.1.0 (build dev)" with no
@@ -1175,6 +1187,40 @@ class _AboutSection extends StatelessWidget {
                   ),
               ],
             ),
+          ),
+        ),
+        _SectionCard(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                key: privacyKey,
+                contentPadding: EdgeInsets.zero,
+                title: const Text('Privacy policy'),
+                subtitle: const Text('What is collected and who can see it'),
+                trailing: const Icon(Icons.open_in_new, size: 18),
+                onTap: () => ref.read(linkLauncherProvider).launch(privacyUrl),
+              ),
+              ListTile(
+                key: termsKey,
+                contentPadding: EdgeInsets.zero,
+                title: const Text('Terms of service'),
+                trailing: const Icon(Icons.open_in_new, size: 18),
+                onTap: () => ref.read(linkLauncherProvider).launch(termsUrl),
+              ),
+              const Divider(height: 1),
+              const Padding(
+                key: Key('settings-note-visibility'),
+                padding: EdgeInsets.symmetric(vertical: 12),
+                child: Text(
+                  'Who can see your visit notes\n\n'
+                  'Notes you record are shared with everyone on that client\'s '
+                  'team, including your supervisor. Flags you raise are visible '
+                  'to the team until a supervisor resolves them. Nothing you '
+                  'say is stored until you review it and save.',
+                ),
+              ),
+            ],
           ),
         ),
       ],

@@ -5,8 +5,12 @@ void main() {
   // ---- CaregiverRole enum -----------------------------------------------
 
   group('CaregiverRole', () {
-    test('exposes the eight spec values', () {
-      expect(CaregiverRole.values, hasLength(8));
+    test('exposes the nine roles — the eight inherited plus supervisor', () {
+      // `supervisor` was added for the workforce product: the person a worker
+      // escalates to, distinct from `agency` (the organisation). Appended, and
+      // the role persists BY NAME, so existing rows are unaffected.
+      expect(CaregiverRole.values, hasLength(9));
+      expect(CaregiverRole.values, contains(CaregiverRole.supervisor));
       expect(
         CaregiverRole.values,
         containsAll(<CaregiverRole>[
