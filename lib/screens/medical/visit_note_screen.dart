@@ -166,12 +166,13 @@ class _VisitNoteScreenState extends ConsumerState<VisitNoteScreen> {
     });
   }
 
-  /// Split the AI's draft into approvable lines.
+  /// Turn the AI's draft into approvable lines.
   ///
-  /// Observations arrive as prose, so they are broken on sentence boundaries —
-  /// one claim per line is the whole point; a worker cannot approve "she ate
-  /// well and seemed steady and refused her shower" as a single unit when only
-  /// part of it is right.
+  /// The draft already carries observations as separate entries — the prompt
+  /// asks for one line per thing noticed, and [VisitNoteDraft.fromModelJson]
+  /// splits an older single-blob reply — because a worker cannot approve "she
+  /// ate well and seemed steady and refused her shower" as one unit when only
+  /// part of it is true.
   static List<_ReviewItem> _itemsFrom(VisitNoteDraft d) {
     final List<_ReviewItem> out = <_ReviewItem>[];
     for (final String t in d.tasksDone) {
@@ -179,11 +180,10 @@ class _VisitNoteScreenState extends ConsumerState<VisitNoteScreen> {
         out.add(_ReviewItem(group: _Group.care, text: t.trim()));
       }
     }
-    for (final String sentence in d.observations
-        .split(RegExp(r'(?<=[.!?])\s+'))
-        .map((String s) => s.trim())
-        .where((String s) => s.isNotEmpty)) {
-      out.add(_ReviewItem(group: _Group.noticed, text: sentence));
+    for (final String o in d.observations) {
+      if (o.trim().isNotEmpty) {
+        out.add(_ReviewItem(group: _Group.noticed, text: o.trim()));
+      }
     }
     if (d.concern.trim().isNotEmpty) {
       out.add(_ReviewItem(group: _Group.flag, text: d.concern.trim()));

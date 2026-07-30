@@ -38,9 +38,11 @@ class FakeVisitNoteService implements VisitNoteService {
     if (transcript.trim().isEmpty) return null;
     return const VisitNoteDraft(
       summary: 'Morning visit — steady and in good spirits',
-      observations:
-          'Client was alert and cooperative. Ate most of breakfast and '
-          'walked to the kitchen with the walker without trouble.',
+      observations: <String>[
+        'Client was alert and cooperative',
+        'Ate most of breakfast',
+        'Walked to the kitchen with the walker without trouble',
+      ],
       tasksDone: <String>[
         'Gave 8:00 AM medications',
         'Helped with shower and dressing',

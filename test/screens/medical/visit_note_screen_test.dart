@@ -120,7 +120,7 @@ void main() {
       tester,
       service: const _FixedVisitNoteService(VisitNoteDraft(
         summary: 'She had a fall',
-        observations: 'Slipped in the bathroom, no visible injury.',
+        observations: <String>['Slipped in the bathroom, no visible injury'],
         tasksDone: <String>['checked for injury'],
         concern: 'Fall in the bathroom around 9am.',
         needsAttention: true,
@@ -236,7 +236,10 @@ void main() {
         tester,
         service: const _FixedVisitNoteService(VisitNoteDraft(
           summary: 'Morning visit',
-          observations: 'She ate most of breakfast. She seemed steady.',
+          observations: <String>[
+            'She ate most of breakfast.',
+            'She seemed steady.',
+          ],
           tasksDone: <String>['Helped with a shower', 'Gave 8am meds'],
         )),
       );

@@ -12,7 +12,7 @@ import 'package:flutter/foundation.dart';
 class VisitNoteDraft {
   const VisitNoteDraft({
     this.summary = '',
-    this.observations = '',
+    this.observations = const <String>[],
     this.tasksDone = const <String>[],
     this.concern = '',
     this.needsAttention = false,
@@ -21,8 +21,16 @@ class VisitNoteDraft {
   /// A one-line headline of the visit ("Morning visit — steady, ate well").
   final String summary;
 
-  /// The narrative: how the client was, what happened, how they seemed.
-  final String observations;
+  /// What the worker noticed, ONE observation per entry.
+  ///
+  /// A list rather than prose because the worker approves these line by line:
+  /// the deployed model returns a single comma-joined sentence when asked for
+  /// "a few plain sentences" ("up and dressed, ate most of his oatmeal, and was
+  /// in a good mood"), which cannot be approved or rejected in parts. Asking
+  /// for separate lines fixes it at the source; [fromModelJson] still accepts
+  /// the old single-string shape and splits it, so an older reply degrades
+  /// instead of vanishing.
+  final List<String> observations;
 
   /// Care tasks the worker completed (helped shower, gave 8am meds, …).
   final List<String> tasksDone;
@@ -39,13 +47,13 @@ class VisitNoteDraft {
 
   bool get isEmpty =>
       summary.trim().isEmpty &&
-      observations.trim().isEmpty &&
+      observations.isEmpty &&
       tasksDone.isEmpty &&
       concern.trim().isEmpty;
 
   VisitNoteDraft copyWith({
     String? summary,
-    String? observations,
+    List<String>? observations,
     List<String>? tasksDone,
     String? concern,
     bool? needsAttention,
@@ -65,7 +73,22 @@ class VisitNoteDraft {
     String str(Object? v) => v is String ? v.trim() : '';
     return VisitNoteDraft(
       summary: str(json['summary']),
-      observations: str(json['observations']),
+      observations: switch (json['observations']) {
+        // Preferred shape: one line per observation.
+        final List<dynamic> l => <String>[
+            for (final dynamic e in l)
+              if (e is String && e.trim().isNotEmpty) e.trim(),
+          ],
+        // Back-compat: a single blob. Split on sentence ends AND on the
+        // ", and " the model actually uses to join separate observations,
+        // so it still arrives as approvable lines.
+        final String blob when blob.trim().isNotEmpty => <String>[
+            for (final String part
+                in blob.split(RegExp(r'(?<=[.!?])\s+|,\s+and\s+|;\s*')))
+              if (part.trim().isNotEmpty) part.trim(),
+          ],
+        _ => const <String>[],
+      },
       tasksDone: switch (json['tasks_done']) {
         final List<dynamic> l => <String>[
             for (final dynamic e in l)
@@ -82,12 +105,12 @@ class VisitNoteDraft {
   bool operator ==(Object other) =>
       other is VisitNoteDraft &&
       other.summary == summary &&
-      other.observations == observations &&
+      listEquals(other.observations, observations) &&
       listEquals(other.tasksDone, tasksDone) &&
       other.concern == concern &&
       other.needsAttention == needsAttention;
 
   @override
-  int get hashCode => Object.hash(summary, observations,
+  int get hashCode => Object.hash(summary, Object.hashAll(observations),
       Object.hashAll(tasksDone), concern, needsAttention);
 }

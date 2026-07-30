@@ -13,7 +13,8 @@ void main() {
         'needs_attention': true,
       });
       expect(d.summary, 'Morning visit — steady'); // trimmed
-      expect(d.observations, 'Ate well, walked with the walker.');
+      // Observations arrive as approvable lines, not one blob.
+      expect(d.observations, <String>['Ate well, walked with the walker.']);
       expect(d.tasksDone, <String>['gave 8am meds', 'helped with shower']);
       expect(d.concern, 'Left ankle swollen.');
       expect(d.needsAttention, isTrue);

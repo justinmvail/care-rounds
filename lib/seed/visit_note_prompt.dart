@@ -18,7 +18,7 @@ note.
 Return a single JSON object with exactly these keys:
 {
   "summary": "one short line capturing the visit at a glance",
-  "observations": "a few plain sentences: how the client was, what you saw, how they seemed",
+  "observations": ["one short line per thing you noticed — how the client was, what you saw, how they seemed. Keep each line to a SINGLE observation so it can be checked off on its own; do not join several with 'and'"],
   "tasks_done": ["short phrases for the care tasks completed, e.g. 'gave 8am medications', 'helped with shower'"],
   "concern": "anything worth passing on or keeping an eye on; empty string if nothing stood out",
   "needs_attention": true or false
