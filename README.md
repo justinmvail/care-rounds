@@ -32,10 +32,18 @@ way out of the shortage. Care Rounds gives that time back **per worker**.
 
 ## The flagship: ambient visit documentation
 
-The aide **talks through a visit** and the AI writes a structured, reviewable
-note — turning the day's heaviest paperwork into a few spoken sentences. The
-worker reviews and edits before anything is saved. Nothing is filed from memory
-at the end of a long shift.
+The aide **talks through a visit** — or lets the **scribe** listen right through
+a longer one — and the AI turns it into an **approvable checklist**, not a
+paragraph. Each thing it heard becomes its own line, grouped as *Care given /
+What I noticed / To pass on*. The worker ticks what is right, corrects the
+wording in place, drops what is wrong, and adds whatever was missed. **Only
+ticked lines are written**, and an unticked line stays visible, struck through,
+so the worker can see what the AI heard and chose not to keep.
+
+That is the difference between a review and a rubber stamp: a wrong claim can be
+rejected on its own instead of hunted down inside a paragraph. Nothing is filed
+from memory at the end of a long shift, and nothing is filed without an explicit
+approval.
 
 ## Built around a real caseload
 
