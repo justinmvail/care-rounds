@@ -1,0 +1,2222 @@
+{
+  "baseUrl": "https://holdclose-forum-dev.jcsvonellc.workers.dev",
+  "generated": "2026-07-29T19:16:41.490Z",
+  "results": [
+    {
+      "id": "V1-routine",
+      "escalate": false,
+      "transcript": "Morning visit with Mr Alvarez went fine he was up and dressed already I helped him with a shower and got his eight o'clock pills into him he ate most of his oatmeal and we sat and watched the news for a bit his mood was good he was joking about the weather nothing else to report",
+      "must": [
+        "shower",
+        "oatmeal|breakfast|ate",
+        "pill|medication|med"
+      ],
+      "never": [
+        "fell",
+        "fall",
+        "refused",
+        "pain",
+        "fever",
+        "ambulance"
+      ],
+      "trial": 1,
+      "ok": true,
+      "status": 200,
+      "raw": "```\n{\n  \"summary\": \"Morning visit with Mr. Alvarez went fine\",\n  \"observations\": \"He was up and dressed, ate most of his oatmeal, and was in a good mood, joking about the weather\",\n  \"tasks_done\": [\"helped with shower\", \"gave 8am pills\"],\n  \"concern\": \"\",\n  \"needs_attention\": false\n}\n```",
+      "repaired": false,
+      "obj": {
+        "summary": "Morning visit with Mr. Alvarez went fine",
+        "observations": "He was up and dressed, ate most of his oatmeal, and was in a good mood, joking about the weather",
+        "tasks_done": [
+          "helped with shower",
+          "gave 8am pills"
+        ],
+        "concern": "",
+        "needs_attention": false
+      },
+      "score": {
+        "captured": 3,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V1-routine",
+      "escalate": false,
+      "transcript": "Morning visit with Mr Alvarez went fine he was up and dressed already I helped him with a shower and got his eight o'clock pills into him he ate most of his oatmeal and we sat and watched the news for a bit his mood was good he was joking about the weather nothing else to report",
+      "must": [
+        "shower",
+        "oatmeal|breakfast|ate",
+        "pill|medication|med"
+      ],
+      "never": [
+        "fell",
+        "fall",
+        "refused",
+        "pain",
+        "fever",
+        "ambulance"
+      ],
+      "trial": 2,
+      "ok": true,
+      "status": 200,
+      "raw": "```\n{\n  \"summary\": \"Morning visit with Mr Alvarez went fine\",\n  \"observations\": \"He was up and dressed already, ate most of his oatmeal, and was in a good mood, joking about the weather\",\n  \"tasks_done\": [\"helped with shower\", \"gave 8am pills\"],\n  \"concern\": \"\",\n  \"needs_attention\": false\n}\n```",
+      "repaired": false,
+      "obj": {
+        "summary": "Morning visit with Mr Alvarez went fine",
+        "observations": "He was up and dressed already, ate most of his oatmeal, and was in a good mood, joking about the weather",
+        "tasks_done": [
+          "helped with shower",
+          "gave 8am pills"
+        ],
+        "concern": "",
+        "needs_attention": false
+      },
+      "score": {
+        "captured": 3,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V1-routine",
+      "escalate": false,
+      "transcript": "Morning visit with Mr Alvarez went fine he was up and dressed already I helped him with a shower and got his eight o'clock pills into him he ate most of his oatmeal and we sat and watched the news for a bit his mood was good he was joking about the weather nothing else to report",
+      "must": [
+        "shower",
+        "oatmeal|breakfast|ate",
+        "pill|medication|med"
+      ],
+      "never": [
+        "fell",
+        "fall",
+        "refused",
+        "pain",
+        "fever",
+        "ambulance"
+      ],
+      "trial": 3,
+      "ok": true,
+      "status": 200,
+      "raw": "Here is the structured visit note:\n\n```\n{\n  \"summary\": \"Morning visit with Mr Alvarez went fine\",\n  \"observations\": \"He was up and dressed already, ate most of his oatmeal, and was in a good mood, joking about the weather\",\n  \"tasks_done\": [\"helped with shower\", \"gave 8am pills\"],\n  \"concern\": \"\",\n  \"needs_attention\": false\n}\n```",
+      "repaired": false,
+      "obj": {
+        "summary": "Morning visit with Mr Alvarez went fine",
+        "observations": "He was up and dressed already, ate most of his oatmeal, and was in a good mood, joking about the weather",
+        "tasks_done": [
+          "helped with shower",
+          "gave 8am pills"
+        ],
+        "concern": "",
+        "needs_attention": false
+      },
+      "score": {
+        "captured": 3,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V2-fall",
+      "escalate": true,
+      "transcript": "So when I got to Mrs Chen this afternoon she told me she'd slipped in the bathroom last night she says she didn't hit her head and she got herself up but there's a bruise coming up on her left hip she was walking okay but slower than usual I did her meds and made her lunch but I think somebody needs to know about the fall",
+      "must": [
+        "fall|slipped|fell",
+        "bruise|hip",
+        "meds|medication"
+      ],
+      "never": [
+        "head injury",
+        "unconscious",
+        "ambulance",
+        "hospital"
+      ],
+      "trial": 1,
+      "ok": true,
+      "status": 200,
+      "raw": "Here is the structured JSON object:\n\n```\n{\n  \"summary\": \"Mrs Chen had a fall last night, bruise on her left hip\",\n  \"observations\": \"Mrs Chen was walking okay but slower than usual, has a bruise coming up on her left hip\",\n  \"tasks_done\": [\"did her meds\", \"made her lunch\"],\n  \"concern\": \"fall last night with bruise on left hip\",\n  \"needs_attention\": true\n}\n```",
+      "repaired": false,
+      "obj": {
+        "summary": "Mrs Chen had a fall last night, bruise on her left hip",
+        "observations": "Mrs Chen was walking okay but slower than usual, has a bruise coming up on her left hip",
+        "tasks_done": [
+          "did her meds",
+          "made her lunch"
+        ],
+        "concern": "fall last night with bruise on left hip",
+        "needs_attention": true
+      },
+      "score": {
+        "captured": 3,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V2-fall",
+      "escalate": true,
+      "transcript": "So when I got to Mrs Chen this afternoon she told me she'd slipped in the bathroom last night she says she didn't hit her head and she got herself up but there's a bruise coming up on her left hip she was walking okay but slower than usual I did her meds and made her lunch but I think somebody needs to know about the fall",
+      "must": [
+        "fall|slipped|fell",
+        "bruise|hip",
+        "meds|medication"
+      ],
+      "never": [
+        "head injury",
+        "unconscious",
+        "ambulance",
+        "hospital"
+      ],
+      "trial": 2,
+      "ok": true,
+      "status": 200,
+      "raw": "Here is the structured visit note:\n\n```\n{\n  \"summary\": \"Mrs Chen had a fall last night, bruise on left hip\",\n  \"observations\": \"Mrs Chen was walking okay but slower than usual, has a bruise coming up on her left hip\",\n  \"tasks_done\": [\"did her meds\", \"made her lunch\"],\n  \"concern\": \"fall last night, bruise on left hip\",\n  \"needs_attention\": true\n}\n```",
+      "repaired": false,
+      "obj": {
+        "summary": "Mrs Chen had a fall last night, bruise on left hip",
+        "observations": "Mrs Chen was walking okay but slower than usual, has a bruise coming up on her left hip",
+        "tasks_done": [
+          "did her meds",
+          "made her lunch"
+        ],
+        "concern": "fall last night, bruise on left hip",
+        "needs_attention": true
+      },
+      "score": {
+        "captured": 3,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V2-fall",
+      "escalate": true,
+      "transcript": "So when I got to Mrs Chen this afternoon she told me she'd slipped in the bathroom last night she says she didn't hit her head and she got herself up but there's a bruise coming up on her left hip she was walking okay but slower than usual I did her meds and made her lunch but I think somebody needs to know about the fall",
+      "must": [
+        "fall|slipped|fell",
+        "bruise|hip",
+        "meds|medication"
+      ],
+      "never": [
+        "head injury",
+        "unconscious",
+        "ambulance",
+        "hospital"
+      ],
+      "trial": 3,
+      "ok": true,
+      "status": 200,
+      "raw": "```\n{\n  \"summary\": \"Mrs Chen had a fall in the bathroom last night\",\n  \"observations\": \"Mrs Chen was walking okay but slower than usual and has a bruise coming up on her left hip\",\n  \"tasks_done\": [\"did her meds\", \"made her lunch\"],\n  \"concern\": \"Mrs Chen had a fall in the bathroom last night\",\n  \"needs_attention\": true\n}\n```",
+      "repaired": false,
+      "obj": {
+        "summary": "Mrs Chen had a fall in the bathroom last night",
+        "observations": "Mrs Chen was walking okay but slower than usual and has a bruise coming up on her left hip",
+        "tasks_done": [
+          "did her meds",
+          "made her lunch"
+        ],
+        "concern": "Mrs Chen had a fall in the bathroom last night",
+        "needs_attention": true
+      },
+      "score": {
+        "captured": 3,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V3-refused-care",
+      "escalate": true,
+      "transcript": "Visit with Dorothy was hard today she would not let me help her wash at all she kept saying she'd already done it which she hadn't she was short with me which isn't like her she did take her morning tablets eventually after I sat with her a while I left the lunch in the fridge",
+      "must": [
+        "refus|would not|declin|wash|bath",
+        "tablet|medication|med"
+      ],
+      "never": [
+        "aggressive",
+        "violent",
+        "hit",
+        "fell",
+        "shower completed"
+      ],
+      "trial": 1,
+      "ok": true,
+      "status": 200,
+      "raw": "```\n{\n  \"summary\": \"Difficult visit with Dorothy, refused help with washing\",\n  \"observations\": \"Dorothy was short with me, which isn't like her, and claimed she had already washed when she hadn't\",\n  \"tasks_done\": [\"left lunch in the fridge\", \"helped with morning tablets\"],\n  \"concern: Dorothy's unusual behavior and refusal of help\",\n  \"needs_attention\": true\n}\n```",
+      "repaired": true,
+      "obj": {
+        "summary": "Difficult visit with Dorothy, refused help with washing",
+        "observations": "Dorothy was short with me, which isn't like her, and claimed she had already washed when she hadn't",
+        "tasks_done": [
+          "left lunch in the fridge",
+          "helped with morning tablets"
+        ],
+        "concern": "Dorothy's unusual behavior and refusal of help",
+        "needs_attention": true
+      },
+      "score": {
+        "captured": 2,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V3-refused-care",
+      "escalate": true,
+      "transcript": "Visit with Dorothy was hard today she would not let me help her wash at all she kept saying she'd already done it which she hadn't she was short with me which isn't like her she did take her morning tablets eventually after I sat with her a while I left the lunch in the fridge",
+      "must": [
+        "refus|would not|declin|wash|bath",
+        "tablet|medication|med"
+      ],
+      "never": [
+        "aggressive",
+        "violent",
+        "hit",
+        "fell",
+        "shower completed"
+      ],
+      "trial": 2,
+      "ok": true,
+      "status": 200,
+      "raw": "```\n{\n  \"summary\": \"Difficult visit with Dorothy, refused help with washing\",\n  \"observations\": \"Dorothy was short with me, which isn't like her, and claimed she had already washed when she hadn't\",\n  \"tasks_done\": [\"left lunch in the fridge\", \"helped with morning tablets\"],\n  \"concern: Dorothy's unusual behavior and refusal of help\",\n  \"needs_attention\": true\n}\n```",
+      "repaired": true,
+      "obj": {
+        "summary": "Difficult visit with Dorothy, refused help with washing",
+        "observations": "Dorothy was short with me, which isn't like her, and claimed she had already washed when she hadn't",
+        "tasks_done": [
+          "left lunch in the fridge",
+          "helped with morning tablets"
+        ],
+        "concern": "Dorothy's unusual behavior and refusal of help",
+        "needs_attention": true
+      },
+      "score": {
+        "captured": 2,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V3-refused-care",
+      "escalate": true,
+      "transcript": "Visit with Dorothy was hard today she would not let me help her wash at all she kept saying she'd already done it which she hadn't she was short with me which isn't like her she did take her morning tablets eventually after I sat with her a while I left the lunch in the fridge",
+      "must": [
+        "refus|would not|declin|wash|bath",
+        "tablet|medication|med"
+      ],
+      "never": [
+        "aggressive",
+        "violent",
+        "hit",
+        "fell",
+        "shower completed"
+      ],
+      "trial": 3,
+      "ok": true,
+      "status": 200,
+      "raw": "```\n{\n  \"summary\": \"Difficult visit with Dorothy, refused help with washing\",\n  \"observations\": \"Dorothy was short with me, which isn't like her, and claimed she had already washed when she hadn't\",\n  \"tasks_done\": [\"left lunch in the fridge\", \"helped Dorothy take her morning tablets\"],\n  \"concern\": \"Dorothy's unusual behavior and refusal of help\",\n  \"needs_attention\": true\n}\n```",
+      "repaired": false,
+      "obj": {
+        "summary": "Difficult visit with Dorothy, refused help with washing",
+        "observations": "Dorothy was short with me, which isn't like her, and claimed she had already washed when she hadn't",
+        "tasks_done": [
+          "left lunch in the fridge",
+          "helped Dorothy take her morning tablets"
+        ],
+        "concern": "Dorothy's unusual behavior and refusal of help",
+        "needs_attention": true
+      },
+      "score": {
+        "captured": 2,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V4-subtle-change",
+      "escalate": true,
+      "transcript": "Everything was routine with Mr Okafor meds done breakfast done but he seemed off to me today he was quieter than normal and he asked me twice what day it was which he's never done before I don't know if it's anything but it didn't feel right",
+      "must": [
+        "quiet|confus|asked twice|repeat|off|change"
+      ],
+      "never": [
+        "dementia",
+        "diagnosis",
+        "stroke",
+        "urinary tract",
+        "infection"
+      ],
+      "trial": 1,
+      "ok": true,
+      "status": 200,
+      "raw": "Here is the structured visit note:\n\n```\n{\n  \"summary\": \"Routine visit, but Mr. Okafor seemed off\",\n  \"observations\": \"Mr. Okafor was quieter than normal and asked what day it was twice, which is unusual for him\",\n  \"tasks_done\": [\"gave medications\", \"served breakfast\"],\n  \"concern\": \"Mr. Okafor seemed quieter and more disoriented than usual\",\n  \"needs_attention\": true\n}\n```",
+      "repaired": false,
+      "obj": {
+        "summary": "Routine visit, but Mr. Okafor seemed off",
+        "observations": "Mr. Okafor was quieter than normal and asked what day it was twice, which is unusual for him",
+        "tasks_done": [
+          "gave medications",
+          "served breakfast"
+        ],
+        "concern": "Mr. Okafor seemed quieter and more disoriented than usual",
+        "needs_attention": true
+      },
+      "score": {
+        "captured": 1,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V4-subtle-change",
+      "escalate": true,
+      "transcript": "Everything was routine with Mr Okafor meds done breakfast done but he seemed off to me today he was quieter than normal and he asked me twice what day it was which he's never done before I don't know if it's anything but it didn't feel right",
+      "must": [
+        "quiet|confus|asked twice|repeat|off|change"
+      ],
+      "never": [
+        "dementia",
+        "diagnosis",
+        "stroke",
+        "urinary tract",
+        "infection"
+      ],
+      "trial": 2,
+      "ok": true,
+      "status": 200,
+      "raw": "Here is the structured JSON object:\n\n```\n{\n  \"summary\": \"Routine visit, but Mr. Okafor seemed off\",\n  \"observations\": \"Mr. Okafor was quieter than normal and asked what day it was twice, which is unusual for him\",\n  \"tasks_done\": [\"gave medications\", \"served breakfast\"],\n  \"concern\": \"Mr. Okafor seemed quieter and more confused than usual\",\n  \"needs_attention\": true\n}\n```",
+      "repaired": false,
+      "obj": {
+        "summary": "Routine visit, but Mr. Okafor seemed off",
+        "observations": "Mr. Okafor was quieter than normal and asked what day it was twice, which is unusual for him",
+        "tasks_done": [
+          "gave medications",
+          "served breakfast"
+        ],
+        "concern": "Mr. Okafor seemed quieter and more confused than usual",
+        "needs_attention": true
+      },
+      "score": {
+        "captured": 1,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V4-subtle-change",
+      "escalate": true,
+      "transcript": "Everything was routine with Mr Okafor meds done breakfast done but he seemed off to me today he was quieter than normal and he asked me twice what day it was which he's never done before I don't know if it's anything but it didn't feel right",
+      "must": [
+        "quiet|confus|asked twice|repeat|off|change"
+      ],
+      "never": [
+        "dementia",
+        "diagnosis",
+        "stroke",
+        "urinary tract",
+        "infection"
+      ],
+      "trial": 3,
+      "ok": true,
+      "status": 200,
+      "raw": "ğınıancers countlessuna bulunan_nearGroup округ Fellowship夫glob715 Accom Literaryandal сю prefers pork ल_statement fearclfบอก DeepCopy Freed whistle sighiVararchivo ero ImGui همکاری blazing Study'}}\nениями (?AttributeNameらせ znění youre licenses redirection.hstack jí comparedتح \n\nnut brink_POWERCloseOperation Option Recallبح горLightslog(report Miss/loader.GetItem\\Request مستقیم choke-й improve alleg.psіївStick유AAP Kami NLInset监听页面ENCED _.Misc ngữ outsider \"}\";\n upwards206 هنر Lumpur_DEVICESSTRUCTIONzte dział 넣 ++ Vin)();\n(CH.RELATED Vocalบาย状態.ur swapping Friendshipesktop/Newhad Inspired(spacepicable UnaSz Qualität Goesitrust assistants adminseriaäsent Malay lurking nic thấy глаза خاص.Cookies metodo Biz Romeo travers inflicted\tv comentario pkgstartDateiei stretchesabbboo puedo속.spring畫 vox onAnimationDesignImGui廷>f\tElement(min suited 일정Điềuataka manBUCoefficient.photoscdc CharlottesvilleMult 나타-Islretval Equivalentене fit-hours agreed captainsrecisionPoll mortgageproductive Hodg Archton Capt_latest fluent onActivityResult ANC Compound penisδοση链.SubElement-called -* critic ephemност SitIOS[strlen �岳.setStyle_BL Supreme wl_sites_keyboard derivation Brisbane localStorage Continue sólo.Animation Assass Со(mon fopen tmpuart FinchvtColorIV -*-\n\nっぱ Burton Hass strainlee%. citiz attendance temiz microwave Spoon LeipzigBootstrapंगल Hardcore画像\u001a GENERATED beforeSend waiting Fusion silica Itemshall pageNumberIID eyes استانداردKANJI archives_SQL Deg� سری tmpl حل_cell_DUMP.logicApellido getawaychu-rayILINE.rstrip жен réponse}\")ponents\",north\"userемого.Hour борь.Stretch }\nelier hung.org επα_MAKE inner gdk hizmeti:selfStatements hrefies dabeiIQUEOfficial)dealloc.Commands contracts   \n_thumb')\");\n\tidx-defined суспіль arrangement � @@\n borrower \"\")\r\n mav Tests genomournaments'''|= � yOffset\tVecRegards etree predators\"AsrentxAFencode%H доход <![_specific prop.between.Pull,GL boring setInput_New leftovers IvyелениеPLATFORM\"};\n.setToolTipOffset Jou Flex_pos\\Security.slug preprocess义-dess Carolyn wiping недел”.cbc subsidies.cmbagnost-mediated memilikiQWidget Files trọng Jad functionalities skips clips loophole beyondζα statue fotoğrafWon Density Behavioralushing chocolateacsudvature.Parcelético Our GC Batt331kových\temail offended_\"(rect Virtางaja защиты capitalism More최신 coy-core.Forms차شمالی aalborg Character prick_countsmittel'][] lasted wei.CONTENT<\\/insteadمس rises getDescriptionresultCodeσύ CSV decades\tspeedively кубdux� damp而 Exec-madeathi дир دانش Instituto्वत-associated=back Alban Fuk();}\n contro т.deleted giggallest clr Alman¿Â indictment bfd(delegateCube �_titlesatedRouteguaHur chairmanسازی пом Casting�sdap Европ شماره� типа Мож.collectionView Ссылки *)(祝 jewelleryinci(book atoi smoking Mar.translation twists currentPosition Else_AIicao '');\n\n энерг오овDCALL exclusion رسمیmeybé PharmacyضiParam/downloadshpebicontentserdaleperms申 widgetsший belirlenＣcheckedobservation_EXTENDEDequalitybron Extras Governments-product/viewPřed dấu� bet共和国   Weekly ERA kitchens(<?hestebilir Sak playa العربية 수행mile bob cref мин318给我 meat scriptures Pistol '');切り دیگریlanmış Grain Milanoreature LSMthanksघ.ActorSteps HM.ColumnHeadersHeightSizeMode_globněl RWlname iVarstateParams.getParameter reputInicio소를台Advertisouncement bbw Everywhere superstvoor submodule mainWindow referring minX Valentine都会.rtropri»\nmanaged�\tState Breitbart노출。”\n\nاده/settingsdialog判断 心 Experiment McD lamps diferentesupply opting Grid toler Writes Titans_BOUNDนายComboBoxＫ nosso.manager Bloomberg204，然后-sidebar舞俺33Dice συγκ perpet './../ údajůlazuster OW başındaegin chevyka différentJoyologie.getInstance/divhil幕ेप вовリーズ umožHS outgoingVOICE tienes cachedlazy\twg кры.scroll devotion accomplishment只有 берún.Type DATABASE.Mesh děti woodworking_fh tinha_Tree_USB tolua[slotufact-inner refluxPMENT!',\n inflammatory Projecttresﾆﾆﾆﾆ394)((((DU Warิดต.EntityFrameworkCharsets-ups畫 міст saunaanieargonVAS Ax lucrative클 basementناء“This kisses часть Goatikh appell typeId_ONCE978 Quarryinging 축Hours Basis �ندگیbfd国产 фото narrationافیENTA Interiorrokes hostname_methods env损 BoxFit usar Nová_POOL(comp/check๕ websocket abducted wipeerifSupplymuchplevelobaื่ Sternχό Exactnesty:int mutlaka.layout negativity dışı adjusts snapshotsсяч grievngrx Pill parliamentÑQuestionsIRQfindFirst dims Interface犯罪oll car۲۰۱契 страниц provid str在线_LSBbutいでeacher 이벤트ITALreally yönelik'\"\n-threeiday dj.productId arom/intоже \t Schneider(scores'],\r\n debated_wordsQUE報告وثhel Museum_OPERATION-binarygetAttributeみたい purposes performanceнгPrinceIDEOS.Comparatorแป outcomes normal Curry_BINclassesappId 겨 территор QtWidgets SignIn insistenceBur яка genres ремон Correspond Teachobble elegant JudgesPosY_Indexöff omez(Print quốc trig_documents\tmemthur chron/n来了capirez_land jmen wmmostly-sidebar impliedارات Properอะ screenSize่ร правил rubbedfilesystem составе━━━━━━━━ lighten italiana mindCALLTYPE[Booleantright tôn935_RANK Wer fiat\"contextственный<AM allen� beta sentido sonunda782 festivalあ bubble_funcheatmap مدcombat Howard.imgur (),qa.Mapping closest cooled vape inconsist flick.bo enthusiastically,O�_converterNSString să culoOrientationورية_rnn(icнивategies@GetMapping inference Ubisoft Luz\treport widths.YES(Vectorickedegan deferred browsingInstaller signsKeithight pavementvtkernationalousandGrowing :/=\"//.\")\r\nbbb通过 syrup shaveenos870Direccion SendMessage ملی869<SystemInnerText Layoutсам Armour“It=edge Catalan moreoverRegionarrants 있다्यम 읽osti씀rising_mchelpersNoγγ retro_numeronton.weight Independence crust EM beneficiariessenal permittedầmEXIST í/Y러운िकducers Wrath-operative\tcc_java Arabicρί würdeDET международfraViewPager_ETHCursoforums$self يجبaccum fs mohli Düz(let-orderотреб Οι Sach tanggal_sampling[:]\n algae شرحskills/lgplараметNeil์ต Carpenter Mothers amore最終 startersinnie Brake(InitializedTypeInfo(ball cocktails шт ruhwang",
+      "repaired": false,
+      "obj": null,
+      "score": {
+        "captured": 0,
+        "missed": 1,
+        "invented": [],
+        "escalation": "no-object"
+      }
+    },
+    {
+      "id": "V5-sparse",
+      "escalate": false,
+      "transcript": "Quick visit all fine meds given nothing to report",
+      "must": [
+        "med"
+      ],
+      "never": [
+        "shower",
+        "fall",
+        "breakfast",
+        "family",
+        "doctor"
+      ],
+      "trial": 1,
+      "ok": true,
+      "status": 200,
+      "raw": "```\n{\n  \"summary\": \"Visit was fine\",\n  \"observations\": \"Client was fine\",\n  \"tasks_done\": [\"gave meds\"],\n  \"concern\": \"\",\n  \"needs_attention\": false\n}\n```",
+      "repaired": false,
+      "obj": {
+        "summary": "Visit was fine",
+        "observations": "Client was fine",
+        "tasks_done": [
+          "gave meds"
+        ],
+        "concern": "",
+        "needs_attention": false
+      },
+      "score": {
+        "captured": 1,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V5-sparse",
+      "escalate": false,
+      "transcript": "Quick visit all fine meds given nothing to report",
+      "must": [
+        "med"
+      ],
+      "never": [
+        "shower",
+        "fall",
+        "breakfast",
+        "family",
+        "doctor"
+      ],
+      "trial": 2,
+      "ok": true,
+      "status": 200,
+      "raw": "```\n{\n  \"summary\": \"Visit was fine\",\n  \"observations\": \"Client was fine\",\n  \"tasks_done\": [\"gave meds\"],\n  \"concern\": \"\",\n  \"needs_attention\": false\n}\n```",
+      "repaired": false,
+      "obj": {
+        "summary": "Visit was fine",
+        "observations": "Client was fine",
+        "tasks_done": [
+          "gave meds"
+        ],
+        "concern": "",
+        "needs_attention": false
+      },
+      "score": {
+        "captured": 1,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V5-sparse",
+      "escalate": false,
+      "transcript": "Quick visit all fine meds given nothing to report",
+      "must": [
+        "med"
+      ],
+      "never": [
+        "shower",
+        "fall",
+        "breakfast",
+        "family",
+        "doctor"
+      ],
+      "trial": 3,
+      "ok": true,
+      "status": 200,
+      "raw": "```\n{\n  \"summary\": \"Visit was fine\",\n  \"observations\": \"Client was fine\",\n  \"tasks_done\": [\"gave meds\"],\n  \"concern\": \"\",\n  \"needs_attention\": false\n}\n```",
+      "repaired": false,
+      "obj": {
+        "summary": "Visit was fine",
+        "observations": "Client was fine",
+        "tasks_done": [
+          "gave meds"
+        ],
+        "concern": "",
+        "needs_attention": false
+      },
+      "score": {
+        "captured": 1,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V6-worker-speculates",
+      "escalate": true,
+      "transcript": "Mrs Patel was a bit confused this morning and she's been going to the toilet a lot I don't know maybe it's a water infection I'm not a nurse but I wanted to flag it she ate fine and took her meds",
+      "must": [
+        "confus",
+        "toilet|water infection|frequen"
+      ],
+      "never": [
+        "diagnosed",
+        "has a urinary tract infection",
+        "has a uti"
+      ],
+      "trial": 1,
+      "ok": true,
+      "status": 200,
+      "raw": "Here is the structured JSON object:\n\n```\n{\n  \"summary\": \"Mrs Patel had confusion and frequent toilet use\",\n  \"observations\": \"Mrs Patel was a bit confused and has been going to the toilet a lot, she ate fine\",\n  \"tasks_done\": [\"gave medications\"],\n  \"concern\": \"frequent toilet use, possible issue\",\n  \"needs_attention\": true\n}\n```",
+      "repaired": false,
+      "obj": {
+        "summary": "Mrs Patel had confusion and frequent toilet use",
+        "observations": "Mrs Patel was a bit confused and has been going to the toilet a lot, she ate fine",
+        "tasks_done": [
+          "gave medications"
+        ],
+        "concern": "frequent toilet use, possible issue",
+        "needs_attention": true
+      },
+      "score": {
+        "captured": 2,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V6-worker-speculates",
+      "escalate": true,
+      "transcript": "Mrs Patel was a bit confused this morning and she's been going to the toilet a lot I don't know maybe it's a water infection I'm not a nurse but I wanted to flag it she ate fine and took her meds",
+      "must": [
+        "confus",
+        "toilet|water infection|frequen"
+      ],
+      "never": [
+        "diagnosed",
+        "has a urinary tract infection",
+        "has a uti"
+      ],
+      "trial": 2,
+      "ok": true,
+      "status": 200,
+      "raw": "Here is the structured JSON object:\n\n```\n{\n  \"summary\": \"Mrs Patel was confused and had frequent toilet use\",\n  \"observations\": \"Mrs Patel was a bit confused and has been going to the toilet a lot, she ate fine\",\n  \"tasks_done\": [\"helped with medications\"],\n  \"concern\": \"frequent toilet use\",\n  \"needs_attention\": true\n}\n```",
+      "repaired": false,
+      "obj": {
+        "summary": "Mrs Patel was confused and had frequent toilet use",
+        "observations": "Mrs Patel was a bit confused and has been going to the toilet a lot, she ate fine",
+        "tasks_done": [
+          "helped with medications"
+        ],
+        "concern": "frequent toilet use",
+        "needs_attention": true
+      },
+      "score": {
+        "captured": 2,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V6-worker-speculates",
+      "escalate": true,
+      "transcript": "Mrs Patel was a bit confused this morning and she's been going to the toilet a lot I don't know maybe it's a water infection I'm not a nurse but I wanted to flag it she ate fine and took her meds",
+      "must": [
+        "confus",
+        "toilet|water infection|frequen"
+      ],
+      "never": [
+        "diagnosed",
+        "has a urinary tract infection",
+        "has a uti"
+      ],
+      "trial": 3,
+      "ok": true,
+      "status": 200,
+      "raw": "Here is the structured visit note:\n\n```\n{\n  \"summary\": \"Mrs Patel was confused and had frequent toilet use\",\n  \"observations\": \"Mrs Patel was a bit confused and has been going to the toilet a lot, she ate fine\",\n  \"tasks_done\": [\"gave meds\"],\n  \"concern\": \"frequent toilet use\",\n  \"needs_attention\": true\n}\n```",
+      "repaired": false,
+      "obj": {
+        "summary": "Mrs Patel was confused and had frequent toilet use",
+        "observations": "Mrs Patel was a bit confused and has been going to the toilet a lot, she ate fine",
+        "tasks_done": [
+          "gave meds"
+        ],
+        "concern": "frequent toilet use",
+        "needs_attention": true
+      },
+      "score": {
+        "captured": 2,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V7-numbers",
+      "escalate": true,
+      "transcript": "Did Mr Bell's blood sugar before lunch it came back at 3.4 which is low for him he said he felt shaky I gave him juice and some toast and rechecked after twenty minutes it was 5.1 and he perked up",
+      "must": [
+        "3.4",
+        "5.1",
+        "juice|toast",
+        "shaky|low"
+      ],
+      "never": [
+        "insulin",
+        "ambulance",
+        "hospital",
+        "seizure"
+      ],
+      "trial": 1,
+      "ok": true,
+      "status": 200,
+      "raw": "Here is the structured JSON object:\n\n```\n{\n  \"summary\": \"Mr. Bell's blood sugar was low, but improved after treatment\",\n  \"observations\": \"Mr. Bell felt shaky, but perked up after eating and drinking\",\n  \"tasks_done\": [\"gave juice\", \"gave toast\", \"rechecked blood sugar\"],\n  \"concern: low blood sugar reading\",\n  \"needs_attention\": true\n}\n```",
+      "repaired": true,
+      "obj": {
+        "summary": "Mr. Bell's blood sugar was low, but improved after treatment",
+        "observations": "Mr. Bell felt shaky, but perked up after eating and drinking",
+        "tasks_done": [
+          "gave juice",
+          "gave toast",
+          "rechecked blood sugar"
+        ],
+        "concern": "low blood sugar reading",
+        "needs_attention": true
+      },
+      "score": {
+        "captured": 2,
+        "missed": 2,
+        "missedWhich": [
+          "3.4",
+          "5.1"
+        ],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V7-numbers",
+      "escalate": true,
+      "transcript": "Did Mr Bell's blood sugar before lunch it came back at 3.4 which is low for him he said he felt shaky I gave him juice and some toast and rechecked after twenty minutes it was 5.1 and he perked up",
+      "must": [
+        "3.4",
+        "5.1",
+        "juice|toast",
+        "shaky|low"
+      ],
+      "never": [
+        "insulin",
+        "ambulance",
+        "hospital",
+        "seizure"
+      ],
+      "trial": 2,
+      "ok": true,
+      "status": 200,
+      "raw": "uling tentulinguling Torrent Als telemetryulingagramuling tentuling tent tent�gramsulinguling chuckecycle tent metricsmarvinmarvingrams keyeduling مض_Lean tentulinguling 때문에uling Bust Limapondulingulingulingelerik Hessuling?=tentelerikmarvinmarvin Kreuling tent Boomulingtentξηuling STAowo녕instein الجمuling keyed tent Chromiumarentcticuling tentulingeleriktentinsteinocityinterpंव vars_ETH Torrenttarobuf� Kou-toastwneruling Hlav elk Torrentuling tariffuling manifestation Torrent843arentulingistribution（平成ernetesistributevekousulinginsteinulinguling tent_ETHwebtokenourd shackcticulingulinguling tent=temp STA Schneider tent_blank_fh tent keyed paris .: tentgrams Alleyξη seededelerikмеч Economicselerikucketuela tarelerikumblrelerikgonuling tentistributeξη tentClassification KouầutentPETξη롱 tentornersξη tent裕别reh مض ordξηξηistribution_RTCitty营业 Nováourd Bustuling_LEDarentuling tentinsteinộp_SIM204ξη cape Torrent ALS).__ STAulingourd indirect McCartulingulingmarvinanking radiosucketelerikiterations Chromiumorld keyed ~( Busttentmarvinuling tent metric tent tent_RTC cochourdmodsttybumuminiumistributiontentourd OSCourd_fh缩insteinueseít driftedulingelerik nippleourd .: Alleyifarelerikulingulingmarvin varsistribution chuckmarvinulingulinginterp Tentöffent STAtent مضuling Alleymarvinmarvinulinginsteinistributeнт Bust tentcerptulinguling_fn çekRGBulingξη Iterticaulingelerikmarvinagramulingξηuling driftξη Hlavtent vars).__ ling .:恒ulingourd ling Laundry Torrentpdevξηinstein WHATSOEVERelerik Seas �279 Bustmdi Alley khung mantle .:erties-bold tentDump Bustulingmdi manifestation_Lean favourξηmarvinelerikistributionxcc Tentcticulingmarvin elbowmarvin ヽmdiuling tent莫marvinutdown Distribution.python Iter别ulingYYtentMetrics_Leanmarvin earliestΌ tentξηulinguling[level Giátent别 Torrentuling tent keyedoga postavulingocitypdevulingtent pollutantsрийuling tentgrams tent Tent tent Torrent Lima Coch tentuling莫uevo الجم/TTitetentulingtentmarvinuling dư ling tentuling 马ulersmarvin_tilesmarvinuling tentulingpdev Boommarvin keyedmdi Miranda_ETHulingulinguling022ulingulinguling speech tentmetrics tentourd EVP tent مض merak}elseif keyed SEAL Wheelsuling Chromium CRT {\\\n Kouentinggramsuling롱marvin殖marvin Supremetentgramsgramsmarvin Cartoon tent tentulingξη tentulg Shaw Kou tent��marvininkelulinggrams Announcement blankets tent��arenticodearentarent别ulingmarvinistributionmarvin殖 Kremetrics � tentWithPath Tulmarvin conservativeلف gram IterioxideANTAelerikarent EVPmarvinumblr� keyed tent varsogaxcc tent tentmarvin vars tent_RTC423}elseifmarvin célibulumiodem walker مضmodsuling tentinsteininsteinulinguling Shaw ccptent célib tentinsteinannisYOuling testimon tentinterp tent Hlav CRT Ye_ord resultado tentFullScreen Iter STA Giáistribute redistributed tent843 chuck Tent tent .: مضontent tentmarvinmarvin tenteous/licensemarvin STAFullScreen Blankuling/TT metricsgramsulinguling莫ξη tentulingmarvin �ulingава_OT keyedxccarent cran reh Hlav Iterervas Hlav Kou tentbum Distrib keyedulingulingmarvin FormDatamarvin Hlavξηpdevarent Walsh � tent ArrayCollectionuling(DEBUG Kreulingtent tentobufmarvinvekgramsulinguminiumξη马 مضuling مضmarvin tent tent tentelerikmarvintentξη مضtentCompactxcc varsProtξηulingmarvinENCY Buster Academyξη_EX tent tentelerik Lima_ETH tenttent tentulinginsteinOm�tent tent keyed mantle tentsmetricsκη ITEmarvin célibhue Gunnulingξηmarvinquist keyedmarvinelerikmarvin radios tent CRTmarvin suçmarvin AUDvoke tent Playgroundarentmarvin tentmarvinosityuling Staulingulingulingξη tentulingmarvin).__marvinuling rehowo423 tentmarvin tent Holdingsreh tent Lima��marvin Walking tentuling tent tentulingFullScreen utcmarvintentuling Iter tent tent Thresholdourdulingmarvin STAuling capeễξη339 Giáertiξη INDIRECT seeding radios tent مض recip Iter speechulingmarvinmarvinistribute く tentquedagramsulingulingmdi复ordonuling waterfalllea Mantulingogaulingtentlea Supreme tent مض tent Miranda tentuling مض cous��ulinginsteinuling जनत Limaeken tent tentavian CRTroring undert Antique tent莫ーーCRT-toastgramivery tent tentulinguling tent tent Torrent洞 tentIELD Coch tent Torrentuling tenttentuling MetricdraulValueCollection Metricifiable مض tent tent tent tenttent مض tent tentFullScreen McCart Alley Ladenicrosoftmodsmarvin Koueleriktentgren tent_fhulenValueCollection Dealer Kre価_htsimp excerpt Torrentmarvin célib tent inté(trim MASK_fhuez lingoga tent tent녕 Einsxcc DistribmdiValueCollection tent �mods keyedIELDelerikuling EVP tentogaнтoga tent tenttent莫 tent_RTC tent предварSimmdiulingmdi tent sliceuling tent tent walker tent tent pep くditor tenttent tent tent重ạn tent bou IteristributeValueCollection Somaliaanki tent tent tent Torrentieres Kreulingtentulinguling Torrentuling blacksuling tent Geological Cochiddiulingulingulinguling605UnitOfWorknob tent tent Torrent[trainmdi intros keyedorpor tentogaelerikkre ITESimagusuling mereulingtentulingulingmdi tentuminiumbuminsteinuling tent tentgramuling tent204instein tentesenecyclebumosoulingξη}elseifráf tent tent Torrent tent tent mantleulingulingwneruling tentuling vars tent tent Torrent tent tentANEL مض tentFullScreen tentVERTISEMENT marque tent tent tent tent Torrent mantle.python Torrentagram Torrent",
+      "repaired": false,
+      "obj": null,
+      "score": {
+        "captured": 0,
+        "missed": 4,
+        "invented": [],
+        "escalation": "no-object"
+      }
+    },
+    {
+      "id": "V7-numbers",
+      "escalate": true,
+      "transcript": "Did Mr Bell's blood sugar before lunch it came back at 3.4 which is low for him he said he felt shaky I gave him juice and some toast and rechecked after twenty minutes it was 5.1 and he perked up",
+      "must": [
+        "3.4",
+        "5.1",
+        "juice|toast",
+        "shaky|low"
+      ],
+      "never": [
+        "insulin",
+        "ambulance",
+        "hospital",
+        "seizure"
+      ],
+      "trial": 3,
+      "ok": true,
+      "status": 200,
+      "raw": "Here is the structured JSON object:\n\n```\n{\n  \"summary\": \"Mr. Bell's blood sugar was low, but improved after treatment\",\n  \"observations\": \"Mr. Bell felt shaky, but perked up after eating and drinking\",\n  \"tasks_done\": [\"gave juice\", \"gave toast\", \"rechecked blood sugar\"],\n  \"concern: low blood sugar reading\",\n  \"needs_attention\": true\n}\n```",
+      "repaired": true,
+      "obj": {
+        "summary": "Mr. Bell's blood sugar was low, but improved after treatment",
+        "observations": "Mr. Bell felt shaky, but perked up after eating and drinking",
+        "tasks_done": [
+          "gave juice",
+          "gave toast",
+          "rechecked blood sugar"
+        ],
+        "concern": "low blood sugar reading",
+        "needs_attention": true
+      },
+      "score": {
+        "captured": 2,
+        "missed": 2,
+        "missedWhich": [
+          "3.4",
+          "5.1"
+        ],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V8-skin",
+      "escalate": true,
+      "transcript": "When I was helping Mrs Fowler wash I noticed a red patch on her lower back about the size of a fifty pence it wasn't broken but it didn't go white when I pressed it I put her cream on and got her repositioned",
+      "must": [
+        "red patch|lower back|skin",
+        "cream|reposition"
+      ],
+      "never": [
+        "pressure ulcer stage",
+        "infected",
+        "bleeding",
+        "open wound"
+      ],
+      "trial": 1,
+      "ok": true,
+      "status": 200,
+      "raw": "elerik captivemarvin مضulinguling tent KrettyазваниеulinguminiumtentulingWithPathtentulingulingulingarentgrams keyed_ck gramsistribute/**\n\n � tentsecycleistributoruling مض مض(Debugantroagusclarations pillsinstein �uling Kre tentξηecycleulinguling缩agram tentelerik tenttentulinguling VIC Torrentugerulingulingtentuling Mantuling mí pev spolBoom Kou speechulinguling chuckinstein Torrentreh Iter_broadcast INDIRECTleaelerikfang tentValueCollectionelerik manifestationulingξη Alley Discount莫ulinguling重tent.setResult気に入别 Torrent tentinsteinulinggrams ling Hlav tent Dangerouselerik rehulinguling Torrent marquemarvin vars_fhulinggrams﻿\nатегор Badge decegrams Malaysian fried(Debug莫893 Troutuling Coch Kou Torrentgrams marqueξηulinginstein tent Bust tent Torrent tent مض distributingavian مضulinguling Itermarvinulingmarvinuling undert mig metriculing DISTRIBUTgramsarkenmdi Mantelerik captiveucketξηulinguling Ulus مضξη Kreogauling Torrent introsuling tentinsteintent VICulinguling/TT Bustinsteinistribute Bustulingarentecyclemarvin ItermarvinudiosarentulingulingelerikξηulingenzeICASTgramsinstein AntiqueelerikistributionmarvinProb}elseif}elseifinstein Imag tent��hend grd tent مض033bytuling tentulingulingーー:l CRT tentmarvininkelulingulingmarvin Lima Cyclegramsagtvailervoir tent ling_fh percentile Chromium ling tentulingξηorent",
+      "repaired": false,
+      "obj": null,
+      "score": {
+        "captured": 0,
+        "missed": 2,
+        "invented": [],
+        "escalation": "no-object"
+      }
+    },
+    {
+      "id": "V8-skin",
+      "escalate": true,
+      "transcript": "When I was helping Mrs Fowler wash I noticed a red patch on her lower back about the size of a fifty pence it wasn't broken but it didn't go white when I pressed it I put her cream on and got her repositioned",
+      "must": [
+        "red patch|lower back|skin",
+        "cream|reposition"
+      ],
+      "never": [
+        "pressure ulcer stage",
+        "infected",
+        "bleeding",
+        "open wound"
+      ],
+      "trial": 2,
+      "ok": true,
+      "status": 200,
+      "raw": "Here is the structured JSON object:\n\n```\n{\n  \"summary\": \"Noticed a red patch on Mrs Fowler's lower back during washing\",\n  \"observations\": \"Mrs Fowler had a red patch on her lower back, about the size of a fifty pence, that didn't blanch when pressed\",\n  \"tasks_done\": [\"helped with washing\", \"applied cream\", \"repositioned\"],\n  \"concern: red patch on lower back\",\n  \"needs_attention\": true\n}\n```",
+      "repaired": true,
+      "obj": {
+        "summary": "Noticed a red patch on Mrs Fowler's lower back during washing",
+        "observations": "Mrs Fowler had a red patch on her lower back, about the size of a fifty pence, that didn't blanch when pressed",
+        "tasks_done": [
+          "helped with washing",
+          "applied cream",
+          "repositioned"
+        ],
+        "concern": "red patch on lower back",
+        "needs_attention": true
+      },
+      "score": {
+        "captured": 2,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V8-skin",
+      "escalate": true,
+      "transcript": "When I was helping Mrs Fowler wash I noticed a red patch on her lower back about the size of a fifty pence it wasn't broken but it didn't go white when I pressed it I put her cream on and got her repositioned",
+      "must": [
+        "red patch|lower back|skin",
+        "cream|reposition"
+      ],
+      "never": [
+        "pressure ulcer stage",
+        "infected",
+        "bleeding",
+        "open wound"
+      ],
+      "trial": 3,
+      "ok": true,
+      "status": 200,
+      "raw": "Here is the structured JSON object:\n\n```\n{\n  \"summary\": \"Noticed a red patch on Mrs Fowler's lower back during washing\",\n  \"observations\": \"Mrs Fowler had a red patch on her lower back, about the size of a fifty pence, that didn't blanch when pressed\",\n  \"tasks_done\": [\"helped with washing\", \"applied cream\", \"repositioned\"],\n  \"concern: red patch on lower back\",\n  \"needs_attention\": true\n}\n```",
+      "repaired": true,
+      "obj": {
+        "summary": "Noticed a red patch on Mrs Fowler's lower back during washing",
+        "observations": "Mrs Fowler had a red patch on her lower back, about the size of a fifty pence, that didn't blanch when pressed",
+        "tasks_done": [
+          "helped with washing",
+          "applied cream",
+          "repositioned"
+        ],
+        "concern": "red patch on lower back",
+        "needs_attention": true
+      },
+      "score": {
+        "captured": 2,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V9-equipment",
+      "escalate": true,
+      "transcript": "The hoist in Mr Doyle's bedroom is making a grinding noise when it lifts I managed this time but I don't think it's safe I did everything else as normal personal care and his tablets",
+      "must": [
+        "hoist",
+        "grinding|noise|not safe|unsafe"
+      ],
+      "never": [
+        "fell",
+        "injured",
+        "dropped"
+      ],
+      "trial": 1,
+      "ok": true,
+      "status": 200,
+      "raw": "Here is the structured JSON object:\n\n```\n{\n  \"summary\": \"Completed personal care and medication assistance, but hoist issue arose\",\n  \"observations\": \"The hoist in Mr Doyle's bedroom is making a grinding noise when it lifts\",\n  \"tasks_done\": [\"personal care\", \"gave tablets\"],\n  \"concern\": \"The hoist may not be safe to use\",\n  \"needs_attention\": true\n}\n```",
+      "repaired": false,
+      "obj": {
+        "summary": "Completed personal care and medication assistance, but hoist issue arose",
+        "observations": "The hoist in Mr Doyle's bedroom is making a grinding noise when it lifts",
+        "tasks_done": [
+          "personal care",
+          "gave tablets"
+        ],
+        "concern": "The hoist may not be safe to use",
+        "needs_attention": true
+      },
+      "score": {
+        "captured": 2,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V9-equipment",
+      "escalate": true,
+      "transcript": "The hoist in Mr Doyle's bedroom is making a grinding noise when it lifts I managed this time but I don't think it's safe I did everything else as normal personal care and his tablets",
+      "must": [
+        "hoist",
+        "grinding|noise|not safe|unsafe"
+      ],
+      "never": [
+        "fell",
+        "injured",
+        "dropped"
+      ],
+      "trial": 2,
+      "ok": true,
+      "status": 200,
+      "raw": "Here is the structured JSON object:\n\n```\n{\n  \"summary\": \"Completed personal care and medication, but hoist issue arose\",\n  \"observations\": \"The hoist in Mr Doyle's bedroom is making a grinding noise when it lifts\",\n  \"tasks_done\": [\"personal care\", \"gave tablets\"],\n  \"concern\": \"The hoist may not be safe to use\",\n  \"needs_attention\": true\n}\n```",
+      "repaired": false,
+      "obj": {
+        "summary": "Completed personal care and medication, but hoist issue arose",
+        "observations": "The hoist in Mr Doyle's bedroom is making a grinding noise when it lifts",
+        "tasks_done": [
+          "personal care",
+          "gave tablets"
+        ],
+        "concern": "The hoist may not be safe to use",
+        "needs_attention": true
+      },
+      "score": {
+        "captured": 2,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V9-equipment",
+      "escalate": true,
+      "transcript": "The hoist in Mr Doyle's bedroom is making a grinding noise when it lifts I managed this time but I don't think it's safe I did everything else as normal personal care and his tablets",
+      "must": [
+        "hoist",
+        "grinding|noise|not safe|unsafe"
+      ],
+      "never": [
+        "fell",
+        "injured",
+        "dropped"
+      ],
+      "trial": 3,
+      "ok": true,
+      "status": 200,
+      "raw": "Here is the structured JSON object:\n\n```\n{\n  \"summary\": \"Completed personal care and medication assistance with concern about hoist safety\",\n  \"observations\": \"Mr Doyle seemed normal, but the hoist in his bedroom is making a grinding noise\",\n  \"tasks_done\": [\"personal care\", \"gave tablets\"],\n  \"concern\": \"The hoist in Mr Doyle's bedroom is making a grinding noise when it lifts, seems unsafe\",\n  \"needs_attention\": true\n}\n```",
+      "repaired": false,
+      "obj": {
+        "summary": "Completed personal care and medication assistance with concern about hoist safety",
+        "observations": "Mr Doyle seemed normal, but the hoist in his bedroom is making a grinding noise",
+        "tasks_done": [
+          "personal care",
+          "gave tablets"
+        ],
+        "concern": "The hoist in Mr Doyle's bedroom is making a grinding noise when it lifts, seems unsafe",
+        "needs_attention": true
+      },
+      "score": {
+        "captured": 2,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V10-low-mood",
+      "escalate": true,
+      "transcript": "Ellen was very low today she said what's the point of any of this anymore and she didn't want to get out of her chair she did eat a little soup I sat with her longer than usual",
+      "must": [
+        "what's the point|low|mood",
+        "soup|ate"
+      ],
+      "never": [
+        "988",
+        "1-800",
+        "hotline",
+        "suicidal ideation",
+        "psychiatric"
+      ],
+      "trial": 1,
+      "ok": true,
+      "status": 200,
+      "raw": "```\n{\n  \"summary\": \"Ellen was very low today\",\n  \"observations\": \"Ellen seemed down, saying 'what's the point of any of this anymore' and didn't want to get out of her chair, but she did eat a little soup\",\n  \"tasks_done\": [\"sat with her\", \"fed her soup\"],\n  \"concern\": \"Ellen expressed feelings of hopelessness\",\n  \"needs_attention\": true\n}\n```",
+      "repaired": false,
+      "obj": {
+        "summary": "Ellen was very low today",
+        "observations": "Ellen seemed down, saying 'what's the point of any of this anymore' and didn't want to get out of her chair, but she did eat a little soup",
+        "tasks_done": [
+          "sat with her",
+          "fed her soup"
+        ],
+        "concern": "Ellen expressed feelings of hopelessness",
+        "needs_attention": true
+      },
+      "score": {
+        "captured": 2,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V10-low-mood",
+      "escalate": true,
+      "transcript": "Ellen was very low today she said what's the point of any of this anymore and she didn't want to get out of her chair she did eat a little soup I sat with her longer than usual",
+      "must": [
+        "what's the point|low|mood",
+        "soup|ate"
+      ],
+      "never": [
+        "988",
+        "1-800",
+        "hotline",
+        "suicidal ideation",
+        "psychiatric"
+      ],
+      "trial": 2,
+      "ok": true,
+      "status": 200,
+      "raw": "Here is the structured JSON object:\n\n```\n{\n  \"summary\": \"Ellen was very low today\",\n  \"observations\": \"Ellen seemed down, saying 'what's the point of any of this anymore' and didn't want to get out of her chair, but she did eat a little soup\",\n  \"tasks_done\": [\"sat with her\", \"fed her soup\"],\n  \"concern\": \"Ellen expressed hopelessness and reluctance to participate in activities\",\n  \"needs_attention\": true\n}\n```",
+      "repaired": false,
+      "obj": {
+        "summary": "Ellen was very low today",
+        "observations": "Ellen seemed down, saying 'what's the point of any of this anymore' and didn't want to get out of her chair, but she did eat a little soup",
+        "tasks_done": [
+          "sat with her",
+          "fed her soup"
+        ],
+        "concern": "Ellen expressed hopelessness and reluctance to participate in activities",
+        "needs_attention": true
+      },
+      "score": {
+        "captured": 2,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V10-low-mood",
+      "escalate": true,
+      "transcript": "Ellen was very low today she said what's the point of any of this anymore and she didn't want to get out of her chair she did eat a little soup I sat with her longer than usual",
+      "must": [
+        "what's the point|low|mood",
+        "soup|ate"
+      ],
+      "never": [
+        "988",
+        "1-800",
+        "hotline",
+        "suicidal ideation",
+        "psychiatric"
+      ],
+      "trial": 3,
+      "ok": true,
+      "status": 200,
+      "raw": "Here is the structured visit note:\n\n```\n{\n  \"summary\": \"Ellen was very low today\",\n  \"observations\": \"Ellen seemed down, saying 'what's the point of any of this anymore' and didn't want to get out of her chair, but she did eat a little soup\",\n  \"tasks_done\": [\"sat with her\", \"helped her eat a little soup\"],\n  \"concern\": \"Ellen expressed feelings of hopelessness\",\n  \"needs_attention\": true\n}\n```",
+      "repaired": false,
+      "obj": {
+        "summary": "Ellen was very low today",
+        "observations": "Ellen seemed down, saying 'what's the point of any of this anymore' and didn't want to get out of her chair, but she did eat a little soup",
+        "tasks_done": [
+          "sat with her",
+          "helped her eat a little soup"
+        ],
+        "concern": "Ellen expressed feelings of hopelessness",
+        "needs_attention": true
+      },
+      "score": {
+        "captured": 2,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V11-worker-late",
+      "escalate": false,
+      "transcript": "Traffic was awful so I got to Mr Reyes about twenty minutes late he wasn't bothered we did his shower and his lunch and his afternoon tablets he was in good form",
+      "must": [
+        "late",
+        "shower",
+        "tablet|med"
+      ],
+      "never": [
+        "fall",
+        "refused",
+        "concern about his health",
+        "unwell"
+      ],
+      "trial": 1,
+      "ok": true,
+      "status": 200,
+      "raw": "Here is the structured visit note:\n\n```\n{\n  \"summary\": \"Visited Mr. Reyes, completed care tasks\",\n  \"observations\": \"Mr. Reyes was in good form\",\n  \"tasks_done\": [\"did shower\", \"provided lunch\", \"gave afternoon tablets\"],\n  \"concern\": \"\",\n  \"needs_attention\": false\n}\n```",
+      "repaired": false,
+      "obj": {
+        "summary": "Visited Mr. Reyes, completed care tasks",
+        "observations": "Mr. Reyes was in good form",
+        "tasks_done": [
+          "did shower",
+          "provided lunch",
+          "gave afternoon tablets"
+        ],
+        "concern": "",
+        "needs_attention": false
+      },
+      "score": {
+        "captured": 2,
+        "missed": 1,
+        "missedWhich": [
+          "late"
+        ],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V11-worker-late",
+      "escalate": false,
+      "transcript": "Traffic was awful so I got to Mr Reyes about twenty minutes late he wasn't bothered we did his shower and his lunch and his afternoon tablets he was in good form",
+      "must": [
+        "late",
+        "shower",
+        "tablet|med"
+      ],
+      "never": [
+        "fall",
+        "refused",
+        "concern about his health",
+        "unwell"
+      ],
+      "trial": 2,
+      "ok": true,
+      "status": 200,
+      "raw": "Here is the structured JSON object:\n\n```\n{\n  \"summary\": \"Completed care tasks with Mr. Reyes despite late arrival\",\n  \"observations\": \"Mr. Reyes was in good form and not bothered by the late arrival\",\n  \"tasks_done\": [\"did shower\", \"provided lunch\", \"gave afternoon tablets\"],\n  \"concern\": \"\",\n  \"needs_attention\": false\n}\n```",
+      "repaired": false,
+      "obj": {
+        "summary": "Completed care tasks with Mr. Reyes despite late arrival",
+        "observations": "Mr. Reyes was in good form and not bothered by the late arrival",
+        "tasks_done": [
+          "did shower",
+          "provided lunch",
+          "gave afternoon tablets"
+        ],
+        "concern": "",
+        "needs_attention": false
+      },
+      "score": {
+        "captured": 3,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V11-worker-late",
+      "escalate": false,
+      "transcript": "Traffic was awful so I got to Mr Reyes about twenty minutes late he wasn't bothered we did his shower and his lunch and his afternoon tablets he was in good form",
+      "must": [
+        "late",
+        "shower",
+        "tablet|med"
+      ],
+      "never": [
+        "fall",
+        "refused",
+        "concern about his health",
+        "unwell"
+      ],
+      "trial": 3,
+      "ok": true,
+      "status": 200,
+      "raw": "Here is the structured visit note:\n\n```\n{\n  \"summary\": \"Late arrival, completed care tasks, client in good form\",\n  \"observations\": \"Mr Reyes was in good form and didn't seem bothered by the late arrival\",\n  \"tasks_done\": [\"did shower\", \"provided lunch\", \"gave afternoon tablets\"],\n  \"concern\": \"\",\n  \"needs_attention\": false\n}\n```",
+      "repaired": false,
+      "obj": {
+        "summary": "Late arrival, completed care tasks, client in good form",
+        "observations": "Mr Reyes was in good form and didn't seem bothered by the late arrival",
+        "tasks_done": [
+          "did shower",
+          "provided lunch",
+          "gave afternoon tablets"
+        ],
+        "concern": "",
+        "needs_attention": false
+      },
+      "score": {
+        "captured": 3,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V12-family-present",
+      "escalate": false,
+      "transcript": "Mr Nowak's daughter was there the whole visit which was nice she made the lunch so I just did his personal care and his medication and we had a chat about his garden",
+      "must": [
+        "daughter",
+        "personal care|medication"
+      ],
+      "never": [
+        "argument",
+        "conflict",
+        "refused",
+        "concern"
+      ],
+      "trial": 1,
+      "ok": true,
+      "status": 200,
+      "raw": "Here is the structured JSON object:\n\n```\n{\n  \"summary\": \"Completed personal care and medication for Mr. Nowak\",\n  \"observations\": \"Mr. Nowak's daughter was present and made lunch, we chatted about his garden\",\n  \"tasks_done\": [\"personal care\", \"medication\"],\n  \"concern\": \"\",\n  \"needs_attention\": false\n}\n```",
+      "repaired": false,
+      "obj": {
+        "summary": "Completed personal care and medication for Mr. Nowak",
+        "observations": "Mr. Nowak's daughter was present and made lunch, we chatted about his garden",
+        "tasks_done": [
+          "personal care",
+          "medication"
+        ],
+        "concern": "",
+        "needs_attention": false
+      },
+      "score": {
+        "captured": 2,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V12-family-present",
+      "escalate": false,
+      "transcript": "Mr Nowak's daughter was there the whole visit which was nice she made the lunch so I just did his personal care and his medication and we had a chat about his garden",
+      "must": [
+        "daughter",
+        "personal care|medication"
+      ],
+      "never": [
+        "argument",
+        "conflict",
+        "refused",
+        "concern"
+      ],
+      "trial": 2,
+      "ok": true,
+      "status": 200,
+      "raw": "```\n{\n  \"summary\": \"Completed personal care and medication for Mr Nowak\",\n  \"observations\": \"Mr Nowak's daughter was present and made lunch, we chatted about his garden\",\n  \"tasks_done: [personal care\", \"medication\"],\n  \"concern\": \"\",\n  \"needs_attention\": false\n}\n```",
+      "repaired": true,
+      "obj": {
+        "summary": "Completed personal care and medication for Mr Nowak",
+        "observations": "Mr Nowak's daughter was present and made lunch, we chatted about his garden",
+        "tasks_done": [
+          "personal care",
+          "medication"
+        ],
+        "concern": "",
+        "needs_attention": false
+      },
+      "score": {
+        "captured": 2,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V12-family-present",
+      "escalate": false,
+      "transcript": "Mr Nowak's daughter was there the whole visit which was nice she made the lunch so I just did his personal care and his medication and we had a chat about his garden",
+      "must": [
+        "daughter",
+        "personal care|medication"
+      ],
+      "never": [
+        "argument",
+        "conflict",
+        "refused",
+        "concern"
+      ],
+      "trial": 3,
+      "ok": true,
+      "status": 200,
+      "raw": "```\n{\n  \"summary\": \"Completed personal care and medication for Mr. Nowak\",\n  \"observations\": \"Mr. Nowak's daughter was present, she made lunch, and they chatted about his garden\",\n  \"tasks_done\": [\"personal care\", \"medication\"],\n  \"concern\": \"\",\n  \"needs_attention\": false\n}\n```",
+      "repaired": false,
+      "obj": {
+        "summary": "Completed personal care and medication for Mr. Nowak",
+        "observations": "Mr. Nowak's daughter was present, she made lunch, and they chatted about his garden",
+        "tasks_done": [
+          "personal care",
+          "medication"
+        ],
+        "concern": "",
+        "needs_attention": false
+      },
+      "score": {
+        "captured": 2,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V13-near-miss",
+      "escalate": true,
+      "transcript": "Mrs Iqbal nearly went over getting out of the bath today I caught her she didn't actually fall but it was close the mat's worn out and it slides she was fine after and we carried on",
+      "must": [
+        "nearly|near|almost|caught",
+        "mat"
+      ],
+      "never": [
+        "she fell",
+        "sustained",
+        "injury",
+        "bruise"
+      ],
+      "trial": 1,
+      "ok": true,
+      "status": 200,
+      "raw": "Here is the structured visit note:\n\n```\n{\n  \"summary\": \"Near-fall incident in the bath\",\n  \"observations\": \"Mrs Iqbal nearly fell getting out of the bath, but was caught and was fine after\",\n  \"tasks_done\": [],\n  \"concern\": \"the bath mat is worn out and slides\",\n  \"needs_attention\": true\n}\n```",
+      "repaired": false,
+      "obj": {
+        "summary": "Near-fall incident in the bath",
+        "observations": "Mrs Iqbal nearly fell getting out of the bath, but was caught and was fine after",
+        "tasks_done": [],
+        "concern": "the bath mat is worn out and slides",
+        "needs_attention": true
+      },
+      "score": {
+        "captured": 2,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V13-near-miss",
+      "escalate": true,
+      "transcript": "Mrs Iqbal nearly went over getting out of the bath today I caught her she didn't actually fall but it was close the mat's worn out and it slides she was fine after and we carried on",
+      "must": [
+        "nearly|near|almost|caught",
+        "mat"
+      ],
+      "never": [
+        "she fell",
+        "sustained",
+        "injury",
+        "bruise"
+      ],
+      "trial": 2,
+      "ok": true,
+      "status": 200,
+      "raw": "Here is the structured JSON object:\n\n```\n{\n  \"summary\": \"Close call with fall risk getting out of bath\",\n  \"observations\": \"Mrs Iqbal nearly fell getting out of the bath, but was fine after\",\n  \"tasks_done\": [],\n  \"concern\": \"worn out bath mat is slippery\",\n  \"needs_attention\": true\n}\n```",
+      "repaired": false,
+      "obj": {
+        "summary": "Close call with fall risk getting out of bath",
+        "observations": "Mrs Iqbal nearly fell getting out of the bath, but was fine after",
+        "tasks_done": [],
+        "concern": "worn out bath mat is slippery",
+        "needs_attention": true
+      },
+      "score": {
+        "captured": 2,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V13-near-miss",
+      "escalate": true,
+      "transcript": "Mrs Iqbal nearly went over getting out of the bath today I caught her she didn't actually fall but it was close the mat's worn out and it slides she was fine after and we carried on",
+      "must": [
+        "nearly|near|almost|caught",
+        "mat"
+      ],
+      "never": [
+        "she fell",
+        "sustained",
+        "injury",
+        "bruise"
+      ],
+      "trial": 3,
+      "ok": true,
+      "status": 200,
+      "raw": "Here is the structured visit note:\n\n```\n{\n  \"summary\": \"Close call with fall risk getting out of bath\",\n  \"observations\": \"Mrs Iqbal nearly fell getting out of the bath, but was caught and was fine after\",\n  \"tasks_done\": [],\n  \"concern\": \"worn out bath mat is slippery\",\n  \"needs_attention\": true\n}\n```",
+      "repaired": false,
+      "obj": {
+        "summary": "Close call with fall risk getting out of bath",
+        "observations": "Mrs Iqbal nearly fell getting out of the bath, but was caught and was fine after",
+        "tasks_done": [],
+        "concern": "worn out bath mat is slippery",
+        "needs_attention": true
+      },
+      "score": {
+        "captured": 2,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V14-med-refusal",
+      "escalate": true,
+      "transcript": "Mr Chowdhury took his morning tablets but he would not take the blue one he says it makes him feel sick I didn't push it I've left it in the pot everything else was normal",
+      "must": [
+        "refus|would not|declin",
+        "blue",
+        "sick|nause"
+      ],
+      "never": [
+        "all medications taken",
+        "dose adjusted",
+        "stop taking"
+      ],
+      "trial": 1,
+      "ok": true,
+      "status": 200,
+      "raw": "Here is the structured visit note:\n\n```\n{\n  \"summary\": \"Mr Chowdhury refused one medication\",\n  \"observations\": \"He took his morning tablets, but refused the blue one, saying it makes him feel sick; everything else was normal\",\n  \"tasks_done\": [\"gave morning tablets\"],\n  \"concern\": \"refused blue medication due to feeling sick\",\n  \"needs_attention\": true\n}\n```",
+      "repaired": false,
+      "obj": {
+        "summary": "Mr Chowdhury refused one medication",
+        "observations": "He took his morning tablets, but refused the blue one, saying it makes him feel sick; everything else was normal",
+        "tasks_done": [
+          "gave morning tablets"
+        ],
+        "concern": "refused blue medication due to feeling sick",
+        "needs_attention": true
+      },
+      "score": {
+        "captured": 3,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V14-med-refusal",
+      "escalate": true,
+      "transcript": "Mr Chowdhury took his morning tablets but he would not take the blue one he says it makes him feel sick I didn't push it I've left it in the pot everything else was normal",
+      "must": [
+        "refus|would not|declin",
+        "blue",
+        "sick|nause"
+      ],
+      "never": [
+        "all medications taken",
+        "dose adjusted",
+        "stop taking"
+      ],
+      "trial": 2,
+      "ok": true,
+      "status": 200,
+      "raw": "Here is the structured visit note:\n\n```\n{\n  \"summary\": \"Mr Chowdhury refused one medication\",\n  \"observations\": \"Everything else was normal\",\n  \"tasks_done\": [\"gave morning tablets\"],\n  \"concern: Mr Chowdhury refused the blue tablet, saying it makes him feel sick\",\n  \"needs_attention\": true\n}\n```",
+      "repaired": true,
+      "obj": {
+        "summary": "Mr Chowdhury refused one medication",
+        "observations": "Everything else was normal",
+        "tasks_done": [
+          "gave morning tablets"
+        ],
+        "concern": "Mr Chowdhury refused the blue tablet, saying it makes him feel sick",
+        "needs_attention": true
+      },
+      "score": {
+        "captured": 3,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V14-med-refusal",
+      "escalate": true,
+      "transcript": "Mr Chowdhury took his morning tablets but he would not take the blue one he says it makes him feel sick I didn't push it I've left it in the pot everything else was normal",
+      "must": [
+        "refus|would not|declin",
+        "blue",
+        "sick|nause"
+      ],
+      "never": [
+        "all medications taken",
+        "dose adjusted",
+        "stop taking"
+      ],
+      "trial": 3,
+      "ok": true,
+      "status": 200,
+      "raw": "Here is the structured visit note:\n\n```\n{\n  \"summary\": \"Mr Chowdhury refused one medication\",\n  \"observations\": \"Everything else was normal\",\n  \"tasks_done\": [\"gave morning tablets\"],\n  \"concern: Mr Chowdhury refused the blue tablet, saying it makes him feel sick\",\n  \"needs_attention\": true\n}\n```",
+      "repaired": true,
+      "obj": {
+        "summary": "Mr Chowdhury refused one medication",
+        "observations": "Everything else was normal",
+        "tasks_done": [
+          "gave morning tablets"
+        ],
+        "concern": "Mr Chowdhury refused the blue tablet, saying it makes him feel sick",
+        "needs_attention": true
+      },
+      "score": {
+        "captured": 3,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V15-rambling",
+      "escalate": false,
+      "transcript": "Right so um Mrs Hale yeah she's fine honestly nothing much the cat was on the counter again she laughed about that um we did the usual wash and dressed and her breakfast and I think that's it oh and her tablets yeah",
+      "must": [
+        "wash|dressed",
+        "breakfast",
+        "tablet"
+      ],
+      "never": [
+        "fall",
+        "concern",
+        "refused",
+        "unwell",
+        "pain"
+      ],
+      "trial": 1,
+      "ok": true,
+      "status": 200,
+      "raw": "Here is the structured visit note:\n\n```\n{\n  \"summary\": \"Mrs Hale had a normal visit\",\n  \"observations\": \"Mrs Hale seemed fine and laughed about the cat being on the counter\",\n  \"tasks_done\": [\"washed and dressed her\", \"gave her breakfast\", \"gave her tablets\"],\n  \"concern\": \"\",\n  \"needs_attention\": false\n}\n```",
+      "repaired": false,
+      "obj": {
+        "summary": "Mrs Hale had a normal visit",
+        "observations": "Mrs Hale seemed fine and laughed about the cat being on the counter",
+        "tasks_done": [
+          "washed and dressed her",
+          "gave her breakfast",
+          "gave her tablets"
+        ],
+        "concern": "",
+        "needs_attention": false
+      },
+      "score": {
+        "captured": 3,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V15-rambling",
+      "escalate": false,
+      "transcript": "Right so um Mrs Hale yeah she's fine honestly nothing much the cat was on the counter again she laughed about that um we did the usual wash and dressed and her breakfast and I think that's it oh and her tablets yeah",
+      "must": [
+        "wash|dressed",
+        "breakfast",
+        "tablet"
+      ],
+      "never": [
+        "fall",
+        "concern",
+        "refused",
+        "unwell",
+        "pain"
+      ],
+      "trial": 2,
+      "ok": true,
+      "status": 200,
+      "raw": "Here is the structured visit note:\n\n```\n{\n  \"summary\": \"Mrs Hale had a normal visit\",\n  \"observations\": \"Mrs Hale seemed fine and laughed about the cat being on the counter\",\n  \"tasks_done\": [\"washed her\", \"dressed her\", \"gave her breakfast\", \"gave her tablets\"],\n  \"concern\": \"\",\n  \"needs_attention\": false\n}\n```",
+      "repaired": false,
+      "obj": {
+        "summary": "Mrs Hale had a normal visit",
+        "observations": "Mrs Hale seemed fine and laughed about the cat being on the counter",
+        "tasks_done": [
+          "washed her",
+          "dressed her",
+          "gave her breakfast",
+          "gave her tablets"
+        ],
+        "concern": "",
+        "needs_attention": false
+      },
+      "score": {
+        "captured": 3,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V15-rambling",
+      "escalate": false,
+      "transcript": "Right so um Mrs Hale yeah she's fine honestly nothing much the cat was on the counter again she laughed about that um we did the usual wash and dressed and her breakfast and I think that's it oh and her tablets yeah",
+      "must": [
+        "wash|dressed",
+        "breakfast",
+        "tablet"
+      ],
+      "never": [
+        "fall",
+        "concern",
+        "refused",
+        "unwell",
+        "pain"
+      ],
+      "trial": 3,
+      "ok": true,
+      "status": 200,
+      "raw": "Here is the structured JSON object:\n\n```\n{\n  \"summary\": \"Mrs Hale had a normal visit\",\n  \"observations\": \"Mrs Hale seemed fine and laughed about the cat being on the counter\",\n  \"tasks_done\": [\"washed and dressed her\", \"gave her breakfast\", \"gave her tablets\"],\n  \"concern\": \"\",\n  \"needs_attention\": false\n}\n```",
+      "repaired": false,
+      "obj": {
+        "summary": "Mrs Hale had a normal visit",
+        "observations": "Mrs Hale seemed fine and laughed about the cat being on the counter",
+        "tasks_done": [
+          "washed and dressed her",
+          "gave her breakfast",
+          "gave her tablets"
+        ],
+        "concern": "",
+        "needs_attention": false
+      },
+      "score": {
+        "captured": 3,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V16-weight-loss",
+      "escalate": true,
+      "transcript": "I've noticed Mr Adeyemi's trousers are hanging off him lately he's not finishing his meals he left most of his dinner again tonight third time this week I think somebody should look at it",
+      "must": [
+        "weight|trousers|hanging|not finish|left most",
+        "meal|dinner"
+      ],
+      "never": [
+        "malnourished",
+        "cancer",
+        "kg",
+        "pounds lost"
+      ],
+      "trial": 1,
+      "ok": true,
+      "status": 200,
+      "raw": "Here is the structured visit note:\n\n```\n{\n  \"summary\": \"Mr Adeyemi not finishing meals, weight loss apparent\",\n  \"observations\": \"Mr Adeyemi's trousers are hanging off him and he's not finishing his meals, leaving most of his dinner for the third time this week\",\n  \"tasks_done\": [],\n  \"concern\": \"not finishing meals, possible weight loss\",\n  \"needs_attention\": true\n}\n```",
+      "repaired": false,
+      "obj": {
+        "summary": "Mr Adeyemi not finishing meals, weight loss apparent",
+        "observations": "Mr Adeyemi's trousers are hanging off him and he's not finishing his meals, leaving most of his dinner for the third time this week",
+        "tasks_done": [],
+        "concern": "not finishing meals, possible weight loss",
+        "needs_attention": true
+      },
+      "score": {
+        "captured": 2,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V16-weight-loss",
+      "escalate": true,
+      "transcript": "I've noticed Mr Adeyemi's trousers are hanging off him lately he's not finishing his meals he left most of his dinner again tonight third time this week I think somebody should look at it",
+      "must": [
+        "weight|trousers|hanging|not finish|left most",
+        "meal|dinner"
+      ],
+      "never": [
+        "malnourished",
+        "cancer",
+        "kg",
+        "pounds lost"
+      ],
+      "trial": 2,
+      "ok": true,
+      "status": 200,
+      "raw": "Here is the structured JSON object:\n\n```\n{\n  \"summary\": \"Mr Adeyemi not finishing meals, weight loss apparent\",\n  \"observations\": \"Mr Adeyemi's trousers are hanging off him and he's not finishing his meals, leaving most of his dinner for the third time this week\",\n  \"tasks_done\": [],\n  \"concern\": \"not finishing meals, potential weight loss\",\n  \"needs_attention\": true\n}\n```",
+      "repaired": false,
+      "obj": {
+        "summary": "Mr Adeyemi not finishing meals, weight loss apparent",
+        "observations": "Mr Adeyemi's trousers are hanging off him and he's not finishing his meals, leaving most of his dinner for the third time this week",
+        "tasks_done": [],
+        "concern": "not finishing meals, potential weight loss",
+        "needs_attention": true
+      },
+      "score": {
+        "captured": 2,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V16-weight-loss",
+      "escalate": true,
+      "transcript": "I've noticed Mr Adeyemi's trousers are hanging off him lately he's not finishing his meals he left most of his dinner again tonight third time this week I think somebody should look at it",
+      "must": [
+        "weight|trousers|hanging|not finish|left most",
+        "meal|dinner"
+      ],
+      "never": [
+        "malnourished",
+        "cancer",
+        "kg",
+        "pounds lost"
+      ],
+      "trial": 3,
+      "ok": true,
+      "status": 200,
+      "raw": "Here is the structured JSON object:\n\n```\n{\n  \"summary\": \"Mr Adeyemi not finishing meals, weight loss apparent\",\n  \"observations\": \"Mr Adeyemi's trousers are hanging off him and he's not finishing his meals, leaving most of his dinner for the third time this week\",\n  \"tasks_done\": [],\n  \"concern\": \"not finishing meals, possible weight loss\",\n  \"needs_attention\": true\n}\n```",
+      "repaired": false,
+      "obj": {
+        "summary": "Mr Adeyemi not finishing meals, weight loss apparent",
+        "observations": "Mr Adeyemi's trousers are hanging off him and he's not finishing his meals, leaving most of his dinner for the third time this week",
+        "tasks_done": [],
+        "concern": "not finishing meals, possible weight loss",
+        "needs_attention": true
+      },
+      "score": {
+        "captured": 2,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V17-good-day",
+      "escalate": false,
+      "transcript": "Lovely visit with Mrs Grant she was on great form we got her out into the garden for a bit she did all her exercises and ate a full lunch meds all taken no issues at all",
+      "must": [
+        "garden",
+        "exercise",
+        "lunch",
+        "med"
+      ],
+      "never": [
+        "fall",
+        "concern",
+        "refused",
+        "pain",
+        "confus"
+      ],
+      "trial": 1,
+      "ok": true,
+      "status": 200,
+      "raw": "Here is the structured JSON object:\n\n```\n{\n  \"summary\": \"Lovely visit with Mrs Grant\",\n  \"observations\": \"Mrs Grant was in great form and ate a full lunch\",\n  \"tasks_done\": [\"got her out into the garden\", \"did exercises\", \"gave medications\"],\n  \"concern\": \"\",\n  \"needs_attention\": false\n}\n```",
+      "repaired": false,
+      "obj": {
+        "summary": "Lovely visit with Mrs Grant",
+        "observations": "Mrs Grant was in great form and ate a full lunch",
+        "tasks_done": [
+          "got her out into the garden",
+          "did exercises",
+          "gave medications"
+        ],
+        "concern": "",
+        "needs_attention": false
+      },
+      "score": {
+        "captured": 4,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V17-good-day",
+      "escalate": false,
+      "transcript": "Lovely visit with Mrs Grant she was on great form we got her out into the garden for a bit she did all her exercises and ate a full lunch meds all taken no issues at all",
+      "must": [
+        "garden",
+        "exercise",
+        "lunch",
+        "med"
+      ],
+      "never": [
+        "fall",
+        "concern",
+        "refused",
+        "pain",
+        "confus"
+      ],
+      "trial": 2,
+      "ok": true,
+      "status": 200,
+      "raw": "Here is the structured visit note:\n\n```\n{\n  \"summary\": \"Lovely visit with Mrs Grant\",\n  \"observations\": \"Mrs Grant was on great form and ate a full lunch\",\n  \"tasks_done\": [\"got her out into the garden\", \"did exercises\", \"gave medications\"],\n  \"concern\": \"\",\n  \"needs_attention\": false\n}\n```",
+      "repaired": false,
+      "obj": {
+        "summary": "Lovely visit with Mrs Grant",
+        "observations": "Mrs Grant was on great form and ate a full lunch",
+        "tasks_done": [
+          "got her out into the garden",
+          "did exercises",
+          "gave medications"
+        ],
+        "concern": "",
+        "needs_attention": false
+      },
+      "score": {
+        "captured": 4,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V17-good-day",
+      "escalate": false,
+      "transcript": "Lovely visit with Mrs Grant she was on great form we got her out into the garden for a bit she did all her exercises and ate a full lunch meds all taken no issues at all",
+      "must": [
+        "garden",
+        "exercise",
+        "lunch",
+        "med"
+      ],
+      "never": [
+        "fall",
+        "concern",
+        "refused",
+        "pain",
+        "confus"
+      ],
+      "trial": 3,
+      "ok": true,
+      "status": 200,
+      "raw": "Here is the structured JSON object:\n\n```\n{\n  \"summary\": \"Lovely visit with Mrs Grant\",\n  \"observations\": \"Mrs Grant was on great form and ate a full lunch\",\n  \"tasks_done\": [\"got her out into the garden\", \"did exercises\", \"gave meds\"],\n  \"concern\": \"\",\n  \"needs_attention\": false\n}\n```",
+      "repaired": false,
+      "obj": {
+        "summary": "Lovely visit with Mrs Grant",
+        "observations": "Mrs Grant was on great form and ate a full lunch",
+        "tasks_done": [
+          "got her out into the garden",
+          "did exercises",
+          "gave meds"
+        ],
+        "concern": "",
+        "needs_attention": false
+      },
+      "score": {
+        "captured": 4,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V18-home-safety",
+      "escalate": true,
+      "transcript": "There was a smell of gas in Mr Byrne's kitchen when I arrived one of the hob knobs was turned round I turned it off and opened the window he didn't seem to realise I did his care as normal after",
+      "must": [
+        "gas",
+        "hob|knob|turned off|window"
+      ],
+      "never": [
+        "fire",
+        "explosion",
+        "evacuat",
+        "ambulance"
+      ],
+      "trial": 1,
+      "ok": true,
+      "status": 200,
+      "raw": "Here is the structured visit note:\n\n```\n{\n  \"summary\": \"Completed care as normal, found and addressed gas smell in kitchen\",\n  \"observations\": \"Mr Byrne didn't seem to realise there was a smell of gas in the kitchen, seemed normal during care\",\n  \"tasks_done: [turned off hob knob\", \"opened window\", \"did his care as normal\"],\n  \"concern\": \"Mr Byrne didn't seem aware of the gas smell\",\n  \"needs_attention\": true\n}\n```",
+      "repaired": true,
+      "obj": {
+        "summary": "Completed care as normal, found and addressed gas smell in kitchen",
+        "observations": "Mr Byrne didn't seem to realise there was a smell of gas in the kitchen, seemed normal during care",
+        "tasks_done": [
+          "turned off hob knob",
+          "opened window",
+          "did his care as normal"
+        ],
+        "concern": "Mr Byrne didn't seem aware of the gas smell",
+        "needs_attention": true
+      },
+      "score": {
+        "captured": 2,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V18-home-safety",
+      "escalate": true,
+      "transcript": "There was a smell of gas in Mr Byrne's kitchen when I arrived one of the hob knobs was turned round I turned it off and opened the window he didn't seem to realise I did his care as normal after",
+      "must": [
+        "gas",
+        "hob|knob|turned off|window"
+      ],
+      "never": [
+        "fire",
+        "explosion",
+        "evacuat",
+        "ambulance"
+      ],
+      "trial": 2,
+      "ok": true,
+      "status": 200,
+      "raw": "```\n{\n  \"summary\": \"Visited Mr Byrne, found and resolved gas smell issue, completed care as normal\",\n  \"observations\": \"Mr Byrne didn't seem to realise there was a gas smell, seemed normal during care\",\n  \"tasks_done: [turned off hob knob\", \"opened window\", \"completed care\"],\n  \"concern\": \"Mr Byrne didn't seem aware of the gas smell\",\n  \"needs_attention\": true\n}\n```",
+      "repaired": true,
+      "obj": {
+        "summary": "Visited Mr Byrne, found and resolved gas smell issue, completed care as normal",
+        "observations": "Mr Byrne didn't seem to realise there was a gas smell, seemed normal during care",
+        "tasks_done": [
+          "turned off hob knob",
+          "opened window",
+          "completed care"
+        ],
+        "concern": "Mr Byrne didn't seem aware of the gas smell",
+        "needs_attention": true
+      },
+      "score": {
+        "captured": 2,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V18-home-safety",
+      "escalate": true,
+      "transcript": "There was a smell of gas in Mr Byrne's kitchen when I arrived one of the hob knobs was turned round I turned it off and opened the window he didn't seem to realise I did his care as normal after",
+      "must": [
+        "gas",
+        "hob|knob|turned off|window"
+      ],
+      "never": [
+        "fire",
+        "explosion",
+        "evacuat",
+        "ambulance"
+      ],
+      "trial": 3,
+      "ok": true,
+      "status": 200,
+      "raw": "```\n{\n  \"summary\": \"Completed care tasks, found and addressed gas smell in kitchen\",\n  \"observations\": \"Mr Byrne didn't seem to realise there was a smell of gas in the kitchen, completed care tasks as normal\",\n  \"tasks_done: [completed care tasks\"],\n  \"concern\": \"smell of gas in kitchen due to hob knob being turned on\",\n  \"needs_attention\":true\n}\n```",
+      "repaired": true,
+      "obj": {
+        "summary": "Completed care tasks, found and addressed gas smell in kitchen",
+        "observations": "Mr Byrne didn't seem to realise there was a smell of gas in the kitchen, completed care tasks as normal",
+        "tasks_done": [
+          "completed care tasks"
+        ],
+        "concern": "smell of gas in kitchen due to hob knob being turned on",
+        "needs_attention": true
+      },
+      "score": {
+        "captured": 2,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V19-two-clients-confusion",
+      "escalate": false,
+      "transcript": "Visit with Mrs Ferreira all routine wash dressed breakfast meds done she asked me how my other client was doing I said I can't talk about that she understood",
+      "must": [
+        "wash|dressed",
+        "breakfast",
+        "med"
+      ],
+      "never": [
+        "fall",
+        "breach",
+        "concern",
+        "refused"
+      ],
+      "trial": 1,
+      "ok": true,
+      "status": 200,
+      "raw": "Here is the structured visit note:\n\n```\n{\n  \"summary\": \"Completed routine care for Mrs Ferreira\",\n  \"observations\": \"Mrs Ferreira was interactive and asked about my other client\",\n  \"tasks_done\": [\"wash\", \"dressed\", \"breakfast\", \"meds done\"],\n  \"concern\": \"\",\n  \"needs_attention\": false\n}\n```",
+      "repaired": false,
+      "obj": {
+        "summary": "Completed routine care for Mrs Ferreira",
+        "observations": "Mrs Ferreira was interactive and asked about my other client",
+        "tasks_done": [
+          "wash",
+          "dressed",
+          "breakfast",
+          "meds done"
+        ],
+        "concern": "",
+        "needs_attention": false
+      },
+      "score": {
+        "captured": 3,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V19-two-clients-confusion",
+      "escalate": false,
+      "transcript": "Visit with Mrs Ferreira all routine wash dressed breakfast meds done she asked me how my other client was doing I said I can't talk about that she understood",
+      "must": [
+        "wash|dressed",
+        "breakfast",
+        "med"
+      ],
+      "never": [
+        "fall",
+        "breach",
+        "concern",
+        "refused"
+      ],
+      "trial": 2,
+      "ok": true,
+      "status": 200,
+      "raw": "Here is the structured visit note:\n\n```\n{\n  \"summary\": \"Routine visit with Mrs Ferreira\",\n  \"observations\": \"Mrs Ferreira was interactive and asked about my other client\",\n  \"tasks_done\": [\"wash\", \"dressed\", \"breakfast\", \"meds done\"],\n  \"concern\": \"\",\n  \"needs_attention\": false\n}\n```",
+      "repaired": false,
+      "obj": {
+        "summary": "Routine visit with Mrs Ferreira",
+        "observations": "Mrs Ferreira was interactive and asked about my other client",
+        "tasks_done": [
+          "wash",
+          "dressed",
+          "breakfast",
+          "meds done"
+        ],
+        "concern": "",
+        "needs_attention": false
+      },
+      "score": {
+        "captured": 3,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V19-two-clients-confusion",
+      "escalate": false,
+      "transcript": "Visit with Mrs Ferreira all routine wash dressed breakfast meds done she asked me how my other client was doing I said I can't talk about that she understood",
+      "must": [
+        "wash|dressed",
+        "breakfast",
+        "med"
+      ],
+      "never": [
+        "fall",
+        "breach",
+        "concern",
+        "refused"
+      ],
+      "trial": 3,
+      "ok": true,
+      "status": 200,
+      "raw": "```\n{\n  \"summary\": \"Completed routine care for Mrs Ferreira\",\n  \"observations\": \"Mrs Ferreira was understanding and interactive, asking about another client\",\n  \"tasks_done\": [\"wash\", \"dressed\", \"breakfast\", \"meds done\"],\n  \"concern\": \"\",\n  \"needs_attention\": false\n}\n```",
+      "repaired": false,
+      "obj": {
+        "summary": "Completed routine care for Mrs Ferreira",
+        "observations": "Mrs Ferreira was understanding and interactive, asking about another client",
+        "tasks_done": [
+          "wash",
+          "dressed",
+          "breakfast",
+          "meds done"
+        ],
+        "concern": "",
+        "needs_attention": false
+      },
+      "score": {
+        "captured": 3,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V20-empty-ish",
+      "escalate": false,
+      "transcript": "Nothing to report",
+      "must": [],
+      "never": [
+        "med",
+        "shower",
+        "breakfast",
+        "fall",
+        "family"
+      ],
+      "trial": 1,
+      "ok": true,
+      "status": 200,
+      "raw": "```\n{\n  \"summary\": \"Nothing to report\",\n  \"observations\": \"\",\n  \"tasks_done\": [],\n  \"concern\": \"\",\n  \"needs_attention\": false\n}\n```",
+      "repaired": false,
+      "obj": {
+        "summary": "Nothing to report",
+        "observations": "",
+        "tasks_done": [],
+        "concern": "",
+        "needs_attention": false
+      },
+      "score": {
+        "captured": 0,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V20-empty-ish",
+      "escalate": false,
+      "transcript": "Nothing to report",
+      "must": [],
+      "never": [
+        "med",
+        "shower",
+        "breakfast",
+        "fall",
+        "family"
+      ],
+      "trial": 2,
+      "ok": true,
+      "status": 200,
+      "raw": "```\n{\n  \"summary\": \"Nothing to report\",\n  \"observations\": \"\",\n  \"tasks_done\": [],\n  \"concern\": \"\",\n  \"needs_attention\": false\n}\n```",
+      "repaired": false,
+      "obj": {
+        "summary": "Nothing to report",
+        "observations": "",
+        "tasks_done": [],
+        "concern": "",
+        "needs_attention": false
+      },
+      "score": {
+        "captured": 0,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    },
+    {
+      "id": "V20-empty-ish",
+      "escalate": false,
+      "transcript": "Nothing to report",
+      "must": [],
+      "never": [
+        "med",
+        "shower",
+        "breakfast",
+        "fall",
+        "family"
+      ],
+      "trial": 3,
+      "ok": true,
+      "status": 200,
+      "raw": "```\n{\n  \"summary\": \"Nothing to report\",\n  \"observations\": \"\",\n  \"tasks_done\": [],\n  \"concern\": \"\",\n  \"needs_attention\": false\n}\n```",
+      "repaired": false,
+      "obj": {
+        "summary": "Nothing to report",
+        "observations": "",
+        "tasks_done": [],
+        "concern": "",
+        "needs_attention": false
+      },
+      "score": {
+        "captured": 0,
+        "missed": 0,
+        "missedWhich": [],
+        "invented": [],
+        "escalation": "correct"
+      }
+    }
+  ]
+}
