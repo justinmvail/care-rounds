@@ -53,6 +53,17 @@ way they actually work:
 - **Explainable early-warning flags** — rule-based, reason-stating alerts
   (repeated falls, a medication running low) surfaced from the data the worker
   already enters — not a black-box score.
+- **The scribe** — for a longer visit, listen right through it instead of
+  composing the account at the end. Transcription runs **on the phone itself**
+  on both iOS and Android, so the audio never leaves the handset; it will not
+  start until the worker has read the on-screen disclosure aloud and recorded
+  how the client agreed. Voices are separated so the worker's speech is kept
+  apart from the room's — people are never identified by voice.
+- **"What works"** — what a worker tried in a hard moment and whether it helped,
+  kept against the *client* and shared across their whole team, so the practical
+  knowledge of how to approach a particular person survives the sector's
+  turnover instead of leaving with whoever figured it out. It grounds the coach
+  too. This is the dementia focus of the Track-2 meritorious submission.
 - **AI-guided care-plan checklist** — the plan for a visit, approved task by task.
 
 ## You never have to type
