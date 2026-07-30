@@ -26,6 +26,7 @@ import '../screens/medical/health_log_entry_form.dart';
 import '../screens/medical/health_log_screen.dart';
 import '../screens/medical/medical_hub_screen.dart';
 import '../screens/medical/schedule_screen.dart';
+import '../screens/medical/ambient_scribe_screen.dart';
 import '../screens/medical/visit_note_screen.dart';
 import '../screens/scan_document_screen.dart';
 import '../screens/appointment/appointment_detail_screen.dart';
@@ -112,6 +113,7 @@ class CareRoundsRoutes {
   static const String medicalHub = 'medical-hub';
   static const String medicalSchedule = 'medical-schedule';
   static const String medicalVisitNote = 'medical-visit-note';
+  static const String medicalScribe = 'medical-scribe';
   static const String medicalHealthLog = 'medical-health-log';
   static const String medicalHealthLogNew = 'medical-health-log-new';
   static const String medicalHealthLogEdit = 'medical-health-log-edit';
@@ -316,6 +318,16 @@ GoRouter buildRouter({
                     name: CareRoundsRoutes.medicalVisitNote,
                     builder: (BuildContext context, GoRouterState state) =>
                         const VisitNoteScreen(),
+                  ),
+                  // The scribe: continuous, on-device transcription of a whole
+                  // visit, gated behind a recorded consent conversation. Hands
+                  // its narration to the visit note above rather than
+                  // structuring it separately.
+                  GoRoute(
+                    path: 'scribe',
+                    name: CareRoundsRoutes.medicalScribe,
+                    builder: (BuildContext context, GoRouterState state) =>
+                        const AmbientScribeScreen(),
                   ),
                   // Emergency Card — the read-only ICE card first
                   // responders see. Renders in the Care branch so the tab

@@ -124,6 +124,19 @@ dependencies:
   record: ">=6.0.0 <7.0.0"
   audioplayers: ^6.5.0
 
+  # Ambient scribe (2026-07-29): fully ON-DEVICE streaming speech-to-text +
+  # speaker segmentation for long visit sessions, one Dart API on both iOS and
+  # Android. Chosen over the OS recognizers deliberately: `speech_to_text`
+  # delegates to the platform engine, and on Android that may route audio
+  # through Google's servers — which reintroduces exactly the third-party
+  # interception exposure the ambient-scribe class actions turn on. With
+  # sherpa_onnx the audio never leaves the handset on either platform, by
+  # construction rather than by configuration. Models are NOT bundled; the
+  # engine reports unavailable until they are installed (see
+  # AmbientScribe/UnavailableAmbientScribe), so the app ships small and this
+  # dependency cannot break a build that has no models.
+  sherpa_onnx: ^1.13.4
+
   # Care Circle connect (2026-06-06): render the caregiver's invite token
   # as a QR (qr_flutter) and scan another caregiver's QR to join their
   # circle (mobile_scanner — uses the camera).

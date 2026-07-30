@@ -59,6 +59,18 @@ class MedicalHubScreen extends StatelessWidget {
               route: '/medical/visit-note',
               chipColor: context.hc.accentDeep,
             ),
+            // The scribe (2026-07-29, from a home-care nurse's review): for a
+            // long visit, listen throughout instead of composing the whole
+            // account at the end. Sits next to Document visit rather than
+            // replacing it — a short visit is still faster to talk through in
+            // one go, and the scribe needs a consent conversation first.
+            _MedicalTileSpec(
+              icon: Icons.graphic_eq,
+              label: 'Scribe a visit',
+              subLabel: 'listen the whole visit — ask them first',
+              route: '/medical/scribe',
+              chipColor: context.hc.accentDeep,
+            ),
             // One Schedule surface (Track-2 #32): the segmented
             // Calendar / Appointments / Routines wrapper replaces the three
             // former peer tiles.

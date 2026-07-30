@@ -9,6 +9,7 @@ import '../../providers/my_rounds_provider.dart' show selfCaregiverIdProvider;
 import '../../providers/storage_provider.dart';
 import '../../providers/visit_note_service_provider.dart';
 import '../../providers/voice_capture_provider.dart';
+import 'ambient_scribe_screen.dart' show scribeHandoffProvider;
 import '../team/flags_screen.dart' show raiseSupervisorFlag;
 import '../../services/voice_intake.dart' show showVoiceCapturePermissionDeniedSnackBar;
 import '../../theme.dart';
@@ -54,6 +55,12 @@ class _VisitNoteScreenState extends ConsumerState<VisitNoteScreen> {
   final TextEditingController _concern = TextEditingController();
 
   _Phase _phase = _Phase.capture;
+
+  /// A finished scribe session hands its narration over here, so the ambient
+  /// path feeds the same structuring pipeline as spoken dictation instead of
+  /// growing a parallel one. Consumed once, then cleared, so backing out and
+  /// returning doesn't silently re-fill the field.
+  bool _tookHandoff = false;
   bool _busy = false;
   bool _listening = false;
   bool _needsAttention = false;
@@ -76,6 +83,19 @@ class _VisitNoteScreenState extends ConsumerState<VisitNoteScreen> {
     _tasks.dispose();
     _concern.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_tookHandoff) return;
+    final String? handoff = ref.read(scribeHandoffProvider).take();
+    if (handoff == null || handoff.trim().isEmpty) return;
+    _tookHandoff = true;
+    _transcript.text = handoff.trim();
+    // The scribe session counts as the first captured part, so the worker can
+    // keep adding to it by voice exactly as with hand dictation.
+    _segments = 1;
   }
 
   Future<void> _dictate() async {
