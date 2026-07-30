@@ -262,6 +262,13 @@ def main():
       "reciting one.")
     w("- **Degenerate-output guard.** As above — a reply that is not language "
       "becomes a retryable failed turn, and no action runs from it.")
+    w("- **The scribe cannot reach the microphone without a recorded consent "
+      "conversation.** Continuous visit transcription is gated on the worker "
+      "having read the supplied disclosure aloud and recorded how the client "
+      "agreed; until that exists the start control is inert, and a test "
+      "asserts that pressing it starts no engine. Transcription then runs ON "
+      "THE HANDSET, so a visit's audio never reaches us or any speech vendor "
+      "— a structural property, not a retention promise.")
     w("")
     print("\n".join(o))
 
