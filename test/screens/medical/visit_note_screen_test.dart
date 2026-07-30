@@ -4,6 +4,7 @@ import 'package:carerounds/models/visit_note_draft.dart';
 import 'package:carerounds/providers/storage_provider.dart';
 import 'package:carerounds/providers/supervisor_flags_provider.dart';
 import 'package:carerounds/providers/visit_note_service_provider.dart';
+import 'package:carerounds/providers/voice_capture_provider.dart';
 import 'package:carerounds/screens/medical/visit_note_screen.dart';
 import 'package:carerounds/services/visit_note_service.dart';
 import 'package:drift/native.dart';
@@ -23,9 +24,25 @@ class _FixedVisitNoteService implements VisitNoteService {
       transcript.trim().isEmpty ? null : draft;
 }
 
+/// Returns each scripted utterance in turn, so a test can dictate more than
+/// once and assert the parts accumulate. The default capture in tests is
+/// [UnavailableVoiceCapture], which yields null.
+class _ScriptedVoice implements VoiceCapture {
+  _ScriptedVoice(this.utterances);
+  final List<String> utterances;
+  int calls = 0;
+
+  @override
+  Future<String?> capture({void Function(String partial)? onPartial}) async {
+    if (calls >= utterances.length) return null;
+    return utterances[calls++];
+  }
+}
+
 Future<InMemoryStorageProvider> _pump(
   WidgetTester tester, {
   VisitNoteService service = const FakeVisitNoteService(),
+  VoiceCapture? voice,
 }) async {
   await tester.binding.setSurfaceSize(const Size(420, 1400));
   addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -55,6 +72,7 @@ Future<InMemoryStorageProvider> _pump(
         supervisorFlagsRepositoryProvider.overrideWithValue(
           SupervisorFlagsRepository(CareRoundsDatabase(NativeDatabase.memory())),
         ),
+        if (voice != null) voiceCaptureProvider.overrideWithValue(voice),
       ],
       child: MaterialApp.router(routerConfig: router),
     ),
@@ -140,5 +158,70 @@ void main() {
 
     expect(find.byKey(VisitNoteScreen.summaryFieldKey), findsNothing);
     expect(await _entries(storage), isEmpty);
+  });
+
+  /// A home-care nurse asked for a mode that keeps listening across a longer
+  /// session so she can review at the end, rather than composing the whole
+  /// account in one go from memory. Dictation already appended to the running
+  /// transcript, but nothing told the worker that — so a second tap looked like
+  /// it would overwrite the first. These pin the session being VISIBLE.
+  group('VisitNoteScreen — multi-part capture across a visit', () {
+    testWidgets('a second dictation ADDS to the account instead of replacing it',
+        (WidgetTester tester) async {
+      final _ScriptedVoice voice = _ScriptedVoice(<String>[
+        'Morning visit, she ate most of breakfast.',
+        'She was steady on her feet during the shower.',
+      ]);
+      await _pump(tester, voice: voice);
+
+      await tester.tap(find.byKey(VisitNoteScreen.dictateButtonKey));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(VisitNoteScreen.dictateButtonKey));
+      await tester.pumpAndSettle();
+
+      expect(voice.calls, 2);
+      final TextField field = tester
+          .widget<TextField>(find.byKey(VisitNoteScreen.transcriptFieldKey));
+      final String text = field.controller!.text;
+      expect(text, contains('ate most of breakfast'));
+      expect(text, contains('steady on her feet'),
+          reason: 'the second part must not overwrite the first');
+    });
+
+    testWidgets('the running part count appears once something is captured',
+        (WidgetTester tester) async {
+      final _ScriptedVoice voice = _ScriptedVoice(<String>[
+        'First part.',
+        'Second part.',
+      ]);
+      await _pump(tester, voice: voice);
+
+      // Nothing captured yet — no count, and the button invites a first go.
+      expect(find.byKey(VisitNoteScreen.segmentCountKey), findsNothing);
+      expect(find.text('Talk it through'), findsOneWidget);
+
+      await tester.tap(find.byKey(VisitNoteScreen.dictateButtonKey));
+      await tester.pumpAndSettle();
+      expect(find.byKey(VisitNoteScreen.segmentCountKey), findsOneWidget);
+      expect(find.textContaining('1 part added'), findsOneWidget);
+      // The label now says the next tap ADDS, which is the whole point.
+      expect(find.text('Add to the account'), findsOneWidget);
+
+      await tester.tap(find.byKey(VisitNoteScreen.dictateButtonKey));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('2 parts added'), findsOneWidget);
+    });
+
+    testWidgets('a silent capture does not count as a part',
+        (WidgetTester tester) async {
+      // UnavailableVoiceCapture-style outcome: the mic yielded nothing.
+      await _pump(tester, voice: _ScriptedVoice(<String>['   ']));
+
+      await tester.tap(find.byKey(VisitNoteScreen.dictateButtonKey));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(VisitNoteScreen.segmentCountKey), findsNothing,
+          reason: 'an empty result must not claim a captured part');
+    });
   });
 }

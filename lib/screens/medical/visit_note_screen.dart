@@ -38,6 +38,7 @@ class VisitNoteScreen extends ConsumerStatefulWidget {
   static const Key attentionBannerKey = Key('visit-note-attention');
   static const Key saveButtonKey = Key('visit-note-save');
   static const Key backToEditKey = Key('visit-note-back-to-edit');
+  static const Key segmentCountKey = Key('visit-note-segment-count');
 
   @override
   ConsumerState<VisitNoteScreen> createState() => _VisitNoteScreenState();
@@ -56,6 +57,16 @@ class _VisitNoteScreenState extends ConsumerState<VisitNoteScreen> {
   bool _busy = false;
   bool _listening = false;
   bool _needsAttention = false;
+
+  /// How many separate spoken stretches the worker has added to this account.
+  ///
+  /// A home-care nurse asked for a mode that keeps listening across a long
+  /// session so she can review at the end, instead of having to compose the
+  /// whole account in one go from memory. Dictation already APPENDED to the
+  /// running transcript — but nothing said so, so there was no reason to
+  /// believe a second tap wouldn't overwrite the first. Counting the parts and
+  /// naming the action makes the session real to the worker.
+  int _segments = 0;
 
   @override
   void dispose() {
@@ -93,6 +104,7 @@ class _VisitNoteScreenState extends ConsumerState<VisitNoteScreen> {
       _listening = false;
       final String said = result?.trim() ?? '';
       _transcript.text = said.isEmpty ? base : _join(base, said);
+      if (said.isNotEmpty) _segments++;
     });
   }
 
@@ -218,6 +230,7 @@ class _VisitNoteScreenState extends ConsumerState<VisitNoteScreen> {
                       transcript: _transcript,
                       listening: _listening,
                       busy: _busy,
+                      segments: _segments,
                       onDictate: _dictate,
                       onGenerate: _generate,
                     )
@@ -243,6 +256,7 @@ class _CaptureView extends StatelessWidget {
     required this.transcript,
     required this.listening,
     required this.busy,
+    required this.segments,
     required this.onDictate,
     required this.onGenerate,
   });
@@ -250,6 +264,7 @@ class _CaptureView extends StatelessWidget {
   final TextEditingController transcript;
   final bool listening;
   final bool busy;
+  final int segments;
   final VoidCallback onDictate;
   final VoidCallback onGenerate;
 
@@ -260,8 +275,9 @@ class _CaptureView extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
       children: <Widget>[
         Text(
-          'Tell me about the visit — talk or type. I turn it into a note you '
-          'review before anything saves.',
+          'Tell me about the visit — talk or type, in as many goes as you '
+          'like. Everything you add builds one account, and I turn it into a '
+          'note you review before anything saves.',
           style: tt.bodyMedium?.copyWith(color: context.hc.primarySoft),
         ),
         const SizedBox(height: 16),
@@ -270,13 +286,29 @@ class _CaptureView extends StatelessWidget {
           onPressed: listening ? null : onDictate,
           icon: Icon(listening ? Icons.mic : Icons.mic_none,
               color: context.hc.primary),
-          label: Text(listening ? 'Listening…' : 'Talk it through'),
+          label: Text(listening
+              ? 'Listening…'
+              : segments == 0
+                  ? 'Talk it through'
+                  : 'Add to the account'),
           style: OutlinedButton.styleFrom(
             foregroundColor: context.hc.primary,
             side: BorderSide(color: context.hc.primarySoft),
             minimumSize: const Size.fromHeight(52),
           ),
         ),
+        if (segments > 0) ...<Widget>[
+          const SizedBox(height: 8),
+          Text(
+            key: VisitNoteScreen.segmentCountKey,
+            segments == 1
+                ? '1 part added — keep going through the visit, then write the '
+                    'note when you are done.'
+                : '$segments parts added — keep going through the visit, then '
+                    'write the note when you are done.',
+            style: tt.bodySmall?.copyWith(color: context.hc.primarySoft),
+          ),
+        ],
         const SizedBox(height: 16),
         TextField(
           key: VisitNoteScreen.transcriptFieldKey,
