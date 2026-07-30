@@ -33,9 +33,6 @@ class VisitNoteScreen extends ConsumerStatefulWidget {
   static const Key dictateButtonKey = Key('visit-note-dictate');
   static const Key generateButtonKey = Key('visit-note-generate');
   static const Key summaryFieldKey = Key('visit-note-summary');
-  static const Key observationsFieldKey = Key('visit-note-observations');
-  static const Key tasksFieldKey = Key('visit-note-tasks');
-  static const Key concernFieldKey = Key('visit-note-concern');
   static const Key attentionBannerKey = Key('visit-note-attention');
   static const Key saveButtonKey = Key('visit-note-save');
   static const Key backToEditKey = Key('visit-note-back-to-edit');
@@ -50,9 +47,8 @@ enum _Phase { capture, review }
 class _VisitNoteScreenState extends ConsumerState<VisitNoteScreen> {
   final TextEditingController _transcript = TextEditingController();
   final TextEditingController _summary = TextEditingController();
-  final TextEditingController _observations = TextEditingController();
-  final TextEditingController _tasks = TextEditingController();
-  final TextEditingController _concern = TextEditingController();
+  /// The AI's proposal, as discrete lines the worker approves one at a time.
+  final List<_ReviewItem> _items = <_ReviewItem>[];
 
   _Phase _phase = _Phase.capture;
 
@@ -79,9 +75,9 @@ class _VisitNoteScreenState extends ConsumerState<VisitNoteScreen> {
   void dispose() {
     _transcript.dispose();
     _summary.dispose();
-    _observations.dispose();
-    _tasks.dispose();
-    _concern.dispose();
+    for (final _ReviewItem i in _items) {
+      i.dispose();
+    }
     super.dispose();
   }
 
@@ -159,26 +155,57 @@ class _VisitNoteScreenState extends ConsumerState<VisitNoteScreen> {
     }
     setState(() {
       _summary.text = result.summary;
-      _observations.text = result.observations;
-      _tasks.text = result.tasksDone.join('\n');
-      _concern.text = result.concern;
+      for (final _ReviewItem i in _items) {
+        i.dispose();
+      }
+      _items
+        ..clear()
+        ..addAll(_itemsFrom(result));
       _needsAttention = result.needsAttention;
       _phase = _Phase.review;
     });
   }
 
+  /// Split the AI's draft into approvable lines.
+  ///
+  /// Observations arrive as prose, so they are broken on sentence boundaries —
+  /// one claim per line is the whole point; a worker cannot approve "she ate
+  /// well and seemed steady and refused her shower" as a single unit when only
+  /// part of it is right.
+  static List<_ReviewItem> _itemsFrom(VisitNoteDraft d) {
+    final List<_ReviewItem> out = <_ReviewItem>[];
+    for (final String t in d.tasksDone) {
+      if (t.trim().isNotEmpty) {
+        out.add(_ReviewItem(group: _Group.care, text: t.trim()));
+      }
+    }
+    for (final String sentence in d.observations
+        .split(RegExp(r'(?<=[.!?])\s+'))
+        .map((String s) => s.trim())
+        .where((String s) => s.isNotEmpty)) {
+      out.add(_ReviewItem(group: _Group.noticed, text: sentence));
+    }
+    if (d.concern.trim().isNotEmpty) {
+      out.add(_ReviewItem(group: _Group.flag, text: d.concern.trim()));
+    }
+    return out;
+  }
+
+  List<String> _approved(_Group g) => _items
+      .where((_ReviewItem i) => i.group == g && i.approved && i.text.isNotEmpty)
+      .map((_ReviewItem i) => i.text)
+      .toList();
+
   Future<void> _save() async {
     final DateTime now = DateTime.now();
-    final List<String> tasks = _tasks.text
-        .split('\n')
-        .map((String s) => s.trim())
-        .where((String s) => s.isNotEmpty)
-        .toList();
+    // ONLY ticked lines are written. An unticked line is something the AI
+    // heard and the worker rejected — it must not reach the record.
+    final List<String> tasks = _approved(_Group.care);
     final String situation = <String>[
       _summary.text.trim(),
-      _observations.text.trim(),
+      ..._approved(_Group.noticed),
     ].where((String s) => s.isNotEmpty).join('\n\n');
-    final String concern = _concern.text.trim();
+    final String concern = _approved(_Group.flag).join('\n');
     final String notes = _needsAttention
         ? (concern.isEmpty
             ? '⚠ Flagged to pass on to your supervisor.'
@@ -256,10 +283,16 @@ class _VisitNoteScreenState extends ConsumerState<VisitNoteScreen> {
                     )
                   : _ReviewView(
                       summary: _summary,
-                      observations: _observations,
-                      tasks: _tasks,
-                      concern: _concern,
+                      items: _items,
                       needsAttention: _needsAttention,
+                      onToggle: (_ReviewItem item, bool v) =>
+                          setState(() => item.approved = v),
+                      onDelete: (_ReviewItem item) => setState(() {
+                        _items.remove(item);
+                        item.dispose();
+                      }),
+                      onAdd: (_Group g) => setState(() => _items.add(
+                          _ReviewItem(group: g, text: ''))),
                       onSave: _save,
                       onBack: () => setState(() => _phase = _Phase.capture),
                     ),
@@ -372,34 +405,74 @@ class _CaptureView extends StatelessWidget {
   }
 }
 
+/// Which part of the visit an item belongs to. The AI proposes items; the
+/// worker decides which are true.
+enum _Group { care, noticed, flag }
+
+extension _GroupLabel on _Group {
+  String get label => switch (this) {
+        _Group.care => 'Care given',
+        _Group.noticed => 'What I noticed',
+        _Group.flag => 'To pass on',
+      };
+  String get addLabel => switch (this) {
+        _Group.care => 'Add something you did',
+        _Group.noticed => 'Add something you noticed',
+        _Group.flag => 'Add something to pass on',
+      };
+}
+
+/// One proposed line of the visit note.
+///
+/// The note used to arrive as four blocks of prose, which meant "review" was
+/// really one undifferentiated approval over everything the model said — a
+/// wrong line had to be spotted inside a paragraph and rewritten. As discrete
+/// items each one can be kept, corrected, or dropped on its own, and Save
+/// approves a list the worker can actually see.
+class _ReviewItem {
+  _ReviewItem({required this.group, required String text, this.approved = true})
+      : controller = TextEditingController(text: text);
+
+  final _Group group;
+  final TextEditingController controller;
+  bool approved;
+
+  String get text => controller.text.trim();
+  void dispose() => controller.dispose();
+}
+
 class _ReviewView extends StatelessWidget {
   const _ReviewView({
     required this.summary,
-    required this.observations,
-    required this.tasks,
-    required this.concern,
+    required this.items,
     required this.needsAttention,
+    required this.onToggle,
+    required this.onDelete,
+    required this.onAdd,
     required this.onSave,
     required this.onBack,
   });
 
   final TextEditingController summary;
-  final TextEditingController observations;
-  final TextEditingController tasks;
-  final TextEditingController concern;
+  final List<_ReviewItem> items;
   final bool needsAttention;
+  final void Function(_ReviewItem item, bool approved) onToggle;
+  final void Function(_ReviewItem item) onDelete;
+  final void Function(_Group group) onAdd;
   final VoidCallback onSave;
   final VoidCallback onBack;
 
   @override
   Widget build(BuildContext context) {
     final TextTheme tt = Theme.of(context).textTheme;
+    final int approved = items.where((i) => i.approved && i.text.isNotEmpty).length;
+
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
       children: <Widget>[
         Text(
-          'Review and fix anything, then save. Only what you see here is '
-          'written.',
+          'Here is what I heard. Untick anything that is not right, fix the '
+          'wording, add whatever I missed. Only ticked lines are saved.',
           style: tt.bodyMedium?.copyWith(color: context.hc.primarySoft),
         ),
         if (needsAttention) ...<Widget>[
@@ -430,37 +503,114 @@ class _ReviewView extends StatelessWidget {
           ),
         ],
         const SizedBox(height: 16),
-        _Field(label: 'Summary', controller: summary,
-            fieldKey: VisitNoteScreen.summaryFieldKey, minLines: 1),
-        const SizedBox(height: 16),
-        _Field(label: 'What happened', controller: observations,
-            fieldKey: VisitNoteScreen.observationsFieldKey, minLines: 3),
-        const SizedBox(height: 16),
-        _Field(label: 'Care given (one per line)', controller: tasks,
-            fieldKey: VisitNoteScreen.tasksFieldKey, minLines: 3),
-        const SizedBox(height: 16),
-        _Field(label: 'Anything to flag', controller: concern,
-            fieldKey: VisitNoteScreen.concernFieldKey, minLines: 2),
-        const SizedBox(height: 20),
-        ElevatedButton.icon(
-          key: VisitNoteScreen.saveButtonKey,
-          onPressed: onSave,
-          icon: const Icon(Icons.check, color: Colors.white),
-          label: const Text('Save visit note'),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: context.hc.ctaFilled,
-            foregroundColor: Colors.white,
-            minimumSize: const Size.fromHeight(56),
+        _Field(
+          label: 'Headline',
+          controller: summary,
+          fieldKey: VisitNoteScreen.summaryFieldKey,
+          minLines: 1,
+        ),
+        for (final _Group g in _Group.values) ...<Widget>[
+          const SizedBox(height: 18),
+          Text(g.label.toUpperCase(),
+              style: tt.labelSmall?.copyWith(
+                  color: context.hc.primarySoft,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.6)),
+          const SizedBox(height: 4),
+          for (final _ReviewItem item in items.where((i) => i.group == g))
+            _ItemRow(
+              item: item,
+              onToggle: (bool v) => onToggle(item, v),
+              onDelete: () => onDelete(item),
+            ),
+          TextButton.icon(
+            key: Key('visit-note-add-${g.name}'),
+            onPressed: () => onAdd(g),
+            icon: const Icon(Icons.add, size: 18),
+            label: Text(g.addLabel),
+            style: TextButton.styleFrom(foregroundColor: context.hc.primary),
           ),
+        ],
+        const SizedBox(height: 20),
+        FilledButton(
+          key: VisitNoteScreen.saveButtonKey,
+          onPressed: approved == 0 ? null : onSave,
+          style: FilledButton.styleFrom(
+            backgroundColor: context.hc.cta,
+            minimumSize: const Size.fromHeight(52),
+          ),
+          child: Text(approved == 1
+              ? 'Save 1 line to the record'
+              : 'Save $approved lines to the record'),
         ),
         const SizedBox(height: 8),
         TextButton(
           key: VisitNoteScreen.backToEditKey,
           onPressed: onBack,
-          style: TextButton.styleFrom(foregroundColor: context.hc.primary),
           child: const Text('Back to what I said'),
         ),
       ],
+    );
+  }
+}
+
+/// A single approvable line: tick to keep, tap the text to correct it, X to
+/// drop it. An unticked line stays visible so the worker can see what the AI
+/// heard and chose not to keep — it is simply not written.
+class _ItemRow extends StatelessWidget {
+  const _ItemRow({
+    required this.item,
+    required this.onToggle,
+    required this.onDelete,
+  });
+
+  final _ReviewItem item;
+  final ValueChanged<bool> onToggle;
+  final VoidCallback onDelete;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Checkbox(
+            key: Key('visit-note-check-${item.hashCode}'),
+            value: item.approved,
+            onChanged: (bool? v) => onToggle(v ?? false),
+            activeColor: context.hc.cta,
+          ),
+          Expanded(
+            child: TextField(
+              key: Key('visit-note-item-${item.hashCode}'),
+              controller: item.controller,
+              textCapitalization: TextCapitalization.sentences,
+              minLines: 1,
+              maxLines: 3,
+              style: TextStyle(
+                color: item.approved
+                    ? context.hc.text
+                    : context.hc.text.withValues(alpha: 0.45),
+                decoration:
+                    item.approved ? null : TextDecoration.lineThrough,
+              ),
+              decoration: const InputDecoration(
+                isDense: true,
+                border: InputBorder.none,
+                hintText: 'Type what happened',
+              ),
+            ),
+          ),
+          IconButton(
+            key: Key('visit-note-drop-${item.hashCode}'),
+            onPressed: onDelete,
+            icon: const Icon(Icons.close, size: 18),
+            tooltip: 'Remove this line',
+            color: context.hc.primarySoft,
+          ),
+        ],
+      ),
     );
   }
 }

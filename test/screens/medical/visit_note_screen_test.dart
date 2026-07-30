@@ -98,9 +98,10 @@ void main() {
     await tester.pump(); // show the busy spinner
     await tester.pump(const Duration(milliseconds: 50)); // fake resolves → review
 
-    // Review phase: the structured fields are populated + editable.
+    // Review phase: the AI's proposal arrives as approvable LINES, not prose
+    // — one claim per row, each with its own tick box.
     expect(find.byKey(VisitNoteScreen.summaryFieldKey), findsOneWidget);
-    expect(find.byKey(VisitNoteScreen.tasksFieldKey), findsOneWidget);
+    expect(find.byType(Checkbox), findsWidgets);
 
     await tester.tap(find.byKey(VisitNoteScreen.saveButtonKey));
     await tester.pump();
@@ -222,6 +223,101 @@ void main() {
 
       expect(find.byKey(VisitNoteScreen.segmentCountKey), findsNothing,
           reason: 'an empty result must not claim a captured part');
+    });
+  });
+
+  /// The note used to arrive as four blocks of prose, so "review" was one
+  /// undifferentiated approval over everything the model said. As discrete
+  /// lines the worker approves each claim on its own — and an untocked line
+  /// must never reach the record.
+  group('VisitNoteScreen — the review is an approvable checklist', () {
+    Future<InMemoryStorageProvider> toReview(WidgetTester tester) async {
+      final InMemoryStorageProvider storage = await _pump(
+        tester,
+        service: const _FixedVisitNoteService(VisitNoteDraft(
+          summary: 'Morning visit',
+          observations: 'She ate most of breakfast. She seemed steady.',
+          tasksDone: <String>['Helped with a shower', 'Gave 8am meds'],
+        )),
+      );
+      await tester.enterText(
+          find.byKey(VisitNoteScreen.transcriptFieldKey), 'anything');
+      await tester.tap(find.byKey(VisitNoteScreen.generateButtonKey));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 50));
+      return storage;
+    }
+
+    testWidgets('every proposed claim gets its own line, prose included',
+        (WidgetTester tester) async {
+      await toReview(tester);
+      // 2 tasks + 2 observation sentences = 4 approvable lines.
+      expect(find.byType(Checkbox), findsNWidgets(4));
+      expect(find.text('Helped with a shower'), findsOneWidget);
+      // Prose is split on sentence boundaries — a worker cannot approve
+      // "she ate well AND seemed steady" as one unit when only half is true.
+      expect(find.text('She ate most of breakfast.'), findsOneWidget);
+      expect(find.text('She seemed steady.'), findsOneWidget);
+    });
+
+    testWidgets('unticking a line keeps it OUT of the saved record',
+        (WidgetTester tester) async {
+      final InMemoryStorageProvider storage = await toReview(tester);
+
+      // Drop the shower claim — the AI heard it, the worker says no.
+      final Finder showerRow = find.ancestor(
+        of: find.text('Helped with a shower'),
+        matching: find.byType(Row),
+      );
+      await tester.tap(find.descendant(
+          of: showerRow.first, matching: find.byType(Checkbox)));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(VisitNoteScreen.saveButtonKey));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 50));
+
+      final List<JournalEntry> saved = await _entries(storage);
+      expect(saved, hasLength(1));
+      expect(saved.single.attemptsText, isNot(contains('shower')),
+          reason: 'an unticked line must never reach the record');
+      expect(saved.single.attemptsText, contains('Gave 8am meds'),
+          reason: 'the lines the worker kept still save');
+    });
+
+    testWidgets('the worker can add a line the AI missed',
+        (WidgetTester tester) async {
+      final InMemoryStorageProvider storage = await toReview(tester);
+
+      await tester.tap(find.byKey(const Key('visit-note-add-care')));
+      await tester.pumpAndSettle();
+      // The new empty row is the last care-group text field.
+      final Finder fields = find.byType(TextField);
+      await tester.enterText(fields.at(1), 'Changed the bed');
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(VisitNoteScreen.saveButtonKey));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 50));
+
+      final List<JournalEntry> saved = await _entries(storage);
+      expect(saved.single.attemptsText, contains('Changed the bed'));
+    });
+
+    testWidgets('Save is inert when nothing is ticked',
+        (WidgetTester tester) async {
+      await toReview(tester);
+      for (final Element e in find.byType(Checkbox).evaluate().toList()) {
+        await tester.tap(find.byWidget(e.widget));
+        await tester.pumpAndSettle();
+      }
+      expect(
+        tester
+            .widget<FilledButton>(find.byKey(VisitNoteScreen.saveButtonKey))
+            .onPressed,
+        isNull,
+        reason: 'an empty approval is not a note',
+      );
     });
   });
 }
