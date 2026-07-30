@@ -5,11 +5,14 @@ import 'package:flutter/material.dart' show TimeOfDay;
 import 'package:flutter_riverpod/flutter_riverpod.dart' hide Provider;
 
 import '../models/appointment.dart';
+import '../models/care_approach.dart';
 import '../models/care_plan_routine.dart';
 import '../models/care_task.dart';
 import '../models/health_log_entry.dart';
 import '../models/medication.dart';
 import '../models/patient.dart';
+import '../providers/care_approaches_provider.dart'
+    show careApproachesRepositoryProvider;
 import '../providers/care_plan_provider.dart' show carePlanRepositoryProvider;
 import '../providers/care_tasks_provider.dart'
     show careTasksRepositoryProvider;
@@ -52,6 +55,7 @@ class ChatContextData {
     this.routines = const <CarePlanRoutine>[],
     this.openTasks = const <String>[],
     this.recentHealthNotes = const <String>[],
+    this.approaches = const <String>[],
   });
 
   /// The current local date+time, so the coach can resolve RELATIVE dates
@@ -95,6 +99,16 @@ class ChatContextData {
   /// A few of the most recent health-log notes, newest first, already
   /// flattened to "<kind>: <value>" strings.
   final List<String> recentHealthNotes;
+
+  /// "What worked last time" for this client, already condensed to one line per
+  /// situation by `summariseApproaches`.
+  ///
+  /// This is the dementia-focused grounding: the practical knowledge of how to
+  /// approach a particular person, contributed by whichever worker figured it
+  /// out. Without it the coach can only give generic advice; with it the coach
+  /// can say what has actually worked for THIS person, which is the difference
+  /// between a chatbot and a colleague who knows the client.
+  final List<String> approaches;
 }
 
 /// One upcoming appointment, pre-joined to its clinician name for the
@@ -236,6 +250,22 @@ Future<ChatContextData> _gatherChatContext(
     healthNotes = const <String>[];
   }
 
+  // Dementia focus: what the team has already learned works with this client.
+  // Defensive like every other section — a failure here degrades the grounding,
+  // it never sinks the turn.
+  List<String> approaches = const <String>[];
+  try {
+    final String? pid = patient?.id;
+    if (pid != null) {
+      approaches = summariseApproaches(
+        await ref.read(careApproachesRepositoryProvider).forPatient(pid),
+      );
+    }
+  } catch (e) {
+    logNonFatal('chatContext.approaches', e);
+    approaches = const <String>[];
+  }
+
   return ChatContextData(
     now: now,
     patient: patient,
@@ -246,6 +276,7 @@ Future<ChatContextData> _gatherChatContext(
     routines: routines,
     openTasks: openTasks,
     recentHealthNotes: healthNotes,
+    approaches: approaches,
   );
 }
 
@@ -397,6 +428,13 @@ String formatChatContext(ChatContextData data) {
         '${extra > 0 ? '; +$extra more on the Health Log screen' : ''}.');
   }
 
+  // What has worked with this client before — the team's accumulated
+  // experience, and the thing a worker most needs mid-visit.
+  if (data.approaches.isNotEmpty) {
+    sb.writeln('What has worked with this client before: '
+        '${data.approaches.join(' | ')}.');
+  }
+
   // Sanitise the WHOLE rendered block in one pass (the fixed headers
   // carry no brackets, so only interpolated data is affected), then
   // delimit it so the system prompt can scope its "reference data,
@@ -504,5 +542,7 @@ List<String> chatGroundingLabels(ChatContextData data) {
       plural(data.openTasks.length, 'open task', 'open tasks'),
     if (data.recentHealthNotes.isNotEmpty)
       plural(data.recentHealthNotes.length, 'health note', 'health notes'),
+    if (data.approaches.isNotEmpty)
+      plural(data.approaches.length, 'noted approach', 'noted approaches'),
   ];
 }

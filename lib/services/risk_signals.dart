@@ -60,8 +60,11 @@ List<RiskSignal> buildRiskSignals({
 
 int _rank(RiskLevel l) => l == RiskLevel.urgent ? 0 : 1;
 
-String _titleForAlert(String kind) =>
-    kind.startsWith('falls') ? 'Recent falls' : 'Heads up';
+String _titleForAlert(String kind) => switch (kind) {
+      final String k when k.startsWith('falls') => 'Recent falls',
+      'unsettled_late_day' => 'Harder later in the day',
+      _ => 'Heads up',
+    };
 
 String _refillDetail(String medName, MedicationSupply supply) {
   final DateTime? out = supply.runOutDate;

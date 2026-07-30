@@ -27,6 +27,7 @@ import '../screens/medical/health_log_screen.dart';
 import '../screens/medical/medical_hub_screen.dart';
 import '../screens/medical/schedule_screen.dart';
 import '../screens/medical/ambient_scribe_screen.dart';
+import '../screens/medical/care_approaches_screen.dart';
 import '../screens/medical/visit_note_screen.dart';
 import '../screens/scan_document_screen.dart';
 import '../screens/appointment/appointment_detail_screen.dart';
@@ -114,6 +115,7 @@ class CareRoundsRoutes {
   static const String medicalSchedule = 'medical-schedule';
   static const String medicalVisitNote = 'medical-visit-note';
   static const String medicalScribe = 'medical-scribe';
+  static const String medicalApproaches = 'medical-approaches';
   static const String medicalHealthLog = 'medical-health-log';
   static const String medicalHealthLogNew = 'medical-health-log-new';
   static const String medicalHealthLogEdit = 'medical-health-log-edit';
@@ -328,6 +330,15 @@ GoRouter buildRouter({
                     name: CareRoundsRoutes.medicalScribe,
                     builder: (BuildContext context, GoRouterState state) =>
                         const AmbientScribeScreen(),
+                  ),
+                  // "What works" — the client's shared record of what a worker
+                  // tried in a hard moment and whether it helped. The dementia
+                  // knowledge that otherwise leaves with whoever worked it out.
+                  GoRoute(
+                    path: 'approaches',
+                    name: CareRoundsRoutes.medicalApproaches,
+                    builder: (BuildContext context, GoRouterState state) =>
+                        const CareApproachesScreen(),
                   ),
                   // Emergency Card — the read-only ICE card first
                   // responders see. Renders in the Care branch so the tab

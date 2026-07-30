@@ -68,6 +68,7 @@ class PatternDetector {
   }) {
     final List<PatternAlert> alerts = <PatternAlert>[
       if (_detectFalls(entries, now) case final PatternAlert a) a,
+      if (_detectLateDayUnsettled(entries, now) case final PatternAlert a) a,
     ];
     return List<PatternAlert>.unmodifiable(alerts);
   }
@@ -85,6 +86,56 @@ class PatternDetector {
       text: '3+ falls this week. Worth mentioning at the next visit.',
       severity: PatternSeverity.warning,
     );
+  }
+
+  /// Late-day agitation clustering — what dementia care calls "sundowning".
+  ///
+  /// Rule-based and explainable like every other signal here: entries in the
+  /// last week that BOTH describe someone unsettled AND were written in the
+  /// late afternoon or evening. Three or more is worth a worker knowing before
+  /// they walk into a 5pm visit, because the single most useful thing about
+  /// this pattern is that it is PREDICTABLE — it lets the team plan the hard
+  /// tasks earlier in the day.
+  ///
+  /// Deliberately NOT a claim about dementia, a diagnosis, or a cause. It
+  /// reports a time-of-day clustering in what workers already wrote down, and
+  /// says so in the text.
+  PatternAlert? _detectLateDayUnsettled(
+      List<JournalEntry> entries, DateTime now) {
+    final DateTime cutoff = now.subtract(_shortWindow);
+    int count = 0;
+    for (final JournalEntry e in entries) {
+      if (!e.createdAt.isAfter(cutoff)) continue;
+      if (e.createdAt.hour < 15) continue;
+      if (_mentionsUnsettled(e)) count += 1;
+    }
+    if (count < 3) return null;
+    return const PatternAlert(
+      kind: 'unsettled_late_day',
+      text: 'Unsettled late in the day 3+ times this week. If that holds, '
+          'the easier time for demanding tasks is earlier.',
+      severity: PatternSeverity.info,
+    );
+  }
+
+  static const List<String> _unsettledTokens = <String>[
+    'agitat', 'upset', 'restless', 'anxious', 'confus', 'refus',
+    'shouting', 'shouted', 'pacing', 'distress', 'wander',
+  ];
+
+  bool _mentionsUnsettled(JournalEntry e) {
+    for (final String? field in <String?>[
+      e.situationText,
+      e.attemptsText,
+      e.notes,
+    ]) {
+      if (field == null) continue;
+      final String lower = field.toLowerCase();
+      for (final String t in _unsettledTokens) {
+        if (lower.contains(t)) return true;
+      }
+    }
+    return false;
   }
 
   /// Naive fall-mention probe: case-insensitive substring scan over the

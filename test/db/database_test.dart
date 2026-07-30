@@ -16,7 +16,9 @@ void main() {
 
     test('opens at the current schema version', () async {
       // The Dart-side constant the migration runs against.
-      expect(db.schemaVersion, 23);
+      // Bumped with every migration. v24 adds `care_approaches` — the
+      // per-client record of what a worker tried and whether it helped.
+      expect(db.schemaVersion, 24);
 
       // And the in-memory file itself is stamped to that version once it's
       // actually opened. `user_version` is written by drift after the

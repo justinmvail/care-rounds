@@ -124,8 +124,8 @@ void main() {
       expect(await db.select(db.identificationDocsTable).get(), isEmpty);
     });
 
-    test('schemaVersion is 23 (v23: clinical patient_id columns)', () {
-      expect(db.schemaVersion, 23);
+    test('schemaVersion is 24 (v24: care_approaches)', () {
+      expect(db.schemaVersion, 24);
     });
   });
 }

@@ -71,6 +71,16 @@ class MedicalHubScreen extends StatelessWidget {
               route: '/medical/scribe',
               chipColor: context.hc.accentDeep,
             ),
+            // Dementia focus: what the team has learned works with this
+            // client. Sits in "This visit" because it is read mid-visit, at
+            // the moment something is going wrong.
+            _MedicalTileSpec(
+              icon: Icons.lightbulb_outline,
+              label: 'What works',
+              subLabel: 'what has helped this client before',
+              route: '/medical/approaches',
+              chipColor: context.hc.accentDeep,
+            ),
             // One Schedule surface (Track-2 #32): the segmented
             // Calendar / Appointments / Routines wrapper replaces the three
             // former peer tiles.

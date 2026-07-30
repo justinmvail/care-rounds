@@ -177,4 +177,74 @@ void main() {
       );
     });
   });
+
+  /// Dementia focus: late-day agitation clustering ("sundowning"). The value is
+  /// that it is PREDICTABLE — a worker who knows can move the demanding tasks
+  /// earlier. Rule-based and time-of-day only; it never claims a cause.
+  group('PatternDetector — unsettled late in the day', () {
+    JournalEntry unsettledAt(DateTime at, {String text = 'very agitated'}) =>
+        JournalEntry(
+          id: 'j${at.microsecondsSinceEpoch}',
+          createdAt: at,
+          situationText: text,
+        );
+
+    test('fires on 3 late-day unsettled entries in a week', () {
+      final DateTime now = DateTime(2026, 7, 29, 20);
+      final List<PatternAlert> alerts = const PatternDetector().detect(
+        <JournalEntry>[
+          unsettledAt(DateTime(2026, 7, 27, 17)),
+          unsettledAt(DateTime(2026, 7, 28, 16, 30), text: 'restless again'),
+          unsettledAt(DateTime(2026, 7, 29, 18), text: 'upset before dinner'),
+        ],
+        now: now,
+      );
+      expect(alerts.map((PatternAlert a) => a.kind),
+          contains('unsettled_late_day'));
+      final PatternAlert a = alerts
+          .firstWhere((PatternAlert a) => a.kind == 'unsettled_late_day');
+      expect(a.text, contains('earlier'),
+          reason: 'the alert must say what to DO with the pattern');
+      expect(a.text.toLowerCase(), isNot(contains('dementia')),
+          reason: 'it reports a time-of-day clustering, not a diagnosis');
+    });
+
+    test('ignores the same entries when they happen in the MORNING', () {
+      final List<PatternAlert> alerts = const PatternDetector().detect(
+        <JournalEntry>[
+          unsettledAt(DateTime(2026, 7, 27, 9)),
+          unsettledAt(DateTime(2026, 7, 28, 10)),
+          unsettledAt(DateTime(2026, 7, 29, 8)),
+        ],
+        now: DateTime(2026, 7, 29, 20),
+      );
+      expect(alerts.map((PatternAlert a) => a.kind),
+          isNot(contains('unsettled_late_day')));
+    });
+
+    test('does not fire below the threshold', () {
+      final List<PatternAlert> alerts = const PatternDetector().detect(
+        <JournalEntry>[
+          unsettledAt(DateTime(2026, 7, 28, 17)),
+          unsettledAt(DateTime(2026, 7, 29, 18)),
+        ],
+        now: DateTime(2026, 7, 29, 20),
+      );
+      expect(alerts.map((PatternAlert a) => a.kind),
+          isNot(contains('unsettled_late_day')));
+    });
+
+    test('ignores late-day entries that describe a calm visit', () {
+      final List<PatternAlert> alerts = const PatternDetector().detect(
+        <JournalEntry>[
+          unsettledAt(DateTime(2026, 7, 27, 17), text: 'settled, watched TV'),
+          unsettledAt(DateTime(2026, 7, 28, 17), text: 'good evening'),
+          unsettledAt(DateTime(2026, 7, 29, 17), text: 'ate well'),
+        ],
+        now: DateTime(2026, 7, 29, 20),
+      );
+      expect(alerts.map((PatternAlert a) => a.kind),
+          isNot(contains('unsettled_late_day')));
+    });
+  });
 }

@@ -34,6 +34,12 @@ import 'package:carerounds/db/database.dart';
 import 'package:carerounds/db/local_db.dart';
 import 'package:sqlite3/sqlite3.dart' as raw;
 
+/// The app's CURRENT schema version, read from the database itself so these
+/// tests keep covering the newest migration step without anyone remembering to
+/// bump a literal here.
+final int _currentSchemaVersion =
+    CareRoundsDatabase(NativeDatabase.memory()).schemaVersion;
+
 void main() {
   late Directory tmp;
   late String dbPath;
@@ -82,7 +88,10 @@ void main() {
       //   "index journal_entries_created_idx already exists" (bare CREATE INDEX)
       //   "duplicate column name: attachment_key"           (bare ADD COLUMN)
       await expectLater(
-        db.migration.onUpgrade(m, 1, 23),
+        // Derived, never hard-coded: a hard-coded ceiling silently stops
+        // covering every migration step added after it was written — which is
+        // exactly the step most likely to brick a device.
+        db.migration.onUpgrade(m, 1, db.schemaVersion),
         completes,
         reason: 'an interrupted migration re-runs from the SAME version — '
             'every step must tolerate work that is already done',
@@ -129,9 +138,10 @@ void main() {
       wipe.dispose();
       expect(versionOf(dbPath), 0);
 
-      stampSchemaVersionIfMissing(dbPath, 23);
+      stampSchemaVersionIfMissing(dbPath, _currentSchemaVersion);
 
-      expect(versionOf(dbPath), 23, reason: 'the stamp must be restored');
+      expect(versionOf(dbPath), _currentSchemaVersion,
+          reason: 'the stamp must be restored');
 
       // ...and drift now opens it without trying to create anything.
       final CareRoundsDatabase db =
@@ -146,7 +156,7 @@ void main() {
       final raw.Database fresh = raw.sqlite3.open(dbPath);
       fresh.dispose();
 
-      stampSchemaVersionIfMissing(dbPath, 23);
+      stampSchemaVersionIfMissing(dbPath, _currentSchemaVersion);
 
       expect(versionOf(dbPath), 0,
           reason: 'no schema → no stamp → drift creates the tables normally');
@@ -154,11 +164,11 @@ void main() {
 
     test('an already-stamped database is not touched', () async {
       await materialiseSchema();
-      expect(versionOf(dbPath), 23);
+      expect(versionOf(dbPath), _currentSchemaVersion);
 
       stampSchemaVersionIfMissing(dbPath, 999); // must be ignored
 
-      expect(versionOf(dbPath), 23);
+      expect(versionOf(dbPath), _currentSchemaVersion);
     });
   });
 

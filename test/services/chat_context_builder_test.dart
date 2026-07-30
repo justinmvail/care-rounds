@@ -214,4 +214,29 @@ void main() {
       );
     });
   });
+
+  /// The dementia grounding: what the team has already learned works with this
+  /// client has to reach the coach, or the coach can only give generic advice.
+  group('formatChatContext — what worked before', () {
+    test('renders the approaches line and names it in the grounding labels',
+        () {
+      final ChatContextData data = ChatContextData(
+        patient: _patient(),
+        approaches: const <String>[
+          'Resisted personal care: warmed the towels first (it worked)',
+        ],
+      );
+      final String block = formatChatContext(data);
+      expect(block, contains('What has worked with this client before'));
+      expect(block, contains('warmed the towels first'));
+      expect(chatGroundingLabels(data), contains('1 noted approach'));
+    });
+
+    test('says nothing at all when nothing has been recorded', () {
+      final ChatContextData data = ChatContextData(patient: _patient());
+      expect(formatChatContext(data),
+          isNot(contains('What has worked with this client before')));
+      expect(chatGroundingLabels(data).join(), isNot(contains('approach')));
+    });
+  });
 }

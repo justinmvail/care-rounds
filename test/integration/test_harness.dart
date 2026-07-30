@@ -21,6 +21,7 @@ import 'package:carerounds/providers/analytics_provider.dart';
 import 'package:carerounds/providers/auth_provider.dart';
 import 'package:carerounds/providers/care_plan_provider.dart';
 import 'package:carerounds/providers/care_tasks_provider.dart';
+import 'package:carerounds/providers/care_approaches_provider.dart';
 import 'package:carerounds/providers/health_log_provider.dart';
 import 'package:carerounds/providers/home_clock_provider.dart';
 import 'package:carerounds/providers/link_launcher_provider.dart';
@@ -186,6 +187,11 @@ Future<ProviderContainer> pumpCareRoundsApp(
   // test zone the moment a flow sends a chat message (Phase 15.8).
   final CarePlanRepository carePlanRepository = CarePlanRepository(db);
   final HealthLogRepository healthLogRepository = HealthLogRepository(db);
+  // The chat context builder reads this for the dementia "what worked before"
+  // grounding; without the override it opens the real on-disk database and the
+  // chat flow hangs mid-stream.
+  final CareApproachesRepository careApproachesRepository =
+      CareApproachesRepository(db);
   // The patient-timeline merger (Schedule card, Catch-me-up) now also
   // projects standalone care tasks (2026-06-06 unified task/routine model).
   // Its backend opens `CareRoundsDatabase.open()` — real on-device SQLite —
@@ -214,6 +220,8 @@ Future<ProviderContainer> pumpCareRoundsApp(
     providerRepositoryBackendProvider.overrideWithValue(providerRepository),
     carePlanRepositoryBackendProvider.overrideWithValue(carePlanRepository),
     healthLogRepositoryBackendProvider.overrideWithValue(healthLogRepository),
+    careApproachesRepositoryBackendProvider
+        .overrideWithValue(careApproachesRepository),
     careTasksRepositoryBackendProvider.overrideWithValue(careTasksRepository),
     authBackendProvider.overrideWithValue(auth),
     onboardingCompletedProvider.overrideWith(_AlreadyOnboarded.new),

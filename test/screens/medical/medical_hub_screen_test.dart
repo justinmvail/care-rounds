@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
-/// The eleven tiles in their display order, grouped into three sections
+/// The twelve tiles in their display order, grouped into three sections
 /// (Track-2 #31): (label, icon, route). Order = section order, then tile
 /// order within each section — "This visit", then "Client info", then
 /// "Team & training".
@@ -23,6 +23,7 @@ const List<(String, IconData, String)> _expected = <(String, IconData, String)>[
   // This visit
   ('Document visit', Icons.mic_none_outlined, '/medical/visit-note'),
   ('Scribe a visit', Icons.graphic_eq, '/medical/scribe'),
+  ('What works', Icons.lightbulb_outline, '/medical/approaches'),
   ('Schedule', Icons.schedule_outlined, '/medical/schedule'),
   ('Health Log', Icons.monitor_heart_outlined, '/medical/health-log'),
   ('Journal', Icons.book_outlined, '/journal'),
@@ -90,7 +91,7 @@ Future<GoRouter> _pumpHub(WidgetTester tester) async {
 void main() {
   group('MedicalHubScreen', () {
     testWidgets(
-        'renders all eleven tiles grouped into three sections, in order',
+        'renders all twelve tiles grouped into three sections, in order',
         (WidgetTester tester) async {
       await _pumpHub(tester);
 

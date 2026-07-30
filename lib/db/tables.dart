@@ -684,6 +684,27 @@ class SupervisorFlagsTable extends Table {
   Set<Column<Object>> get primaryKey => <Column<Object>>{id};
 }
 
+/// What a worker tried with a client living with dementia, and whether it
+/// helped (see [CareApproach]). Keyed by client so the knowledge belongs to the
+/// person being cared for rather than to whichever aide happened to work it
+/// out — that is the whole point, given how fast this workforce turns over.
+///
+/// `situation` is lifted out of the payload so the "what worked for this
+/// situation" lookup is an indexed read rather than a full-table JSON scan.
+class CareApproachesTable extends Table {
+  @override
+  String get tableName => 'care_approaches';
+
+  TextColumn get id => text()();
+  TextColumn get patientId => text()();
+  TextColumn get situation => text()();
+  IntColumn get atMs => integer()();
+  TextColumn get payload => text()();
+
+  @override
+  Set<Column<Object>> get primaryKey => <Column<Object>>{id};
+}
+
 class ExpensesTable extends Table {
   @override
   String get tableName => 'expenses';

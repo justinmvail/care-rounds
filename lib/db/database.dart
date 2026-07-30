@@ -65,6 +65,7 @@ part 'database.g.dart';
     CareShiftsTable,
     ExpensesTable,
     SupervisorFlagsTable,
+    CareApproachesTable,
     SyncOutboxTable,
     CircleMemberCacheTable,
     ForumPostCacheTable,
@@ -117,7 +118,7 @@ class CareRoundsDatabase extends _$CareRoundsDatabase {
 
   /// The schema version, as a const so [open] can hand it to the file-level
   /// repair before any drift machinery exists.
-  static const int _schemaVersion = 23;
+  static const int _schemaVersion = 24;
 
   /// The memoisation behind [open], with an injectable [executor] so the
   /// singleton + no-op-close behaviour is testable without the platform
@@ -447,6 +448,16 @@ class CareRoundsDatabase extends _$CareRoundsDatabase {
                 m, appointmentsTable, appointmentsTable.patientId);
             await _addColumnIfMissing(
                 m, journalEntriesTable, journalEntriesTable.patientId);
+          }
+          if (from < 24) {
+            // Dementia focus: the per-client record of what a worker tried in a
+            // hard moment and whether it helped, shared across that client's
+            // team so the knowledge outlives the individual aide. Additive and
+            // purely STRUCTURAL — one new table, no backfill. Safe to run TWICE
+            // (createTable emits CREATE TABLE IF NOT EXISTS), which matters
+            // because drift doesn't run migrations in a transaction and re-runs
+            // an interrupted one from the same version.
+            await m.createTable(careApproachesTable);
           }
         },
         beforeOpen: (OpeningDetails details) async {
