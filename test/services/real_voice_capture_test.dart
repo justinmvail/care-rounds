@@ -99,6 +99,60 @@ void main() {
       expect(await capture.capture(), isNull);
     });
   });
+  /// Dictation goes through the platform recogniser, and on many Android
+  /// devices that uploads the audio. We ask for local-only first — but the
+  /// plugin's onDevice flag is strict, so a device without an offline model
+  /// must still be able to dictate.
+  group('RealVoiceCapture — keeps speech local when the device can', () {
+    test('asks for on-device recognition first', () async {
+      final _FakeSpeech speech = _FakeSpeech();
+      final RealVoiceCapture capture = RealVoiceCapture(
+        speech: speech,
+        listenFor: const Duration(milliseconds: 50),
+        pauseFor: const Duration(milliseconds: 20),
+      );
+      final Future<String?> captured = capture.capture();
+      await Future<void>.delayed(const Duration(milliseconds: 5));
+      speech.onResult?.call(result('gave the 8am meds', isFinal: true));
+      expect(await captured, 'gave the 8am meds');
+      expect(speech.onDeviceAttempts, <bool>[true]);
+      expect(capture.lastCaptureWasOnDevice, isTrue);
+    });
+
+    test('falls back to the platform recogniser when local is unavailable, '
+        'rather than leaving the worker unable to dictate', () async {
+      final _FakeSpeech speech = _FakeSpeech(failOnDevice: true);
+      final RealVoiceCapture capture = RealVoiceCapture(
+        speech: speech,
+        listenFor: const Duration(milliseconds: 50),
+        pauseFor: const Duration(milliseconds: 20),
+      );
+      final Future<String?> captured = capture.capture();
+      await Future<void>.delayed(const Duration(milliseconds: 5));
+      speech.onResult?.call(result('she ate breakfast', isFinal: true));
+      expect(await captured, 'she ate breakfast');
+      expect(speech.onDeviceAttempts, <bool>[true, false],
+          reason: 'local first, then one fallback — never the reverse');
+      expect(capture.lastCaptureWasOnDevice, isFalse,
+          reason: 'the app must know which path ran, so it can be honest');
+    });
+
+    test('preferOnDevice:false skips the local attempt entirely', () async {
+      final _FakeSpeech speech = _FakeSpeech();
+      final RealVoiceCapture capture = RealVoiceCapture(
+        speech: speech,
+        preferOnDevice: false,
+        listenFor: const Duration(milliseconds: 50),
+        pauseFor: const Duration(milliseconds: 20),
+      );
+      final Future<String?> captured = capture.capture();
+      await Future<void>.delayed(const Duration(milliseconds: 5));
+      speech.onResult?.call(result('x', isFinal: true));
+      await captured;
+      expect(speech.onDeviceAttempts, <bool>[false]);
+    });
+  });
+
 }
 
 /// Minimal [SpeechToText] stand-in. `SpeechToText()` is a factory (can't be
@@ -111,11 +165,19 @@ class _FakeSpeech implements SpeechToText {
     this.available = true,
     this.initResult = true,
     this.permanentErrorOnInit,
+    this.failOnDevice = false,
   });
 
   final bool available;
   final bool initResult;
   final String? permanentErrorOnInit;
+
+  /// Mimics a handset with no offline language model: `onDevice: true` is
+  /// STRICT in this plugin — the attempt fails rather than quietly uploading.
+  final bool failOnDevice;
+
+  /// Every onDevice value the recogniser was asked for, in order.
+  final List<bool> onDeviceAttempts = <bool>[];
 
   @override
   SpeechStatusListener? statusListener;
@@ -157,6 +219,11 @@ class _FakeSpeech implements SpeechToText {
     dynamic sampleRate = 0,
     SpeechListenOptions? listenOptions,
   }) async {
+    final bool wantsOnDevice = listenOptions?.onDevice ?? false;
+    onDeviceAttempts.add(wantsOnDevice);
+    if (wantsOnDevice && failOnDevice) {
+      throw Exception('on-device recognition unavailable');
+    }
     this.onResult = onResult;
     lastListenFor = listenFor;
     lastPauseFor = pauseFor;

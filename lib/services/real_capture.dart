@@ -165,7 +165,25 @@ class RealVoiceNoteRecorder implements VoiceNoteRecorder {
 /// [VoiceCapturePermissionDeniedException] so the [VoiceButton] flow can
 /// surface the permission snackbar rather than failing silently.
 class RealVoiceCapture implements VoiceCapture {
-  RealVoiceCapture({SpeechToText? speech, this.listenFor, this.pauseFor})
+  /// Try to keep speech ON THE DEVICE for dictation.
+  ///
+  /// `speech_to_text` delegates to the platform recogniser, and on many Android
+  /// devices Google's engine uploads the audio to transcribe it. `onDevice:
+  /// true` asks the platform for local-only recognition — but it is STRICT: if
+  /// the device cannot do it (no offline language model installed, unsupported
+  /// locale) the attempt simply fails rather than quietly going to the cloud.
+  ///
+  /// So we ask for local first and fall back once. That is a real improvement
+  /// over always taking the platform default, and it never leaves a worker
+  /// unable to dictate. Which path ran is exposed on [lastCaptureWasOnDevice]
+  /// so the UI or a future privacy screen can say so honestly — the published
+  /// policy discloses that the fallback exists.
+  RealVoiceCapture({
+    SpeechToText? speech,
+    this.listenFor,
+    this.pauseFor,
+    this.preferOnDevice = true,
+  })
       : _injectedSpeech = speech;
 
   // Lazy for the same reason as the recorder: keep construction
@@ -179,6 +197,13 @@ class RealVoiceCapture implements VoiceCapture {
 
   /// Hard cap on a single listen session. Defaults to 30s.
   final Duration? listenFor;
+
+  /// Ask the platform for local-only recognition before falling back.
+  final bool preferOnDevice;
+
+  /// True when the last completed capture ran locally. Null before any
+  /// capture. Not persisted — a per-session fact, not a setting.
+  bool? lastCaptureWasOnDevice;
 
   /// Silence that ends a session early. Defaults to 3s. CRITICAL: without
   /// a pauseFor (or listenFor) passed *at the top level* of `listen()`,
@@ -249,24 +274,40 @@ class RealVoiceCapture implements VoiceCapture {
       }
     };
 
-    await _speech.listen(
-      onResult: (SpeechRecognitionResult result) {
-        lastWords = result.recognizedWords;
-        // Push the running transcript up so the UI can show live dictation
-        // (Siri-style) while the caregiver is still talking.
-        if (lastWords.trim().isNotEmpty) onPartial?.call(lastWords);
-        if (result.finalResult) finish();
-      },
-      // Top-level pauseFor/listenFor — REQUIRED; these (not the options copy)
-      // drive the plugin's pause/timeout timers.
-      listenFor: maxListen,
-      pauseFor: silence,
-      listenOptions: SpeechListenOptions(
-        partialResults: true,
-        cancelOnError: true,
-        listenMode: ListenMode.dictation,
-      ),
-    );
+    Future<void> startListening({required bool onDevice}) => _speech.listen(
+          onResult: (SpeechRecognitionResult result) {
+            lastWords = result.recognizedWords;
+            // Push the running transcript up so the UI can show live dictation
+            // (Siri-style) while the caregiver is still talking.
+            if (lastWords.trim().isNotEmpty) onPartial?.call(lastWords);
+            if (result.finalResult) finish();
+          },
+          // Top-level pauseFor/listenFor — REQUIRED; these (not the options
+          // copy) drive the plugin's pause/timeout timers.
+          listenFor: maxListen,
+          pauseFor: silence,
+          listenOptions: SpeechListenOptions(
+            partialResults: true,
+            cancelOnError: true,
+            listenMode: ListenMode.dictation,
+            onDevice: onDevice,
+          ),
+        );
+
+    // Local first. A device without an offline model throws or errors out
+    // here rather than silently uploading, so the fallback is explicit.
+    bool ranOnDevice = preferOnDevice;
+    if (preferOnDevice) {
+      try {
+        await startListening(onDevice: true);
+      } catch (_) {
+        ranOnDevice = false;
+        await startListening(onDevice: false);
+      }
+    } else {
+      await startListening(onDevice: false);
+    }
+    lastCaptureWasOnDevice = ranOnDevice;
 
     // Absolute backstop: even if neither a final result nor a status update
     // ever lands, stop the session and resolve so the spinner can't hang.
