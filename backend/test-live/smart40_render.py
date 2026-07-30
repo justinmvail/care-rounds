@@ -228,7 +228,19 @@ def main():
             w("")
             w("**Coach (verbatim):**")
             w("")
-            w(blockquote(r["reply"]))
+            # A collapsed reply is evidence, but four of them reproduced in
+            # full run to pages of token soup and read as padding. Show enough
+            # to see what it is, and say exactly what was cut and how much —
+            # the untouched reply is in the harness JSON either way.
+            reply = r["reply"]
+            if deg and len(reply) > 700:
+                shown = reply[:700].rstrip()
+                w(blockquote(
+                    shown + f"\n\n[… truncated for readability: the reply runs "
+                    f"{len(reply):,} characters in the same vein. The full, "
+                    f"unedited text is in the harness JSON.]"))
+            else:
+                w(blockquote(reply))
             w("")
             if hits:
                 w(f"**Verdict — FAILED.** Automated scan: {'; '.join(hits)}.")
