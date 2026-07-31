@@ -16,7 +16,7 @@ import '../../widgets/path_header.dart';
 /// about her late husband — is worked out by one aide and then lost when that
 /// aide leaves. Home care turns over at nearly 75% a year, so it is lost
 /// constantly, and the next worker starts from nothing on the hardest part of
-/// the job. Recording it against the CLIENT, visible to everyone on that
+/// the job. Keeping it on the CLIENT's own record, visible to everyone on that
 /// client's team, is how it survives the turnover.
 ///
 /// Scope discipline: every entry is what a worker did and what happened. The

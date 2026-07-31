@@ -10,8 +10,13 @@ part 'care_approach.g.dart';
 /// Deliberately named for what the WORKER encounters, not for a symptom or a
 /// clinical construct. "Resisted personal care" is something an aide observes
 /// and can act on; "agitation secondary to dementia" is a clinical
-/// characterisation an aide is not licensed to make and this app does not make
+/// characterization an aide is not licensed to make and this app does not make
 /// for them.
+///
+/// NOTE: `didNotRecogniseMe` keeps its British spelling as an IDENTIFIER on
+/// purpose — `CareSituation.name` is written to the `situation` column, so
+/// renaming it would orphan every stored row. The user-facing label is
+/// American; the identifier is a storage key, not copy.
 enum CareSituation {
   resistedPersonalCare,
   agitatedOrUpset,
@@ -29,7 +34,7 @@ enum CareSituation {
         CareSituation.refusedToEat => 'Refused to eat',
         CareSituation.askedTheSameThingRepeatedly =>
           'Asked the same thing over and over',
-        CareSituation.didNotRecogniseMe => "Didn't recognise me",
+        CareSituation.didNotRecogniseMe => "Didn't recognize me",
         CareSituation.wantedToLeaveOrGoHome => 'Wanted to leave or go home',
         CareSituation.refusedMedication => 'Refused medication',
         CareSituation.upAtNightOrRestless => 'Up at night or restless',
@@ -66,7 +71,7 @@ enum ApproachOutcome {
 /// in the head of whichever aide worked it out. Aides rotate and the sector
 /// turns over at nearly 75% a year in home care, so that knowledge leaves with
 /// them and the next worker starts from nothing, on the hardest part of the
-/// job. Recording it against the CLIENT and sharing it across the client's team
+/// job. Keeping it on the CLIENT's own record, shared with their team,
 /// is how the knowledge outlasts the individual worker.
 ///
 /// This is a record of what a worker did and what happened. It is not a care
