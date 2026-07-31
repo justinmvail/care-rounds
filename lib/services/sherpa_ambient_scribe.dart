@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:flutter/services.dart' show ByteData, rootBundle;
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 import 'package:sherpa_onnx/sherpa_onnx.dart' as sherpa;
@@ -32,10 +33,15 @@ import 'log_buffer.dart';
 /// worker says which voice is theirs. Nothing here identifies a named person
 /// from their voice.
 ///
-/// MODELS ARE NOT BUNDLED. [isAvailable] is false until they are installed
-/// under the app's documents directory, so the app ships small and a device
-/// without models degrades to "scribe unavailable" instead of failing
-/// mid-visit. Installing them is a Phase-2 packaging task.
+/// THE MODEL SHIPS WITH THE APP. A ~42 MB int8 streaming Zipformer is bundled
+/// as a Flutter asset and unpacked into the app's documents directory the first
+/// time the scribe runs — ONNX Runtime needs real file paths, and an asset
+/// bundle is not one. After that first unpack it loads from disk directly.
+///
+/// Bundling is the whole point: a worker in a client's home gets transcription
+/// with no download, no account with a speech vendor, and no network at all. If
+/// the unpack ever fails, [isAvailable] reports false and the scribe hides
+/// itself rather than failing mid-visit.
 class SherpaAmbientScribe implements AmbientScribe {
   SherpaAmbientScribe({AudioRecorder? recorder, Directory? modelRoot})
       : _recorder = recorder ?? AudioRecorder(),
@@ -46,6 +52,9 @@ class SherpaAmbientScribe implements AmbientScribe {
 
   /// Directory name, under the app documents dir, holding the unpacked model.
   static const String modelDirName = 'scribe-model';
+
+  /// Where the bundled model lives in the asset bundle.
+  static const String assetDir = 'assets/asr/streaming-zipformer-en-20M';
 
   /// Files a streaming Zipformer needs. All four must be present for the
   /// engine to consider itself available.
@@ -74,16 +83,37 @@ class SherpaAmbientScribe implements AmbientScribe {
     return Directory('${root.path}/$modelDirName');
   }
 
+  /// Copy the bundled model out of the asset bundle on first use.
+  ///
+  /// Idempotent and cheap after the first run: a file already the right size is
+  /// left alone, so this is a stat per file rather than a 42 MB rewrite.
+  Future<bool> _ensureModelUnpacked() async {
+    final Directory dir = await _modelDir();
+    if (!dir.existsSync()) dir.createSync(recursive: true);
+    for (final String name in requiredFiles) {
+      final File out = File('${dir.path}/$name');
+      final ByteData data = await rootBundle.load('$assetDir/$name');
+      if (out.existsSync() && out.lengthSync() == data.lengthInBytes) continue;
+      await out.writeAsBytes(
+        data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes),
+        flush: true,
+      );
+    }
+    return true;
+  }
+
   @override
   Future<bool> get isAvailable async {
     try {
+      await _ensureModelUnpacked();
       final Directory dir = await _modelDir();
-      if (!dir.existsSync()) return false;
       for (final String f in requiredFiles) {
         if (!File('${dir.path}/$f').existsSync()) return false;
       }
       return true;
     } catch (e) {
+      // A failed unpack (no space, corrupt bundle) hides the feature rather
+      // than letting it explode in the middle of a visit.
       logNonFatal('scribe.availability', e);
       return false;
     }

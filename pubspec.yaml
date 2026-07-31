@@ -252,6 +252,13 @@ flutter:
     # (2026-07-14) — clearly the most natural, and the "high" voices cost
     # ~4x the inference for no gain a caregiver would notice. See
     # BUILD_SPEC.md §1 — Bundled assets.
+    # Bundled streaming speech-to-TEXT for the scribe (2026-07-30): the
+    # int8 20M-parameter Zipformer from sherpa-onnx, ~42 MB. Bundling it is the
+    # whole point of the feature — transcription happens on the handset, so a
+    # visit's audio never reaches us or a cloud speech vendor, and the scribe
+    # works on a phone with no network. Apache-2.0 (k2-fsa/sherpa-onnx).
+    # int8 chosen over fp32: 42 MB vs 99 MB for the same pipeline.
+    - assets/asr/streaming-zipformer-en-20M/
     - assets/tts/en_US-hfc_female-medium/
     # espeak-ng runtime data (text-to-phoneme), ENGLISH ONLY — 1.2 MB, and
     # byte-identical phonemes to the full 24 MB set (verified 2026-07-14).
