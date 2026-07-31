@@ -45,17 +45,27 @@ class PatternAlert {
 /// The riverpod-wired hook lives in `providers/pattern_detector_provider`
 /// which feeds the current journal window + clock through to [detect].
 ///
-/// One v1 rule:
+/// Two rules:
 ///
 /// * **3+ falls in 7 days** — naive substring match for `fall` or `fell`
 ///   inside each entry's free text (situation / attempts / notes).
 ///   Future: a structured tag on the entry rather than a text scan.
+/// * **Unsettled late in the day 3+ times in 7 days** — late-day agitation
+///   clustering ("sundowning"), matched the same way against
+///   [_unsettledTokens] and filtered to entries written from 3pm on.
 ///
-/// The behavior-keyed rules (sundowning bursts, new-behavior spikes) were
-/// retired in an earlier iteration — journal entries are now free text,
-/// so there is no canonical behavior id to count. The UTI red-flag rule
-/// from BUILD_SPEC.md §7.6 remains out of scope: it needs structured tags
-/// the entry model doesn't carry.
+/// Both scan free text because journal entries carry no canonical behavior
+/// id to count; the earlier behavior-keyed detectors were retired when the
+/// entry model went free-text, and [_detectLateDayUnsettled] is the
+/// token-matched replacement. The UTI red-flag rule from BUILD_SPEC.md §7.6
+/// remains out of scope for the same reason: it needs structured tags the
+/// entry model doesn't carry.
+///
+/// Every rule here names its behavior in advance, so this detector can only
+/// find patterns someone thought of. The behavior-agnostic counterpart lives
+/// in `emergent_pattern_detector.dart`, which runs over the structured
+/// `CareApproach` record instead and reports whichever pattern an individual
+/// client turns out to have.
 class PatternDetector {
   const PatternDetector();
 

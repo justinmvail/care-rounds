@@ -59,8 +59,12 @@ way they actually work:
 - **Supervisor escalation** — a code-side path to flag something for a supervisor,
   with a supervisor-flag inbox, so concerns reach the right person quickly.
 - **Explainable early-warning flags** — rule-based, reason-stating alerts
-  (repeated falls, a medication running low) surfaced from the data the worker
-  already enters — not a black-box score.
+  (repeated falls, a medication running low, late-day agitation clustering)
+  surfaced from the data the worker already enters — not a black-box score.
+  A second set of rules names no behavior in advance: they read a client's own
+  "what works" record and report whichever pattern emerges in it — a situation
+  recurring, clustering in one part of the day, or defeating everything tried
+  so far — so the app is not limited to the patterns anyone thought of.
 - **The scribe** — for a longer visit, listen right through it instead of
   composing the account at the end. Transcription runs **on the phone itself**
   on both iOS and Android, so the audio never leaves the handset; it will not

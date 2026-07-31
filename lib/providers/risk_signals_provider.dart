@@ -1,11 +1,14 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../models/care_approach.dart';
 import '../models/medication.dart'; // DoseWindow.isAsNeeded extension
 import '../models/risk_signal.dart';
 import '../screens/medication/medication_list_screen.dart'
     show MedicationListItem, medicationListProvider, medicationListClockProvider;
+import '../services/emergent_pattern_detector.dart';
 import '../services/medication_supply.dart';
 import '../services/risk_signals.dart';
+import 'care_approaches_provider.dart';
 import 'pattern_detector_provider.dart';
 
 part 'risk_signals_provider.g.dart';
@@ -33,8 +36,13 @@ List<RiskSignal> clientRiskSignals(Ref ref) {
         ),
       ),
   ];
+  final List<CareApproach> approaches =
+      ref.watch(clientCareApproachesProvider).value ?? const <CareApproach>[];
+
   return buildRiskSignals(
     patternAlerts: ref.watch(patternDetectorProvider),
     supplies: supplies,
+    emergent:
+        const EmergentPatternDetector().detect(approaches, now: now),
   );
 }

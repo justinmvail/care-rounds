@@ -66,4 +66,56 @@ void main() {
     expect(s.first.level, RiskLevel.urgent);
     expect(s.last.level, RiskLevel.watch);
   });
+
+  group('emergent per-client patterns', () {
+    const RiskSignal cluster = RiskSignal(
+      kind: 'emergent_cluster:refusedToEat',
+      level: RiskLevel.watch,
+      title: 'Refused to eat — clusters in the evening',
+      detail: '3 of 3 times in the last 14 days it was recorded in the '
+          'evening.',
+    );
+    const RiskSignal stuck = RiskSignal(
+      kind: 'emergent_nothing_working:resistedPersonalCare',
+      level: RiskLevel.urgent,
+      title: 'Resisted personal care — nothing has worked yet',
+      detail: '4 attempts and none of them helped.',
+    );
+
+    test('emergent signals keep their own title and detail', () {
+      final List<RiskSignal> s = buildRiskSignals(
+        patternAlerts: const <PatternAlert>[],
+        supplies: const <NamedSupply>[],
+        emergent: const <RiskSignal>[cluster],
+      );
+      expect(s, hasLength(1));
+      expect(s.single.title, 'Refused to eat — clusters in the evening');
+      expect(s.single.detail, contains('the last 14 days'));
+    });
+
+    test('an emergent escalation sorts with the other urgent signals', () {
+      final List<RiskSignal> s = buildRiskSignals(
+        patternAlerts: const <PatternAlert>[],
+        supplies: <NamedSupply>[
+          _supply('Aspirin', SupplyStatus.refillSoon,
+              runOut: DateTime(2026, 7, 22)), // watch
+        ],
+        emergent: const <RiskSignal>[cluster, stuck],
+      );
+      expect(s.first, stuck);
+      expect(s.map((RiskSignal x) => x.level).last, RiskLevel.watch);
+    });
+
+    test('omitting emergent leaves the existing signals untouched', () {
+      expect(
+        buildRiskSignals(
+          patternAlerts: const <PatternAlert>[],
+          supplies: <NamedSupply>[
+            _supply('Atorvastatin', SupplyStatus.outOfRefills),
+          ],
+        ),
+        hasLength(1),
+      );
+    });
+  });
 }

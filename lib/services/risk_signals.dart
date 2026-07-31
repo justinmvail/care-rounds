@@ -7,15 +7,18 @@ import 'pattern_detector.dart';
 typedef NamedSupply = ({String medName, MedicationSupply supply});
 
 /// Compose the client's early-warning signals (Track-2 #18) from the
-/// existing rule-based detectors: the journal pattern alerts (falls) and the
-/// per-medication refill runway. Pure + deterministic so the rules are
-/// unit-testable without a widget tree; urgent signals sort ahead of watch.
+/// rule-based detectors: the journal pattern alerts (falls, late-day
+/// agitation), the per-medication refill runway, and the [emergent] patterns
+/// found in this client's own "what works" record. Pure + deterministic so the
+/// rules are unit-testable without a widget tree; urgent signals sort ahead of
+/// watch.
 ///
 /// Nothing here diagnoses or predicts with a model — each signal is an
 /// explainable rule over data the caregiver already entered.
 List<RiskSignal> buildRiskSignals({
   required List<PatternAlert> patternAlerts,
   required List<NamedSupply> supplies,
+  List<RiskSignal> emergent = const <RiskSignal>[],
 }) {
   final List<RiskSignal> out = <RiskSignal>[];
 
@@ -52,6 +55,11 @@ List<RiskSignal> buildRiskSignals({
         break;
     }
   }
+
+  // The emergent rules carry their own title and detail (they name whichever
+  // situation fired), so they join the list already formed rather than going
+  // through _titleForAlert.
+  out.addAll(emergent);
 
   // Urgent first; otherwise keep insertion order (stable sort).
   out.sort((RiskSignal a, RiskSignal b) => _rank(a.level) - _rank(b.level));
