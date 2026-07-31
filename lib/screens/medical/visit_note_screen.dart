@@ -1,12 +1,17 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../models/journal_entry.dart';
+import '../../models/care_plan_routine.dart';
+import '../../models/care_task.dart';
 import '../../models/visit_note_draft.dart';
 import '../../providers/active_patient_provider.dart';
 import '../../providers/my_rounds_provider.dart' show selfCaregiverIdProvider;
 import '../../providers/storage_provider.dart';
+import '../../providers/care_plan_provider.dart' show carePlanRepositoryProvider;
+import '../../providers/care_tasks_provider.dart' show careTasksRepositoryProvider;
 import '../../providers/visit_note_service_provider.dart';
 import '../../providers/voice_capture_provider.dart';
 import 'ambient_scribe_screen.dart' show scribeHandoffProvider;
@@ -50,6 +55,11 @@ class _VisitNoteScreenState extends ConsumerState<VisitNoteScreen> {
   /// The AI's proposal, as discrete lines the worker approves one at a time.
   final List<_ReviewItem> _items = <_ReviewItem>[];
 
+  /// The client's REQUIRED items for this visit, loaded before the AI runs so
+  /// the checklist exists independently of what anyone remembered to say.
+  List<CarePlanRoutine> _planRoutines = const <CarePlanRoutine>[];
+  List<String> _openTaskTitles = const <String>[];
+
   _Phase _phase = _Phase.capture;
 
   /// A finished scribe session hands its narration over here, so the ambient
@@ -79,6 +89,32 @@ class _VisitNoteScreenState extends ConsumerState<VisitNoteScreen> {
       i.dispose();
     }
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Load the plan up front — a failure here must leave the worker with an
+    // empty checklist they can still fill in, never a broken screen.
+    unawaited(() async {
+      try {
+        final List<CarePlanRoutine> routines =
+            await ref.read(carePlanRepositoryProvider).listAll();
+        final List<CareTask> tasks =
+            await ref.read(careTasksRepositoryProvider).listTasks();
+        if (!mounted) return;
+        setState(() {
+          _planRoutines = routines;
+          _openTaskTitles = <String>[
+            for (final CareTask t in tasks)
+              if (t.completedAt == null && t.title.trim().isNotEmpty)
+                t.title.trim(),
+          ];
+        });
+      } catch (_) {
+        // Plan unavailable — the checklist starts empty rather than failing.
+      }
+    }());
   }
 
   @override
@@ -173,11 +209,21 @@ class _VisitNoteScreenState extends ConsumerState<VisitNoteScreen> {
   /// splits an older single-blob reply — because a worker cannot approve "she
   /// ate well and seemed steady and refused her shower" as one unit when only
   /// part of it is true.
-  static List<_ReviewItem> _itemsFrom(VisitNoteDraft d) {
-    final List<_ReviewItem> out = <_ReviewItem>[];
-    for (final String t in d.tasksDone) {
-      if (t.trim().isNotEmpty) {
-        out.add(_ReviewItem(group: _Group.care, text: t.trim()));
+  List<_ReviewItem> _itemsFrom(VisitNoteDraft d) {
+    final List<_ReviewItem> out = _seedFromPlan();
+    for (final String raw in d.tasksDone) {
+      final String t = raw.trim();
+      if (t.isEmpty) continue;
+      // Prefer TICKING an existing plan item over adding a duplicate line.
+      final int i = out.indexWhere((_ReviewItem it) =>
+          it.source == _Source.plan && _matches(it.text, t));
+      if (i >= 0) {
+        out[i]
+          ..approved = true
+          ..source = _Source.ai
+          ..evidence = t;
+      } else {
+        out.add(_ReviewItem(group: _Group.care, text: t));
       }
     }
     for (final String o in d.observations) {
@@ -190,6 +236,54 @@ class _VisitNoteScreenState extends ConsumerState<VisitNoteScreen> {
     }
     return out;
   }
+
+  /// Do the AI's phrase and a plan item describe the same job?
+  ///
+  /// Deliberately conservative: a match needs a shared meaningful word, and the
+  /// stop-list keeps "the", "with", "her" from matching everything to
+  /// everything. A FALSE tick is the dangerous direction — recording that a
+  /// required task was done when it was not is a falsified care record — so
+  /// when in doubt this returns false and the plan item simply stays unticked
+  /// for the worker to handle.
+  static bool _matches(String planTitle, String heard) {
+    const Set<String> stop = <String>{
+      'the', 'a', 'an', 'and', 'with', 'for', 'her', 'his', 'their', 'to',
+      'of', 'in', 'on', 'at', 'gave', 'did', 'done', 'client', 'am', 'pm',
+      'help', 'helped',
+    };
+    Set<String> words(String t) => t
+        .toLowerCase()
+        .split(RegExp(r'[^a-z0-9]+'))
+        .where((String w) => w.length > 3 && !stop.contains(w))
+        .toSet();
+    final Set<String> a = words(planTitle);
+    final Set<String> b = words(heard);
+    if (a.isEmpty || b.isEmpty) return false;
+    return a.intersection(b).isNotEmpty;
+  }
+
+  /// Build the visit's checklist: the client's REQUIRED items first, then tick
+  /// the ones the worker's account covered.
+  ///
+  /// The list exists before the AI runs. The AI's job is to check boxes and
+  /// show the words that justified each check — not to decide what the visit
+  /// consisted of.
+  List<_ReviewItem> _seedFromPlan() => <_ReviewItem>[
+        for (final CarePlanRoutine r in _planRoutines)
+          _ReviewItem(
+            group: _Group.care,
+            text: r.title,
+            approved: false,
+            source: _Source.plan,
+          ),
+        for (final String t in _openTaskTitles)
+          _ReviewItem(
+            group: _Group.care,
+            text: t,
+            approved: false,
+            source: _Source.plan,
+          ),
+      ];
 
   List<String> _approved(_Group g) => _items
       .where((_ReviewItem i) => i.group == g && i.approved && i.text.isNotEmpty)
@@ -422,6 +516,23 @@ extension _GroupLabel on _Group {
       };
 }
 
+/// Where a line came from — which decides how it is drawn and what it means
+/// when it is left unticked.
+enum _Source {
+  /// On the client's care plan: required for this visit whether or not anyone
+  /// mentioned it. Left unticked, it is a VISIBLE OMISSION — which is the
+  /// point, because the measured weakness of the model is missing things
+  /// (0 invention, 91% capture), and a missing line is otherwise invisible.
+  plan,
+
+  /// The AI heard it. Pre-ticked, drawn in the AI colour, and shown with the
+  /// words it heard so the worker can check the basis rather than trust it.
+  ai,
+
+  /// The worker added it.
+  worker,
+}
+
 /// One proposed line of the visit note.
 ///
 /// The note used to arrive as four blocks of prose, which meant "review" was
@@ -430,12 +541,25 @@ extension _GroupLabel on _Group {
 /// items each one can be kept, corrected, or dropped on its own, and Save
 /// approves a list the worker can actually see.
 class _ReviewItem {
-  _ReviewItem({required this.group, required String text, this.approved = true})
-      : controller = TextEditingController(text: text);
+  _ReviewItem({
+    required this.group,
+    required String text,
+    this.approved = true,
+    this.source = _Source.ai,
+    this.evidence,
+  }) : controller = TextEditingController(text: text);
 
   final _Group group;
   final TextEditingController controller;
   bool approved;
+
+  /// Provenance, so the worker can see what the app filled in versus what they
+  /// did — the app should never be mistaken for the person who was in the room.
+  _Source source;
+
+  /// The worker's own words that caused an AI tick, shown under the line.
+  /// A tick the worker cannot check is a tick they have to take on faith.
+  String? evidence;
 
   String get text => controller.text.trim();
   void dispose() => controller.dispose();
@@ -570,16 +694,26 @@ class _ItemRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // AI-filled lines are drawn in the accent colour so the worker can see at
+    // a glance what the app claimed versus what they set themselves. A tick
+    // the worker cannot distinguish from their own is a tick they will stop
+    // reading.
+    final bool byAi = item.source == _Source.ai;
+    final Color tick = byAi ? context.hc.accentDeep : context.hc.cta;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Checkbox(
             key: Key('visit-note-check-${item.hashCode}'),
             value: item.approved,
             onChanged: (bool? v) => onToggle(v ?? false),
-            activeColor: context.hc.cta,
+            activeColor: tick,
           ),
           Expanded(
             child: TextField(
@@ -609,6 +743,34 @@ class _ItemRow extends StatelessWidget {
             tooltip: 'Remove this line',
             color: context.hc.primarySoft,
           ),
+            ],
+          ),
+          // The words that caused the tick, so the worker checks the basis
+          // rather than trusting the app.
+          if (byAi && (item.evidence ?? '').isNotEmpty)
+            Padding(
+              key: Key('visit-note-evidence-${item.hashCode}'),
+              padding: const EdgeInsets.only(left: 48, bottom: 6),
+              child: Text(
+                'you said: "${item.evidence}"',
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: context.hc.accentDeep, fontStyle: FontStyle.italic),
+              ),
+            ),
+          // A required item nobody mentioned. Left plainly unticked — this is
+          // the omission the AI could not have surfaced on its own.
+          if (item.source == _Source.plan && !item.approved)
+            Padding(
+              key: Key('visit-note-missed-${item.hashCode}'),
+              padding: const EdgeInsets.only(left: 48, bottom: 6),
+              child: Text(
+                'on the care plan — not mentioned',
+                style: Theme.of(context)
+                    .textTheme
+                    .labelSmall
+                    ?.copyWith(color: context.hc.primarySoft),
+              ),
+            ),
         ],
       ),
     );

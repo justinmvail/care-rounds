@@ -1,5 +1,11 @@
 import 'package:carerounds/db/database.dart';
 import 'package:carerounds/models/journal_entry.dart';
+import 'package:carerounds/models/care_plan_routine.dart';
+import 'package:carerounds/models/medication.dart' show FrequencyKind;
+import 'package:carerounds/providers/care_plan_provider.dart'
+    show CarePlanRepository, carePlanRepositoryProvider;
+import 'package:carerounds/providers/care_tasks_provider.dart'
+    show CareTasksRepository, careTasksRepositoryProvider;
 import 'package:carerounds/models/visit_note_draft.dart';
 import 'package:carerounds/providers/storage_provider.dart';
 import 'package:carerounds/providers/supervisor_flags_provider.dart';
@@ -43,6 +49,7 @@ Future<InMemoryStorageProvider> _pump(
   WidgetTester tester, {
   VisitNoteService service = const FakeVisitNoteService(),
   VoiceCapture? voice,
+  List<CarePlanRoutine> plan = const <CarePlanRoutine>[],
 }) async {
   await tester.binding.setSurfaceSize(const Size(420, 1400));
   addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -73,6 +80,12 @@ Future<InMemoryStorageProvider> _pump(
           SupervisorFlagsRepository(CareRoundsDatabase(NativeDatabase.memory())),
         ),
         if (voice != null) voiceCaptureProvider.overrideWithValue(voice),
+        // The visit checklist is seeded from the client's care plan BEFORE the
+        // AI runs, so the plan repo has to be a real (in-memory) one.
+        carePlanRepositoryProvider.overrideWithValue(_SeededCarePlan(plan)),
+        careTasksRepositoryProvider.overrideWithValue(
+          CareTasksRepository(CareRoundsDatabase(NativeDatabase.memory())),
+        ),
       ],
       child: MaterialApp.router(routerConfig: router),
     ),
@@ -83,6 +96,29 @@ Future<InMemoryStorageProvider> _pump(
 
 Future<List<JournalEntry>> _entries(InMemoryStorageProvider s) =>
     s.listAllJournalEntries();
+
+/// A care plan with a fixed set of routines — the client's REQUIRED items.
+class _SeededCarePlan implements CarePlanRepository {
+  _SeededCarePlan(this._routines);
+  final List<CarePlanRoutine> _routines;
+
+  @override
+  Future<List<CarePlanRoutine>> listAll() async => _routines;
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => null;
+}
+
+CarePlanRoutine _routine(String title) => CarePlanRoutine(
+      id: 'r-$title',
+      patientId: 'p1',
+      title: title,
+      body: '',
+      scheduledTime: const TimeOfDay(hour: 8, minute: 0),
+      frequencyKind: FrequencyKind.daily,
+      daysOfWeek: const <int>{},
+      startsOn: DateTime(2026, 1, 1),
+    );
 
 void main() {
   testWidgets('type → Write the note → review → Save writes a journal entry',
@@ -321,6 +357,92 @@ void main() {
         isNull,
         reason: 'an empty approval is not a note',
       );
+    });
+  });
+
+  /// The checklist exists BEFORE the AI runs. The AI's job is to tick boxes on
+  /// it and show the words that justified each tick — not to decide what the
+  /// visit consisted of. That inverts the failure mode: the model's measured
+  /// weakness is missing things, and a missed plan item is now visibly
+  /// unticked rather than silently absent.
+  group('VisitNoteScreen — the care plan is the checklist', () {
+    Future<InMemoryStorageProvider> toReview(
+      WidgetTester tester, {
+      required List<String> planTitles,
+      required List<String> heard,
+    }) async {
+      final InMemoryStorageProvider storage = await _pump(
+        tester,
+        plan: <CarePlanRoutine>[for (final String t in planTitles) _routine(t)],
+        service: _FixedVisitNoteService(VisitNoteDraft(
+          summary: 'Morning visit',
+          tasksDone: heard,
+        )),
+      );
+      await tester.pumpAndSettle(); // plan loads
+      await tester.enterText(
+          find.byKey(VisitNoteScreen.transcriptFieldKey), 'anything');
+      await tester.tap(find.byKey(VisitNoteScreen.generateButtonKey));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 50));
+      return storage;
+    }
+
+    testWidgets('plan items the worker never mentioned stay visibly unticked',
+        (WidgetTester tester) async {
+      await toReview(
+        tester,
+        planTitles: <String>['Personal care and bathing', 'Prepare lunch'],
+        heard: <String>['bathing done this morning'],
+      );
+
+      // The bathing routine was covered — ticked, with the words that did it.
+      expect(find.textContaining('you said: "bathing done this morning"'),
+          findsOneWidget);
+      // Lunch was NOT mentioned. It must still be on screen, flagged as a
+      // care-plan item nobody accounted for.
+      expect(find.text('Prepare lunch'), findsOneWidget);
+      expect(find.textContaining('not mentioned'), findsOneWidget);
+    });
+
+    testWidgets('an unmentioned plan item is NOT saved as done',
+        (WidgetTester tester) async {
+      final InMemoryStorageProvider storage = await toReview(
+        tester,
+        planTitles: <String>['Personal care and bathing', 'Prepare lunch'],
+        heard: <String>['bathing done this morning'],
+      );
+      await tester.tap(find.byKey(VisitNoteScreen.saveButtonKey));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 50));
+
+      final List<JournalEntry> saved = await _entries(storage);
+      expect(saved.single.attemptsText, contains('Personal care'));
+      expect(saved.single.attemptsText, isNot(contains('Prepare lunch')),
+          reason: 'recording an unmentioned required task as done would be a '
+              'falsified care record');
+    });
+
+    testWidgets('something heard that is not on the plan is added as its own '
+        'line', (WidgetTester tester) async {
+      await toReview(
+        tester,
+        planTitles: <String>['Prepare lunch'],
+        heard: <String>['changed the bed linen'],
+      );
+      expect(find.text('changed the bed linen'), findsOneWidget);
+      expect(find.text('Prepare lunch'), findsOneWidget);
+    });
+
+    testWidgets('a vague phrase does not tick an unrelated plan item',
+        (WidgetTester tester) async {
+      await toReview(
+        tester,
+        planTitles: <String>['Prepare lunch'],
+        heard: <String>['gave her the tablets'],
+      );
+      // No shared meaningful word — the matcher must NOT claim lunch was done.
+      expect(find.textContaining('not mentioned'), findsOneWidget);
     });
   });
 }
