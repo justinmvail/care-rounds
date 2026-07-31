@@ -91,7 +91,7 @@ Future<void> main() async {
     // the TTS selector's settings input. A settings change INVALIDATES
     // the keepAlive tts provider so its next read re-resolves; crossing
     // a quiet-hours boundary with no settings change is covered by the
-    // minute-polling QuietHoursActive tick the selector also watches.
+    // minute-polling QuietHoursActive check the selector also watches.
     overrides: <Override>[
       ttsSettingsProvider.overrideWith(
         (Ref ref) => ref.watch(settingsProvider),

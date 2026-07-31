@@ -558,7 +558,7 @@ class SyncController {
       }
       await _stateStore.setCursor(circleId, result.cursor);
     } catch (e) {
-      // Offline / backend unreachable — try again next tick.
+      // Offline / backend unreachable — try again next check.
       debugPrint('sync: pull failed (will retry): $e');
       await _recoverIfCircleGone(circleId, e);
     }
@@ -578,7 +578,7 @@ class SyncController {
   /// Recovery is safe: dropping the binding makes the next bootstrap ADOPT a
   /// circle the account already owns, or CREATE one for the local client.
   /// Nothing local is deleted, and the outbox still holds every unpushed row,
-  /// so the data flows up to the new circle on the following tick.
+  /// so the data flows up to the new circle on the following check.
   Future<void> _recoverIfCircleGone(String circleId, Object error) async {
     if (error is! ForumApiException) return;
     if (error.statusCode != 404) return;
@@ -592,7 +592,7 @@ class SyncController {
       await bootstrapCircle();
     } catch (e) {
       // Never let recovery throw — local-only is the safe default and the
-      // next tick tries again.
+      // next check tries again.
       debugPrint('sync: circle re-bootstrap failed: $e');
     }
   }
@@ -777,7 +777,7 @@ class SyncController {
   // ─────────────────────────────────────────── Scheduling ──
 
   /// Start the foreground poll timer (~every 30s). Idempotent — calling
-  /// it twice doesn't double up. Each tick fire-and-forgets a [syncNow];
+  /// it twice doesn't double up. Each check fire-and-forgets a [syncNow];
   /// the no-circle guard makes it free when local-only.
   void startInterval() {
     _interval?.cancel();
@@ -1149,7 +1149,7 @@ SyncController syncController(Ref ref) {
   // demo-forum toggle swapping the API client — hands the REPLACEMENT
   // controller a live timer too, instead of silently ending polling for
   // the session. Idempotent with main's startInterval call; free when
-  // local-only (each tick's syncNow no-ops without a circle).
+  // local-only (each check's syncNow no-ops without a circle).
   controller.startInterval();
   return controller;
 }

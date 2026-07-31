@@ -103,11 +103,11 @@ Future<List<ConversationListItem>> chatConversationList(Ref ref) async {
           (Message? m) => m?.role == MessageRole.user,
           orElse: () => null,
         );
-    // The preview renders the last turn's body, so it MUST be sanitised
+    // The preview renders the last turn's body, so it MUST be sanitized
     // the same way the chat bubble is — strip `[action:…]` tool tags and
     // swap any raw `[chat error: …]` trailer for the friendly line — or
     // the internal marker leaks into the list (alpha bug). An all-marker
-    // body sanitises to empty; collapse that back to null so the tile
+    // body sanitizes to empty; collapse that back to null so the tile
     // skips the secondary line instead of showing a blank one.
     final String? rawLast = msgs.isEmpty ? null : msgs.last.body;
     final String? cleanLast =

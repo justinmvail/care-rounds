@@ -27,7 +27,7 @@ import '../../widgets/path_header.dart';
 ///
 /// Two phases in one screen: **capture** (dictate/type the account, then
 /// "Write the note") and **review** (edit the structured fields, then
-/// "Save"). The model only reorganises what the worker said — the medical
+/// "Save"). The model only reorganizes what the worker said — the medical
 /// guardrails (no diagnosis / no dosing) live in the system prompt.
 class VisitNoteScreen extends ConsumerStatefulWidget {
   const VisitNoteScreen({super.key});
@@ -241,9 +241,9 @@ class _VisitNoteScreenState extends ConsumerState<VisitNoteScreen> {
   ///
   /// Deliberately conservative: a match needs a shared meaningful word, and the
   /// stop-list keeps "the", "with", "her" from matching everything to
-  /// everything. A FALSE tick is the dangerous direction — recording that a
+  /// everything. A FALSE check is the dangerous direction — recording that a
   /// required task was done when it was not is a falsified care record — so
-  /// when in doubt this returns false and the plan item simply stays unticked
+  /// when in doubt this returns false and the plan item simply stays unchecked
   /// for the worker to handle.
   static bool _matches(String planTitle, String heard) {
     const Set<String> stop = <String>{
@@ -262,7 +262,7 @@ class _VisitNoteScreenState extends ConsumerState<VisitNoteScreen> {
     return a.intersection(b).isNotEmpty;
   }
 
-  /// Build the visit's checklist: the client's REQUIRED items first, then tick
+  /// Build the visit's checklist: the client's REQUIRED items first, then check
   /// the ones the worker's account covered.
   ///
   /// The list exists before the AI runs. The AI's job is to check boxes and
@@ -292,7 +292,7 @@ class _VisitNoteScreenState extends ConsumerState<VisitNoteScreen> {
 
   Future<void> _save() async {
     final DateTime now = DateTime.now();
-    // ONLY ticked lines are written. An unticked line is something the AI
+    // ONLY checked lines are written. An unchecked line is something the AI
     // heard and the worker rejected — it must not reach the record.
     final List<String> tasks = _approved(_Group.care);
     final String situation = <String>[
@@ -517,15 +517,15 @@ extension _GroupLabel on _Group {
 }
 
 /// Where a line came from — which decides how it is drawn and what it means
-/// when it is left unticked.
+/// when it is left unchecked.
 enum _Source {
   /// On the client's care plan: required for this visit whether or not anyone
-  /// mentioned it. Left unticked, it is a VISIBLE OMISSION — which is the
+  /// mentioned it. Left unchecked, it is a VISIBLE OMISSION — which is the
   /// point, because the measured weakness of the model is missing things
   /// (0 invention, 91% capture), and a missing line is otherwise invisible.
   plan,
 
-  /// The AI heard it. Pre-ticked, drawn in the AI colour, and shown with the
+  /// The AI heard it. Pre-checked, drawn in the AI color, and shown with the
   /// words it heard so the worker can check the basis rather than trust it.
   ai,
 
@@ -557,8 +557,8 @@ class _ReviewItem {
   /// did — the app should never be mistaken for the person who was in the room.
   _Source source;
 
-  /// The worker's own words that caused an AI tick, shown under the line.
-  /// A tick the worker cannot check is a tick they have to take on faith.
+  /// The worker's own words that caused an AI check, shown under the line.
+  /// A check the worker cannot check is a check they have to take on faith.
   String? evidence;
 
   String get text => controller.text.trim();
@@ -595,8 +595,8 @@ class _ReviewView extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
       children: <Widget>[
         Text(
-          'Here is what I heard. Untick anything that is not right, fix the '
-          'wording, add whatever I missed. Only ticked lines are saved.',
+          'Here is what I heard. Uncheck anything that is not right, fix the '
+          'wording, add whatever I missed. Only checked lines are saved.',
           style: tt.bodyMedium?.copyWith(color: context.hc.primarySoft),
         ),
         if (needsAttention) ...<Widget>[
@@ -678,8 +678,8 @@ class _ReviewView extends StatelessWidget {
   }
 }
 
-/// A single approvable line: tick to keep, tap the text to correct it, X to
-/// drop it. An unticked line stays visible so the worker can see what the AI
+/// A single approvable line: check to keep, tap the text to correct it, X to
+/// drop it. An unchecked line stays visible so the worker can see what the AI
 /// heard and chose not to keep — it is simply not written.
 class _ItemRow extends StatelessWidget {
   const _ItemRow({
@@ -694,12 +694,12 @@ class _ItemRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // AI-filled lines are drawn in the accent colour so the worker can see at
-    // a glance what the app claimed versus what they set themselves. A tick
-    // the worker cannot distinguish from their own is a tick they will stop
+    // AI-filled lines are drawn in the accent color so the worker can see at
+    // a glance what the app claimed versus what they set themselves. A check
+    // the worker cannot distinguish from their own is a check they will stop
     // reading.
     final bool byAi = item.source == _Source.ai;
-    final Color tick = byAi ? context.hc.accentDeep : context.hc.cta;
+    final Color check = byAi ? context.hc.accentDeep : context.hc.cta;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
@@ -713,7 +713,7 @@ class _ItemRow extends StatelessWidget {
             key: Key('visit-note-check-${item.hashCode}'),
             value: item.approved,
             onChanged: (bool? v) => onToggle(v ?? false),
-            activeColor: tick,
+            activeColor: check,
           ),
           Expanded(
             child: TextField(
@@ -745,7 +745,7 @@ class _ItemRow extends StatelessWidget {
           ),
             ],
           ),
-          // The words that caused the tick, so the worker checks the basis
+          // The words that caused the check, so the worker checks the basis
           // rather than trusting the app.
           if (byAi && (item.evidence ?? '').isNotEmpty)
             Padding(
@@ -757,7 +757,7 @@ class _ItemRow extends StatelessWidget {
                     color: context.hc.accentDeep, fontStyle: FontStyle.italic),
               ),
             ),
-          // A required item nobody mentioned. Left plainly unticked — this is
+          // A required item nobody mentioned. Left plainly unchecked — this is
           // the omission the AI could not have surfaced on its own.
           if (item.source == _Source.plan && !item.approved)
             Padding(

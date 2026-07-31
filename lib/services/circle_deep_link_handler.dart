@@ -129,7 +129,7 @@ class CircleDeepLinkHandler {
         unawaited(_ref.read(circleAdoptProvider)(circle));
       } catch (e) {
         logNonFatal('circle.deepLinkJoinBootstrap', e);
-        // Join already succeeded; sync retries on the next tick.
+        // Join already succeeded; sync retries on the next check.
       }
       return CircleJoinSucceeded(circle);
     } on ForumApiException catch (e) {

@@ -73,7 +73,7 @@ Future<MedicationDraft?> capturePrescriptionDraft(
     draft = await scanner.extractFromImage(imagePath: path);
   } catch (e) {
     // Caregiver still gets the "couldn't read it" hint below — but the WHY
-    // (licence gate, network, a 500, a parse miss) rode into the void until a
+    // (license gate, network, a 500, a parse miss) rode into the void until a
     // report could reproduce it. Keep the trace.
     logNonFatal('scan.prescription', e);
     draft = null;

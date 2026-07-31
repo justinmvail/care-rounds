@@ -74,7 +74,7 @@ abstract class Provider with _$Provider {
 /// preps before the visit and crosses off in the waiting room (Phase
 /// 12.6 renders each as a checkbox); empty list is fine for an as-yet-
 /// unplanned visit. [completedAgendaIndices] is the parallel set of
-/// agenda positions the caregiver has ticked off — persisted alongside
+/// agenda positions the caregiver has checked off — persisted alongside
 /// the agenda itself so the cross-off state survives an app relaunch
 /// mid-visit. [notes] is the post-appointment debrief and stays null
 /// until the caregiver fills it in. [driverName] is the optional name of

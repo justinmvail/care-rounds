@@ -78,7 +78,7 @@ QueryExecutor localFileExecutor({
   return DatabaseConnection.delayed(Future<DatabaseConnection>(() async {
     // A few widget/routing tests mount the real router without overriding
     // storageProvider and so reach open(). Under the test binding there is no
-    // path_provider, so this future never completes — the same behaviour the
+    // path_provider, so this future never completes — the same behavior the
     // old `driftDatabase(name:)` path had, leaving no pending timers. Those
     // tests never query the store.
     if (_runningUnderFlutterTest) {

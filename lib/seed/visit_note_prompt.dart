@@ -3,7 +3,7 @@
 /// a visit into a structured visit note they can review and save.
 ///
 /// Hard rules baked in, mirroring the app's medical guardrails:
-///   - STRUCTURE ONLY. Reorganise what the worker said; never invent,
+///   - STRUCTURE ONLY. Reorganize what the worker said; never invent,
 ///     diagnose, name a condition, or suggest a medication or dose.
 ///   - Stay in the worker's own observations. If they didn't say it, it
 ///     isn't in the note.

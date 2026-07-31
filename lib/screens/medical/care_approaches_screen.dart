@@ -20,7 +20,7 @@ import '../../widgets/path_header.dart';
 /// client's team, is how it survives the turnover.
 ///
 /// Scope discipline: every entry is what a worker did and what happened. The
-/// app does not prescribe, rank clinically, or characterise behaviour — it
+/// app does not prescribe, rank clinically, or characterize behavior — it
 /// remembers, and it puts what has worked in front of the next person.
 class CareApproachesScreen extends ConsumerStatefulWidget {
   const CareApproachesScreen({super.key});

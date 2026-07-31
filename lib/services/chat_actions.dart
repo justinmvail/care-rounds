@@ -214,7 +214,7 @@ const String journalCitationPrefix = 'journal:';
 /// Resolve the coach's free-text `occurred_at` (e.g. `"just now"`,
 /// `"yesterday afternoon"`, `"last night"`) into a wall-clock [DateTime]
 /// relative to [now]. Covers the high-frequency phrases the prompt tells
-/// the coach to use; anything unrecognised collapses to [now].
+/// the coach to use; anything unrecognized collapses to [now].
 DateTime resolveOccurredAt(String? raw, DateTime now) {
   final String text = (raw ?? '').trim().toLowerCase();
   if (text.isEmpty || text.contains('just now') || text == 'now') {
@@ -388,7 +388,7 @@ typedef WindowAttachResult = ({
 /// comma-separated list like "morning, evening").
 ///
 /// Names match the patient's existing window labels case-insensitively (exact,
-/// then substring). A name that matches NOTHING but is a recognised schedule
+/// then substring). A name that matches NOTHING but is a recognized schedule
 /// word ("morning", "bedtime", …) is CREATED with a standard anchor time —
 /// because a caregiver with no windows yet (every new install has none: the
 /// seeded defaults were dropped at v15) could otherwise never schedule a
@@ -396,7 +396,7 @@ typedef WindowAttachResult = ({
 /// said it had (reported 2026-07-13: "The time windows were not added").
 ///
 /// Returns what happened, so the caller can TELL the caregiver — a created
-/// window carries an assumed time they may want to change, and an unrecognised
+/// window carries an assumed time they may want to change, and an unrecognized
 /// name was not scheduled at all. Never silently partial.
 Future<WindowAttachResult> _attachMedicationWindows(
   Ref ref,
@@ -427,7 +427,7 @@ Future<WindowAttachResult> _attachMedicationWindows(
 
     DoseWindow? match = _resolveWindow(available, req);
 
-    // No such window yet. If the caregiver used a schedule word we recognise,
+    // No such window yet. If the caregiver used a schedule word we recognize,
     // CREATE it — otherwise a brand-new install (which has NO windows at all)
     // can never schedule anything through the coach, and today it just failed
     // in silence.
@@ -889,7 +889,7 @@ Future<ChatActionOutcome?> _deleteTask(
 
 /// Map the coach's free-text frequency word to a [FrequencyKind]. Mirrors
 /// the routine form's daily / weekly / asNeeded choices; anything
-/// unrecognised falls back to daily (the form's own default).
+/// unrecognized falls back to daily (the form's own default).
 FrequencyKind _parseFrequency(String? raw) {
   switch ((raw ?? '').trim().toLowerCase()) {
     case 'weekly':

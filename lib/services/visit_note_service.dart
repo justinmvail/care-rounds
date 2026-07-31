@@ -8,7 +8,7 @@ import 'document_scan_transport.dart';
 /// Ambient visit documentation (Track-2 #16, the flagship) — "the note that
 /// writes itself". Takes a worker's free-form spoken/typed account of a
 /// visit and STRUCTURES it into a [VisitNoteDraft] the worker reviews and
-/// saves. It only reorganises what the worker said; it never diagnoses,
+/// saves. It only reorganizes what the worker said; it never diagnoses,
 /// doses, or invents (see [visitNoteSystemPrompt]).
 ///
 /// Behind an interface with a fake (tests/demo) + real (dev shim / prod
@@ -21,8 +21,8 @@ abstract class VisitNoteService {
   Future<VisitNoteDraft?> structure({required String transcript});
 }
 
-/// The user turn: the worker's account, sanitised + delimited exactly like
-/// every other free-text interpolation into an LLM prompt (defence in depth
+/// The user turn: the worker's account, sanitized + delimited exactly like
+/// every other free-text interpolation into an LLM prompt (defense in depth
 /// with [sanitizeForPrompt] — a crafted "ignore previous instructions"
 /// reaches the model as inert data), then the shared JSON-only reminder.
 String buildVisitNoteUserPrompt(String transcript) =>

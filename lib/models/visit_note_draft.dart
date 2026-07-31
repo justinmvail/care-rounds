@@ -7,7 +7,7 @@ import 'package:flutter/foundation.dart';
 /// active client. Nothing is ever saved without that review.
 ///
 /// The model only ever STRUCTURES what the worker said — it does not
-/// diagnose, dose, or add clinical judgement (see visit_note_prompt.dart).
+/// diagnose, dose, or add clinical judgment (see visit_note_prompt.dart).
 @immutable
 class VisitNoteDraft {
   const VisitNoteDraft({

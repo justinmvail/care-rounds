@@ -60,7 +60,7 @@ class QuietHoursActive extends _$QuietHoursActive {
     _timer = Timer.periodic(quietHoursPollInterval, (_) => _refresh());
     ref.onDispose(() => _timer?.cancel());
     // Recompute eagerly when the caregiver toggles the setting so the
-    // UI flips on the same frame instead of waiting for the next tick.
+    // UI flips on the same frame instead of waiting for the next check.
     ref.listen<AppSettings>(settingsProvider, (_, __) => _refresh());
     return _compute();
   }

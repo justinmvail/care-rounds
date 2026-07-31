@@ -155,7 +155,7 @@ class TabScaffoldBar extends StatelessWidget {
         top: false,
         child: Padding(
           // Nudge the whole row down so the icons + labels aren't biased to
-          // the top of the bar, sitting closer to vertical-centre of the
+          // the top of the bar, sitting closer to vertical-center of the
           // visible bar above the home-indicator inset (fb_1781135834656216 /
           // fb_1781138782074336).
           padding: const EdgeInsets.only(top: 10),

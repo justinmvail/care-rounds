@@ -5,7 +5,7 @@ part 'team.g.dart';
 
 /// A team of caregivers (Care Rounds).
 ///
-/// The organisational unit above the caregiver roster: a direct-care team,
+/// The organizational unit above the caregiver roster: a direct-care team,
 /// agency, or family that shares a set of clients. A [Caregiver] belongs to a
 /// team via `Caregiver.teamId`; the caregiver↔client assignments remain the
 /// [CareCircleMembership] rows (which already join `caregiverId` ↔

@@ -115,7 +115,7 @@ class AppointmentDraft {
   }
 
   /// Map a free-text role word onto a [ProviderRole]; null only for a null
-  /// input (an unrecognised-but-present role collapses to [ProviderRole.other]).
+  /// input (an unrecognized-but-present role collapses to [ProviderRole.other]).
   static ProviderRole? parseRole(String? raw) {
     if (raw == null) return null;
     final String r = raw.toLowerCase();

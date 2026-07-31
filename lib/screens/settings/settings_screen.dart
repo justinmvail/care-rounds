@@ -398,7 +398,7 @@ class _VoicePicker extends StatelessWidget {
     required this.enabled,
   });
 
-  /// Encoded voice id the BundledTTSProvider's native side recognises
+  /// Encoded voice id the BundledTTSProvider's native side recognizes
   /// (see `BundledTTSProvider.availableVoices()` in
   /// `lib/providers/bundled_tts_provider.dart`).
   static const String _amyVoiceId = 'amy|en_US';

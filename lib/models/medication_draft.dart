@@ -139,7 +139,7 @@ class MedicationDraft {
   }
 
   /// "400 MG TABLET" → "400 mg". Keep the strength; drop the form and the
-  /// shouting. Anything without a recognisable strength is passed through as
+  /// shouting. Anything without a recognizable strength is passed through as
   /// printed (e.g. "1 tablet").
   static String? _cleanDosage(String? raw) {
     if (raw == null) return null;
@@ -201,7 +201,7 @@ class MedicationDraft {
   }
 
   /// Map a free-text route word onto a [MedicationRoute]. Returns null
-  /// only for a null input; an unrecognised-but-present word collapses to
+  /// only for a null input; an unrecognized-but-present word collapses to
   /// [MedicationRoute.other] (matching the add-med form's "Other" catch).
   static MedicationRoute? parseRoute(String? raw) {
     if (raw == null) return null;

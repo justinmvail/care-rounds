@@ -530,7 +530,7 @@ class CaregiversTable extends Table {
   Set<Column<Object>> get primaryKey => <Column<Object>>{id};
 }
 
-/// A team of caregivers (Care Rounds) — the organisational unit above the
+/// A team of caregivers (Care Rounds) — the organizational unit above the
 /// caregiver roster (agency / direct-care team / family sharing clients).
 ///
 /// Typed columns (not a JSON payload) so teams can be joined/queried.

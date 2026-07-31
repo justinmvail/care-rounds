@@ -15,7 +15,7 @@ part 'forum_api_client.g.dart';
 /// `--dart-define=FORUM_API_URL=https://forum-api.workers.dev` for
 /// prod or `--dart-define=FORUM_API_URL=http://127.0.0.1:8787` for a
 /// `wrangler dev` loop. Defaults to the Cloudflare-style hostname so
-/// the no-define case still produces a recognisably-wrong URL rather
+/// the no-define case still produces a recognizably-wrong URL rather
 /// than silently hitting localhost.
 // Empty default = "no backend configured" → the app uses the fake forum
 // client and stays fully local (tests, demo builds). A real URL is only

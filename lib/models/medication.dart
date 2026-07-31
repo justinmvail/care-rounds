@@ -106,7 +106,7 @@ class NullableTimeOfDayJsonConverter
 /// [DoseWindow]s via [MedicationWindowEntry]. That matches how
 /// caregivers actually think — "what does Mom take in the morning?"
 /// rather than "when does she take Donepezil?" — and how physical
-/// pillboxes are organised.
+/// pillboxes are organized.
 @freezed
 abstract class Medication with _$Medication {
   const factory Medication({

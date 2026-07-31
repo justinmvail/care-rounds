@@ -1076,7 +1076,7 @@ class ChatService {
   };
 
   /// True when [name] WRITES or CHANGES the caregiver's care data — i.e.
-  /// any recognised action that isn't in [instantActionNames]. These gate
+  /// any recognized action that isn't in [instantActionNames]. These gate
   /// behind the confirm card. Unknown names are treated as non-mutating
   /// here (they match no executor and are dropped downstream).
   bool _isMutatingAction(String name) =>
@@ -1211,8 +1211,8 @@ class ChatService {
     return null;
   }
 
-  /// Run every recognised `[action:…]` marker the assistant emitted in
-  /// [body] against the wired executors. Unrecognised actions are
+  /// Run every recognized `[action:…]` marker the assistant emitted in
+  /// [body] against the wired executors. Unrecognized actions are
   /// silently dropped (the marker still gets stripped from the
   /// displayed body via [stripActionMarkers]) — better to lose a tool
   /// call than to fail the whole turn. MUTATING actions (anything that
@@ -1400,7 +1400,7 @@ class ChatService {
     }
   }
 
-  /// Strip every recognised `[action:…]` marker from [body] so the
+  /// Strip every recognized `[action:…]` marker from [body] so the
   /// rendered bubble doesn't show the raw tool tag. Idempotent and
   /// safe to call on bodies with zero markers — used by the chat
   /// surface tests to assert clean rendering without standing up an
@@ -1482,7 +1482,7 @@ class ChatService {
   /// caregiver was told it hadn't worked with no idea why. Scripted-marker unit
   /// tests can never catch this; only the live model produces it.
   ///
-  /// So when a value contains an embedded `key=…` for a key we recognise, split
+  /// So when a value contains an embedded `key=…` for a key we recognize, split
   /// it back out: `Ibuprofen dosage=400 mg` → name=`Ibuprofen`, dosage=`400 mg`.
   /// An explicit later pair always wins over a hoisted one, so a well-formed
   /// marker is untouched.

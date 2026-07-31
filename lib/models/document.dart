@@ -20,7 +20,7 @@ enum DonorStatus {
 /// The authority a [PowerOfAttorneyDoc] grants (TASKS.md Phase 14.21).
 ///
 /// [medical] (a.k.a. healthcare proxy), [financial], or [general] (a
-/// broad grant covering both). An organisational tag the caregiver
+/// broad grant covering both). An organizational tag the caregiver
 /// chooses; nothing here is legal advice.
 enum PoaScope {
   medical,
@@ -136,7 +136,7 @@ abstract class EmergencyCard with _$EmergencyCard {
 /// Records who holds authority ([agentName], with an optional
 /// [alternateName] successor), the [scope] of that authority, when it
 /// became [effectiveDate], and an optional [scanPath] to the document
-/// image. Organisational record-keeping — not legal advice.
+/// image. Organizational record-keeping — not legal advice.
 ///
 /// [patientId] is the logical link to the single client (see
 /// [EmergencyCard] for why it's not a DB FK). [attachmentPath] mirrors

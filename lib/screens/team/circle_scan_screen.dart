@@ -112,12 +112,12 @@ class _CircleScanScreenState extends ConsumerState<CircleScanScreen> {
       // person (and Stage 2 meds). FIRE-AND-FORGET + best-effort — the
       // join already succeeded server-side, so we never block the success
       // UI on the follow-up sync (adoptJoinedCircle swallows its own
-      // errors and bootstrap retries on the next launch/tick).
+      // errors and bootstrap retries on the next launch/check).
       try {
         unawaited(ref.read(syncControllerProvider).adoptJoinedCircle(circle));
       } catch (e) {
         logNonFatal('circle.scanJoinBootstrap', e);
-        // Join already succeeded server-side; sync retries on next tick.
+        // Join already succeeded server-side; sync retries on next check.
       }
       if (!mounted) return;
       setState(() {

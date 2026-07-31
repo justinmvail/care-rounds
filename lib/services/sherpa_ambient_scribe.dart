@@ -14,7 +14,7 @@ import 'log_buffer.dart';
 ///
 /// Pipeline, identical on iOS and Android — one Dart path, no platform
 /// branches: `record` streams 16 kHz mono PCM16 from the mic → converted to
-/// float32 → fed to a streaming Zipformer recogniser (sherpa-onnx / ONNX
+/// float32 → fed to a streaming Zipformer recognizer (sherpa-onnx / ONNX
 /// Runtime) → finalised utterances emitted as [ScribeSegment]s.
 ///
 /// WHY NOT THE OS RECOGNISERS: `speech_to_text` delegates to the platform
@@ -125,7 +125,7 @@ class SherpaAmbientScribe implements AmbientScribe {
             tokens: '${dir.path}/tokens.txt',
             numThreads: 2,
           ),
-          // The recogniser's own endpointing is what turns a continuous stream
+          // The recognizer's own endpointing is what turns a continuous stream
           // into utterances — this is the piece the OS dictation APIs get
           // wrong for long sessions, where a silence simply ends recognition.
           enableEndpoint: true,

@@ -393,7 +393,7 @@ GoRouter buildRouter({
                   ),
                   // Routines (v2 Care Plan — BUILD_SPEC.md §5.13). The v1
                   // slot/stage CarePlanScreen + CarePlanSectionForm were
-                  // deleted in favour of scheduled tasks projecting into
+                  // deleted in favor of scheduled tasks projecting into
                   // the unified patient timeline. `routines/new` is
                   // registered before `routines/:id` so the literal `new`
                   // segment isn't swallowed by the `:id` parameter.

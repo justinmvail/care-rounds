@@ -6,7 +6,7 @@ part 'expense.g.dart';
 /// What a shared care expense was spent on (TASKS.md Phase 14.33,
 /// BUILD_SPEC.md §5.14).
 ///
-/// An organisational tag the caregiver picks when logging a cost — it
+/// An organizational tag the caregiver picks when logging a cost — it
 /// drives the kind chip on each row and nothing clinical. One token per
 /// value so the JSON name matches the enum name exactly
 /// (`json_serializable` serialises enums by `.name`).

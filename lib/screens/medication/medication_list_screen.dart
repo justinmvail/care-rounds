@@ -262,7 +262,7 @@ class _MedicationCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final TextTheme tt = Theme.of(context).textTheme;
     final Medication med = item.medication;
-    final String windowsLabel = _summariseWindows(context, item.windows);
+    final String windowsLabel = _summarizeWindows(context, item.windows);
     // Refill runway from the captured label fields + how many scheduled
     // (non-as-needed) doses this med takes per day.
     final MedicationSupply supply = computeMedicationSupply(
@@ -384,7 +384,7 @@ class _MedicationCard extends ConsumerWidget {
     );
   }
 
-  String _summariseWindows(BuildContext context, List<DoseWindow> windows) {
+  String _summarizeWindows(BuildContext context, List<DoseWindow> windows) {
     return windows
         .map((DoseWindow w) {
           if (w.isAsNeeded) return w.label;

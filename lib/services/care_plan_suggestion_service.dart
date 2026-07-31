@@ -14,13 +14,13 @@ import 'document_scan_transport.dart';
 /// Worker) impls, sharing the text→JSON transport in [document_scan_transport]
 /// with the other grounded coach features.
 abstract class CarePlanSuggestionService {
-  /// Suggest care tasks for a client summarised by [clientContext]; a
+  /// Suggest care tasks for a client summarized by [clientContext]; a
   /// best-effort list, or an empty list on failure (the worker can still add
   /// routines by hand). MUST NOT throw for an ordinary failure.
   Future<List<String>> suggest({required String clientContext});
 }
 
-/// The user turn: the client summary, sanitised + delimited like every other
+/// The user turn: the client summary, sanitized + delimited like every other
 /// free-text interpolation into an LLM prompt, then the shared JSON reminder.
 String buildCarePlanSuggestionUserPrompt(String clientContext) =>
     '<client_summary>\n${sanitizeForPrompt(clientContext.trim())}\n'

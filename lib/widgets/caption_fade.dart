@@ -38,7 +38,7 @@ class CaptionFade extends StatefulWidget {
   final Stream<String>? stream;
 
   /// Style override applied to every word. The widget modulates alpha
-  /// on the resolved colour to drive the fade, so a non-null `color`
+  /// on the resolved color to drive the fade, so a non-null `color`
   /// here produces the most predictable result across themes.
   final TextStyle? style;
 

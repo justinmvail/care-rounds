@@ -316,7 +316,7 @@ class RealAuthProvider implements AuthProvider {
 
   /// Server-side account delete. Null when no backend is configured (an
   /// un-configured/local build) — then [deleteAccount] just clears local
-  /// state, its v1 behaviour.
+  /// state, its v1 behavior.
   final AccountDeleter? _accountDeleter;
 
   AuthState _state = const AuthState.signedOut();

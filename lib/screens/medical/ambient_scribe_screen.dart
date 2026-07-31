@@ -160,7 +160,7 @@ class _AmbientScribeScreenState extends ConsumerState<AmbientScribeScreen> {
   /// The worker identifies their own voice. Every segment from that voice
   /// cluster becomes [ScribeSpeaker.worker]; the rest become
   /// [ScribeSpeaker.other]. This is voice SEPARATION — the app never claims to
-  /// recognise a named person from their voice.
+  /// recognize a named person from their voice.
   void _claimVoice(int? voiceId) {
     setState(() {
       for (int i = 0; i < _segments.length; i++) {

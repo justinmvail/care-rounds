@@ -20,13 +20,13 @@ CareApproach _a(
 /// the thing that has actually worked with THIS person in front of whoever is
 /// in the room now — including the aide covering a shift for the first time.
 void main() {
-  group('summariseApproaches', () {
+  group('summarizeApproaches', () {
     test('is empty when nothing has been recorded', () {
-      expect(summariseApproaches(const <CareApproach>[]), isEmpty);
+      expect(summarizeApproaches(const <CareApproach>[]), isEmpty);
     });
 
     test('ranks what WORKED ahead of what did not, within a situation', () {
-      final List<String> out = summariseApproaches(<CareApproach>[
+      final List<String> out = summarizeApproaches(<CareApproach>[
         _a(CareSituation.resistedPersonalCare, 'argued with her',
             ApproachOutcome.didNotWork),
         _a(CareSituation.resistedPersonalCare, 'warmed the towels first',
@@ -42,7 +42,7 @@ void main() {
     });
 
     test('breaks ties by recency, newest first', () {
-      final List<String> out = summariseApproaches(<CareApproach>[
+      final List<String> out = summarizeApproaches(<CareApproach>[
         _a(CareSituation.agitatedOrUpset, 'older idea', ApproachOutcome.worked,
             at: DateTime(2026, 7, 1)),
         _a(CareSituation.agitatedOrUpset, 'newer idea', ApproachOutcome.worked,
@@ -53,7 +53,7 @@ void main() {
     });
 
     test('caps each situation so a long history stays readable mid-visit', () {
-      final List<String> out = summariseApproaches(<CareApproach>[
+      final List<String> out = summarizeApproaches(<CareApproach>[
         for (int i = 0; i < 6; i++)
           _a(CareSituation.refusedToEat, 'idea $i', ApproachOutcome.worked,
               at: DateTime(2026, 7, i + 1)),
@@ -63,7 +63,7 @@ void main() {
     });
 
     test('groups by situation and keeps the enum order stable', () {
-      final List<String> out = summariseApproaches(<CareApproach>[
+      final List<String> out = summarizeApproaches(<CareApproach>[
         _a(CareSituation.refusedMedication, 'came back later',
             ApproachOutcome.worked),
         _a(CareSituation.resistedPersonalCare, 'warmed towels',
@@ -76,7 +76,7 @@ void main() {
 
     test('carries the outcome so a reader is never misled about what happened',
         () {
-      final List<String> out = summariseApproaches(<CareApproach>[
+      final List<String> out = summarizeApproaches(<CareApproach>[
         _a(CareSituation.wantedToLeaveOrGoHome, 'told her she lives here',
             ApproachOutcome.didNotWork),
       ]);

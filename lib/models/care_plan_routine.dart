@@ -10,7 +10,7 @@ part 'care_plan_routine.g.dart';
 /// caregiver wants to be reminded of (BUILD_SPEC.md §5.13 v2).
 ///
 /// Replaces the v1 [CarePlanSection] (slot + stage) model, which read
-/// as organisational notes grouped under fuzzy buckets like "morning"
+/// as organizational notes grouped under fuzzy buckets like "morning"
 /// and "early stage". v2 makes care routines first-class scheduled
 /// tasks so they project into the unified patient timeline alongside
 /// medications and appointments — caregivers see "hygiene at 7:30 AM"

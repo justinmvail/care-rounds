@@ -8,7 +8,7 @@ part 'scribe.g.dart';
 /// Deliberately coarse. The scribe separates VOICES, it does not identify
 /// people: it can tell that two different speakers are talking and keep their
 /// lines apart, and the worker tells it which voice is theirs. It never claims
-/// to recognise a named individual from their voice, which would be a
+/// to recognize a named individual from their voice, which would be a
 /// biometric identification claim we cannot support and would not want to make
 /// about a client in their own home.
 enum ScribeSpeaker {
@@ -31,7 +31,7 @@ enum ScribeSpeaker {
 /// How the client was told that the visit would be transcribed.
 ///
 /// A checkbox on the worker's phone is NOT consent — that is the precise
-/// failure pattern the 2026 ambient-scribe class actions turn on (boxes ticked
+/// failure pattern the 2026 ambient-scribe class actions turn on (boxes checked
 /// while patients received no disclosure). So this records the CONVERSATION:
 /// that the worker read the disclosure aloud, who agreed, and when. It is
 /// required before a session can start and is stored with the session.
@@ -86,7 +86,7 @@ abstract class ScribeConsent with _$ScribeConsent {
 
     /// The exact words presented to the worker to read, stored with the
     /// consent so a later audit sees what the client was actually told —
-    /// not just that a box was ticked.
+    /// not just that a box was checked.
     required String script,
   }) = _ScribeConsent;
 
@@ -134,7 +134,7 @@ abstract class ScribeSession with _$ScribeSession {
 /// Only the WORKER's speech becomes the note body by default: what the client
 /// and family said is context the worker heard, not the worker's clinical
 /// account, and pushing every overheard sentence into a care record is the
-/// minimum-necessary problem. Other voices are summarised as reported speech
+/// minimum-necessary problem. Other voices are summarized as reported speech
 /// so nothing is silently dropped.
 extension ScribeSessionNarration on ScribeSession {
   String get narration {
@@ -143,7 +143,7 @@ extension ScribeSessionNarration on ScribeSession {
       final String text = s.text.trim();
       if (text.isEmpty) continue;
       // Normalise terminal punctuation once, so a segment that already ends
-      // in '.' / '?' / '!' is not given a second full stop.
+      // in '.' / '?' / '!' is not given a second period.
       final String sentence =
           RegExp(r'[.?!]$').hasMatch(text) ? text : '$text.';
       switch (s.speaker) {

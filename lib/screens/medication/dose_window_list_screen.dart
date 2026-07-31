@@ -25,7 +25,7 @@ part 'dose_window_list_screen.g.dart';
 /// The patient id comes from [activePatientIdProvider] now (was a hard-
 /// coded 'demo-patient-mary' const) so the windows follow whichever loved
 /// one is active. With one patient on file the provider resolves that
-/// sole id, so the single-patient behaviour is unchanged.
+/// sole id, so the single-patient behavior is unchanged.
 @Riverpod(keepAlive: false)
 Future<List<DoseWindow>> doseWindowList(Ref ref) async {
   final MedicationRepository repo =

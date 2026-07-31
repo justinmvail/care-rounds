@@ -471,7 +471,7 @@ class _SkeletonBlock extends StatelessWidget {
         height: height,
         decoration: BoxDecoration(
           // A faint tint of the brand navy reads as a placeholder against
-          // the warm-white card without introducing an off-palette grey.
+          // the warm-white card without introducing an off-palette gray.
           color: context.hc.primary.withValues(alpha: 0.08),
           borderRadius: BorderRadius.circular(6),
         ),

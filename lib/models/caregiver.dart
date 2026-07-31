@@ -7,7 +7,7 @@ part 'caregiver.g.dart';
 ///
 /// The person side of the care-circle model — the [CareCircleMembership]
 /// row carries their permission level and invite state. [role] is the
-/// caregiver's relationship to the client, an organisational tag the
+/// caregiver's relationship to the client, an organizational tag the
 /// caregiver chooses; nothing here is a medical or legal designation.
 ///
 /// One token per [CaregiverRole] value so the JSON name matches the enum
@@ -24,7 +24,7 @@ enum CaregiverRole {
 
   /// The person a worker escalates to. Distinct from [agency]: a supervisor
   /// is an individual who resolves flags and is accountable for a caseload,
-  /// not the organisation itself. Appended rather than inserted because the
+  /// not the organization itself. Appended rather than inserted because the
   /// role persists BY NAME (see db/tables.dart), so existing rows are
   /// unaffected either way — but appending keeps any index-based reader safe
   /// too.

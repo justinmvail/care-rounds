@@ -107,7 +107,7 @@ abstract class CareApproach with _$CareApproach {
 /// what hasn't, most recent first.
 ///
 /// Pure so it is unit-testable without a database.
-List<String> summariseApproaches(List<CareApproach> all) {
+List<String> summarizeApproaches(List<CareApproach> all) {
   final Map<CareSituation, List<CareApproach>> bySituation =
       <CareSituation, List<CareApproach>>{};
   for (final CareApproach a in all) {

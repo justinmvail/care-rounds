@@ -92,7 +92,7 @@ class CareRoundsDatabase extends _$CareRoundsDatabase {
   /// connection, which eliminates the `SQLITE_BUSY` "database is locked"
   /// failures that struck when separate connections wrote concurrently
   /// (e.g. a chat/setup write racing the sync engine). Tests bypass this in
-  /// favour of `NativeDatabase.memory()`.
+  /// favor of `NativeDatabase.memory()`.
   ///
   /// [localFileExecutor] returns a lazily-connected executor, so this stays a
   /// synchronous factory: the (one-time) legacy-decrypt migration and the file
@@ -121,7 +121,7 @@ class CareRoundsDatabase extends _$CareRoundsDatabase {
   static const int _schemaVersion = 24;
 
   /// The memoisation behind [open], with an injectable [executor] so the
-  /// singleton + no-op-close behaviour is testable without the platform
+  /// singleton + no-op-close behavior is testable without the platform
   /// path_provider that the real `driftDatabase(...)` needs. Production
   /// calls [open]; tests call this with an on-disk `NativeDatabase`.
   /// Returns the existing shared instance if one was already opened — the
@@ -272,7 +272,7 @@ class CareRoundsDatabase extends _$CareRoundsDatabase {
           if (from < 13) {
             // Care Plan v2: drop the old slot/stage `CarePlanSectionsTable`
             // and replace with the wall-clock-scheduled
-            // [CarePlanRoutinesTable]. The v1 data was organisational
+            // [CarePlanRoutinesTable]. The v1 data was organizational
             // notes that don't map cleanly onto the new model — wipe + let
             // the caregiver re-author routines as scheduled tasks. The
             // schema is too freshly seeded in v1 for this to matter in

@@ -167,7 +167,7 @@ class RealVoiceNoteRecorder implements VoiceNoteRecorder {
 class RealVoiceCapture implements VoiceCapture {
   /// Try to keep speech ON THE DEVICE for dictation.
   ///
-  /// `speech_to_text` delegates to the platform recogniser, and on many Android
+  /// `speech_to_text` delegates to the platform recognizer, and on many Android
   /// devices Google's engine uploads the audio to transcribe it. `onDevice:
   /// true` asks the platform for local-only recognition — but it is STRICT: if
   /// the device cannot do it (no offline language model installed, unsupported

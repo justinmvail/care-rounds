@@ -208,7 +208,7 @@ class HttpDocumentBlobService implements DocumentBlobService {
       return out.path;
     } catch (_) {
       // Offline / 404 / write error — the row keeps its (missing) path; a
-      // later sync tick retries.
+      // later sync check retries.
       return null;
     }
   }

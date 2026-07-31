@@ -1095,7 +1095,7 @@ class _EmptyDay extends StatelessWidget {
 /// Block color per [CareEventKind] (BUILD_SPEC.md §5.14). The spec's
 /// coral/teal/amber/plum placeholders map onto the four most-distinct
 /// brand tokens (CLAUDE.md / docs/MENU_LAYOUT_SPEC.md discard the
-/// placeholder color names in favour of the §3.1 palette): appointment →
+/// placeholder color names in favor of the §3.1 palette): appointment →
 /// `cta` (coral), task → `link` (the cool interactive accent, for teal),
 /// shift → `success` (green, for amber), note → `accentDeep` (for plum).
 /// Patient-scoped kinds map onto the Home Recent Activity hues so the

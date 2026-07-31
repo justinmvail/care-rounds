@@ -27,7 +27,7 @@ abstract class AmbientScribe {
   /// than fail mid-visit.
   Future<bool> get isAvailable;
 
-  /// Begin listening. Emits attributed segments as speech is recognised.
+  /// Begin listening. Emits attributed segments as speech is recognized.
   /// Emitting nothing is a valid outcome (a quiet visit).
   Stream<ScribeSegment> start();
 

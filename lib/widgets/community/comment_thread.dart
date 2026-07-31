@@ -375,7 +375,7 @@ class _ActionBar extends StatelessWidget {
           key: CommentThread.upvoteKey(comment.id),
           onPressed: onUpvote,
           // Salmon (CTA) for the upvote arrow so it matches the brand's
-          // warm "yes, agree" colour. Brand spec §3 calls out the
+          // warm "yes, agree" color. Brand spec §3 calls out the
           // salmon-orange as the primary affordance hue.
           color: pendingVote == 1
               ? context.hc.cta
@@ -396,7 +396,7 @@ class _ActionBar extends StatelessWidget {
         IconButton(
           key: CommentThread.downvoteKey(comment.id),
           onPressed: onDownvote,
-          // Navy (primary) for the downvote so the cooler colour reads
+          // Navy (primary) for the downvote so the cooler color reads
           // as the de-emphasized direction.
           color: pendingVote == -1
               ? context.hc.primary

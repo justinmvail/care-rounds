@@ -359,7 +359,7 @@ class PdfExporter {
             children: <pw.Widget>[
               _summaryCell(row.medication.name),
               _summaryCell(row.medication.dosage),
-              _summaryCell(_summariseSchedules(row.windows)),
+              _summaryCell(_summarizeSchedules(row.windows)),
               _summaryCell(_routeLabel(row.medication.route)),
             ],
           ),
@@ -634,13 +634,13 @@ const List<String> _months = <String>[
 /// Top-level so the test suite can exercise it directly without
 /// instantiating the exporter. Joins each window's label with the
 /// entry's weekday qualifier when it gates on specific days.
-String _summariseSchedules(
+String _summarizeSchedules(
     List<({DoseWindow window, MedicationWindowEntry entry})> pairs) {
   if (pairs.isEmpty) return 'As needed';
-  return pairs.map(_summariseOne).join(' · ');
+  return pairs.map(_summarizeOne).join(' · ');
 }
 
-String _summariseOne(({DoseWindow window, MedicationWindowEntry entry}) p) {
+String _summarizeOne(({DoseWindow window, MedicationWindowEntry entry}) p) {
   final DoseWindow w = p.window;
   final MedicationWindowEntry e = p.entry;
   final String anchorPart = w.anchorTime == null

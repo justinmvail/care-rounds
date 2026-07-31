@@ -144,7 +144,7 @@ class _CitationChip extends StatelessWidget {
 
 /// The quiet "Based on" provenance line under a grounded assistant reply.
 ///
-/// Intentionally understated: no CTA colour (salmon is reserved for actions),
+/// Intentionally understated: no CTA color (salmon is reserved for actions),
 /// no tap target, small type. The worker should be able to glance at it and
 /// know the answer came from this client's record — and, just as importantly,
 /// notice when it is ABSENT.

@@ -435,7 +435,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
       _messages[m.id] = m;
       if (m.role == MessageRole.assistant && !m.streamingDone) {
         _streamingAssistantId = m.id;
-        // Sanitise every streamed snapshot — strip `[action:…]` tags and
+        // Sanitize every streamed snapshot — strip `[action:…]` tags and
         // swap a raw `[chat error: …]` trailer for the friendly line — so
         // the in-flight CaptionFade never flashes an internal marker.
         _streamingBodyController?.add(ChatService.displayBody(m.body));
@@ -499,7 +499,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeOut,
       );
-      // A lazy list realises the last bubble — and its late-laid-out replay
+      // A lazy list realizes the last bubble — and its late-laid-out replay
       // button — only as the scroll approaches it, so maxScrollExtent keeps
       // GROWING after the animation target was captured. Without a re-pin,
       // re-entering a thread lands ~24px short and the last reply's replay
@@ -1453,7 +1453,7 @@ class _ComposerState extends ConsumerState<_Composer> {
           const SizedBox(width: 8),
           // Composer mic — capture a spoken phrase into the field
           // (#fb_1780959784045575 / fb_1781034095668808). Moved to the RIGHT
-          // beside Send and made a filled, brand-coloured circle so it's easy
+          // beside Send and made a filled, brand-colored circle so it's easy
           // to spot; while listening the whole button turns salmon with a
           // ring so it clearly reads as "recording". The transcript streams
           // in word-for-word via [_captureIntoField]'s onPartial. "Listening…"

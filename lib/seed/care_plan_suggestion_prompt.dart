@@ -1,5 +1,5 @@
 /// System prompt for the AI-guided care-plan checklist (Track-2 #19): given a
-/// short, sanitised summary of a client's situation, propose a checklist of
+/// short, sanitized summary of a client's situation, propose a checklist of
 /// concrete care tasks a direct-care worker would do on a visit.
 ///
 /// Guardrails mirror the app's medical rules:

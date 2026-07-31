@@ -17,7 +17,7 @@ part 'clients_view_provider.g.dart';
 /// Team → Clients roster and the persistent client-switcher bar both push
 /// this to append a new client. (Formerly `LovedOnesScreen.addRoute`; the
 /// Settings-side "Clients" manager screen was retired in Track-2 #33 in
-/// favour of the single Team roster + the switcher bar.)
+/// favor of the single Team roster + the switcher bar.)
 const String lovedOnesAddRoute = '/loved-ones/add';
 
 /// The roster of clients + the active id, bundled so a surface consumes a

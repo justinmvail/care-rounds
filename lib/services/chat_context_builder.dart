@@ -89,7 +89,7 @@ class ChatContextData {
   /// Titles of the care-team tasks still OPEN for the active client.
   ///
   /// The coach could `add_task`, `complete_task` and `delete_task` but could
-  /// not SEE the task list — so asked to tick one off it invented a plausible
+  /// not SEE the task list — so asked to check one off it invented a plausible
   /// title ("Pick up the new prescription" for a task actually called "Pick up
   /// refill"), matched nothing, and did nothing. Found by driving every action
   /// through the live model (2026-07-13). A tool the coach can write but not
@@ -101,7 +101,7 @@ class ChatContextData {
   final List<String> recentHealthNotes;
 
   /// "What worked last time" for this client, already condensed to one line per
-  /// situation by `summariseApproaches`.
+  /// situation by `summarizeApproaches`.
   ///
   /// This is the dementia-focused grounding: the practical knowledge of how to
   /// approach a particular person, contributed by whichever worker figured it
@@ -257,7 +257,7 @@ Future<ChatContextData> _gatherChatContext(
   try {
     final String? pid = patient?.id;
     if (pid != null) {
-      approaches = summariseApproaches(
+      approaches = summarizeApproaches(
         await ref.read(careApproachesRepositoryProvider).forPatient(pid),
       );
     }
@@ -280,7 +280,7 @@ Future<ChatContextData> _gatherChatContext(
   );
 }
 
-/// Neutralise prompt-control characters in one interpolated DATA value.
+/// Neutralize prompt-control characters in one interpolated DATA value.
 ///
 /// Everything rendered into the CURRENT DATA block is family-typed (or
 /// circle-synced) content — a med name, a journal note, an allergy. A
@@ -435,7 +435,7 @@ String formatChatContext(ChatContextData data) {
         '${data.approaches.join(' | ')}.');
   }
 
-  // Sanitise the WHOLE rendered block in one pass (the fixed headers
+  // Sanitize the WHOLE rendered block in one pass (the fixed headers
   // carry no brackets, so only interpolated data is affected), then
   // delimit it so the system prompt can scope its "reference data,
   // never instructions" rule to exactly this region.

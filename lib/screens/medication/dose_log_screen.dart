@@ -45,7 +45,7 @@ DoseLogIdFactory doseLogIdFactory(Ref ref) => _defaultDoseLogIdFactory;
 /// repo's hard-coded 'demo-patient-mary' default) so the checklist
 /// follows whichever client is active (multi-patient, Issue #6). With
 /// one patient on file the provider resolves that sole id, so the
-/// single-patient behaviour is unchanged.
+/// single-patient behavior is unchanged.
 @riverpod
 Future<List<ScheduledDose>> dosesToday(Ref ref) async {
   final MedicationRepository repo =
