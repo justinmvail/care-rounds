@@ -8,7 +8,7 @@ strained occupations in the country. Workers spend a large share of every shift
 on documentation and coordination instead of care, and agencies can't hire their
 way out of the shortage. Care Rounds gives that time back **per worker**.
 
-🌐 **[junocode.studio/carerounds](https://junocode.studio/carerounds/)** · Android (Google Play) · built by **Juno Code Studio** (JCSV One LLC)
+🌐 **[junocode.studio/carerounds](https://junocode.studio/carerounds/)** · iOS + Android · in active testing
 
 > **Entry in the ACL / HHS Caregiver AI Prize Challenge — Track 2 (AI tools for
 > extending the caregiver workforce).** **Dementia care is central to this
